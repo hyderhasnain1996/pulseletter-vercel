@@ -2271,3 +2271,29 @@ video.doc-media {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* ---- Text message preview ---------------------------------------------- */
+.sms-preview {
+  display: grid;
+  gap: 6px;
+}
+.sms-label {
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.sms-bubble {
+  padding: 11px 14px;
+  border-radius: 16px 16px 16px 4px;
+  background: #4db2bd1f;
+  border: 1px solid var(--border);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--foreground);
+  word-break: break-word;
+}
+.sms-meta {
+  font-size: 11px;
+  color: var(--muted-foreground);
+}

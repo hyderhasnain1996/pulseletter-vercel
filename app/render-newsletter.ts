@@ -89,6 +89,31 @@ export function renderEmail(issue: Issue, brand: string, origin?: string) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(issue.title)}</title></head><body style="margin:0;background:#eef1f3;font-family:Arial,Helvetica,sans-serif;color:${t.ink}"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#eef1f3"><tr><td align="center" style="padding:22px 12px"><table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%;max-width:600px;background:${t.bg};border-radius:10px;overflow:hidden">${rows}</table></td></tr></table></body></html>`;
 }
 
+/* A text message fits 160 characters before carriers split it into two, so
+   the link is measured first and the wording is trimmed to whatever is left.
+   Anything longer costs double and can arrive out of order. */
+export const SMS_LIMIT = 160;
+
+export function renderSms(issue: Issue, brand: string, origin?: string) {
+  const link = readUrl(issue, origin);
+  const budget = SMS_LIMIT - link.length - 1;
+  if (budget <= 0) return link;
+
+  const intro = issue.blocks.find((b) => b.type === "Introduction")?.text ?? "";
+  let body = `${brand}: ${issue.title}`.replace(/\s+/g, " ").trim();
+  if (intro && body.length + 3 < budget)
+    body = `${body} — ${intro.replace(/\s+/g, " ").trim()}`;
+  if (body.length > budget)
+    body = body.slice(0, Math.max(1, budget - 1)).trimEnd() + "…";
+
+  return `${body} ${link}`;
+}
+
+/** How many messages a carrier will bill for. */
+export const smsSegments = (text: string) =>
+  Math.max(1, Math.ceil(text.length / SMS_LIMIT));
+
+/** Short form used for the mobile notification preview. */
 export function renderMobile(issue: Issue) {
   return `${issue.title}: ${issue.blocks.find((b) => b.type === "Introduction")?.text || ""}`.slice(
     0,

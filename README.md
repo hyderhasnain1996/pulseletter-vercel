@@ -53,6 +53,19 @@ email, no password. Google sign-in appears only when `AUTH_GOOGLE_ID` and
 address that owns the Resend account** — fine for a first test, not for real
 subscribers.
 
+## Sending texts
+
+Texts carry a short line and a link to the full issue, because a newsletter
+does not fit in a message. The send panel shows the exact text and how many
+messages it will be charged as, so it can be kept to one.
+
+Texts need a Twilio account, a bought phone number and three variables:
+`SMS_ACCOUNT_SID`, `SMS_AUTH_TOKEN` and `SMS_FROM`. There is no free tier for
+real delivery — a number is roughly $1-2 a month plus a few cents per message,
+and trial accounts can only text numbers you have verified.
+
+Email needs none of that, so it stays the cheaper way to reach most readers.
+
 ## Running locally
 
 ```bash

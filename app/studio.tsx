@@ -96,7 +96,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Toaster, toast } from "sonner";
 import { initial, templates, State, Issue } from "./data";
-import { renderEmail, renderMobile, readUrl } from "./render-newsletter";
+import {
+  renderEmail,
+  renderSms,
+  smsSegments,
+  SMS_LIMIT,
+  readUrl,
+} from "./render-newsletter";
 import { parseCSV } from "./csv";
 import { compressImage, toEmbed } from "./media";
 import { themes, themeVars } from "./themes";
@@ -2550,11 +2556,30 @@ export default function Studio() {
                 )}
               </div>
 
-              <p className="send-what">
-                {sendChannel === "Email"
-                  ? "Each person gets the short version — cover photo, intro and key points — with a button to the full issue."
-                  : "Each person gets a short text with a link to the full issue."}
-              </p>
+              {sendChannel === "Email" ? (
+                <p className="send-what">
+                  Each person gets the short version — cover photo, intro and
+                  key points — with a button to the full issue.
+                </p>
+              ) : (
+                (() => {
+                  const text = renderSms(issue, data.brand, origin);
+                  const parts = smsSegments(text);
+                  return (
+                    <div className="sms-preview">
+                      <span className="sms-label">They receive</span>
+                      <p className="sms-bubble">{text}</p>
+                      <p className="sms-meta">
+                        {text.length} characters ·{" "}
+                        {parts === 1
+                          ? "one message"
+                          : `${parts} messages (charged as ${parts})`}
+                        {text.length > SMS_LIMIT ? " · shorten the title to fit one" : ""}
+                      </p>
+                    </div>
+                  );
+                })()
+              )}
 
               <div className="ai-launch">
                 <button
@@ -2577,7 +2602,7 @@ export default function Studio() {
                               : undefined,
                           text:
                             sendChannel === "SMS"
-                              ? renderMobile(issue) + " " + readUrl(issue, origin)
+                              ? renderSms(issue, data.brand, origin)
                               : undefined,
                         }),
                       });
