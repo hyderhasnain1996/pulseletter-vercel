@@ -1,0 +1,298 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import {
+  BellRing,
+  CalendarClock,
+  Check,
+  Mail,
+  Search,
+  Users,
+} from "lucide-react";
+import type { Contact, Issue } from "./data";
+
+/* Setting up an automation.
+
+   Four decisions, in the order someone actually makes them: what goes out,
+   how it travels, who receives it, and how often. The summary at the foot
+   says the whole thing back as one sentence, so the schedule can be checked
+   before it is switched on. */
+
+export type NewAutomation = {
+  name: string;
+  issueId: string;
+  channel: string;
+  group: string;
+  recipients?: string[];
+  frequency: string;
+};
+
+const FREQUENCIES = [
+  { value: "Daily", label: "Every day", hint: "A daily pulse" },
+  { value: "Weekly", label: "Every week", hint: "The usual rhythm" },
+  { value: "Monthly", label: "Every month", hint: "A fuller round-up" },
+];
+
+const WHO = [
+  { value: "all", label: "Everyone" },
+  { value: "group", label: "A group" },
+  { value: "people", label: "Pick people" },
+];
+
+export function AutomationForm({
+  issues,
+  contacts,
+  groups,
+  onCreate,
+}: {
+  issues: Issue[];
+  contacts: Contact[];
+  groups: string[];
+  onCreate: (a: NewAutomation) => void;
+}) {
+  const [name, setName] = useState("");
+  const [issueId, setIssueId] = useState("");
+  const [channel, setChannel] = useState("Email");
+  const [who, setWho] = useState("all");
+  const [group, setGroup] = useState(groups[0] ?? "All contacts");
+  const [picked, setPicked] = useState<string[]>([]);
+  const [frequency, setFrequency] = useState("Weekly");
+  const [query, setQuery] = useState("");
+
+  /* Only people who agreed to receive email can be chosen. Showing the rest
+     would offer a choice the sender is not allowed to act on. */
+  const mailable = useMemo(
+    () => contacts.filter((c) => c.subscribed && c.email),
+    [contacts],
+  );
+
+  const matches = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return mailable;
+    return mailable.filter(
+      (c) =>
+        c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q),
+    );
+  }, [mailable, query]);
+
+  const toggle = (email: string) =>
+    setPicked((p) =>
+      p.includes(email) ? p.filter((e) => e !== email) : [...p, email],
+    );
+
+  const phone = channel === "Phone alert";
+  const inGroup = mailable.filter((c) => c.group === group).length;
+
+  const audience = phone
+    ? "everyone with notifications on"
+    : who === "people"
+      ? `${picked.length} ${picked.length === 1 ? "person" : "people"}`
+      : who === "group"
+        ? `${group} (${inGroup})`
+        : `all ${mailable.length} subscribed`;
+
+  const incomplete = !phone && who === "people" && picked.length === 0;
+
+  const first = new Date();
+  first.setUTCDate(first.getUTCDate() + 1);
+  first.setUTCHours(9, 0, 0, 0);
+  const firstDay = first.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    timeZone: "UTC",
+  });
+
+  return (
+    <form
+      className="auto-form"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (incomplete) return;
+        onCreate({
+          name: name.trim(),
+          issueId,
+          channel,
+          group: phone || who !== "group" ? "All contacts" : group,
+          recipients: !phone && who === "people" ? picked : undefined,
+          frequency,
+        });
+      }}
+    >
+      <label className="auto-field">
+        <span className="auto-label">Name it</span>
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          placeholder="Weekly issue"
+        />
+      </label>
+
+      <label className="auto-field">
+        <span className="auto-label">Which newsletter goes out</span>
+        <select value={issueId} onChange={(e) => setIssueId(e.target.value)}>
+          <option value="">Always the most recently edited one</option>
+          {issues.map((i) => (
+            <option key={i.id} value={i.id}>
+              {i.title}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <div className="auto-field">
+        <span className="auto-label">How it travels</span>
+        <div className="auto-seg" role="group" aria-label="Channel">
+          {[
+            { v: "Email", label: "Email", icon: <Mail size={15} /> },
+            {
+              v: "Phone alert",
+              label: "Phone alert",
+              icon: <BellRing size={15} />,
+            },
+          ].map((c) => (
+            <button
+              key={c.v}
+              type="button"
+              className={"auto-seg-btn" + (channel === c.v ? " on" : "")}
+              aria-pressed={channel === c.v}
+              onClick={() => setChannel(c.v)}
+            >
+              {c.icon}
+              {c.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {phone ? (
+        <p className="auto-note">
+          <BellRing size={15} aria-hidden="true" />
+          Phone alerts reach every device that turned notifications on. There is
+          no list to choose from.
+        </p>
+      ) : (
+        <div className="auto-field">
+          <span className="auto-label">Who receives it</span>
+          <div className="auto-seg" role="group" aria-label="Who receives it">
+            {WHO.map((w) => (
+              <button
+                key={w.value}
+                type="button"
+                className={"auto-seg-btn" + (who === w.value ? " on" : "")}
+                aria-pressed={who === w.value}
+                onClick={() => setWho(w.value)}
+              >
+                {w.label}
+              </button>
+            ))}
+          </div>
+
+          {who === "group" && (
+            <select
+              className="auto-sub"
+              value={group}
+              onChange={(e) => setGroup(e.target.value)}
+              aria-label="Group"
+            >
+              {groups.map((g) => (
+                <option key={g} value={g}>
+                  {g} ({mailable.filter((c) => c.group === g).length})
+                </option>
+              ))}
+            </select>
+          )}
+
+          {who === "people" && (
+            <div className="auto-people">
+              <div className="auto-search">
+                <Search size={15} aria-hidden="true" />
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search by name or email"
+                  aria-label="Search contacts"
+                />
+              </div>
+
+              <div className="auto-list">
+                {matches.length ? (
+                  matches.map((c) => {
+                    const on = picked.includes(c.email);
+                    return (
+                      <button
+                        key={c.id}
+                        type="button"
+                        className={"auto-person" + (on ? " on" : "")}
+                        aria-pressed={on}
+                        onClick={() => toggle(c.email)}
+                      >
+                        <span className="auto-tick" aria-hidden="true">
+                          {on && <Check size={13} />}
+                        </span>
+                        <span>
+                          {c.name}
+                          <small>{c.email}</small>
+                        </span>
+                      </button>
+                    );
+                  })
+                ) : (
+                  <p className="auto-empty">
+                    {mailable.length
+                      ? "Nobody matches that search."
+                      : "No subscribed contacts yet. Add someone on Contacts & Groups first."}
+                  </p>
+                )}
+              </div>
+
+              <p className="auto-count">
+                {picked.length
+                  ? `${picked.length} selected`
+                  : "Choose at least one person."}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="auto-field">
+        <span className="auto-label">How often</span>
+        <div className="auto-freq" role="group" aria-label="How often">
+          {FREQUENCIES.map((f) => (
+            <button
+              key={f.value}
+              type="button"
+              className={"auto-card" + (frequency === f.value ? " on" : "")}
+              aria-pressed={frequency === f.value}
+              onClick={() => setFrequency(f.value)}
+            >
+              <strong>{f.label}</strong>
+              <small>{f.hint}</small>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="auto-summary">
+        <CalendarClock size={18} aria-hidden="true" />
+        <p>
+          <strong>
+            {FREQUENCIES.find((f) => f.value === frequency)?.label} at 09:00 UTC
+          </strong>
+          <span>
+            {phone ? "A phone alert" : "An email"} to {audience}. First send{" "}
+            {firstDay}.
+          </span>
+        </p>
+      </div>
+
+      <div className="auto-actions">
+        <button className="primary" disabled={incomplete}>
+          <Users size={16} aria-hidden="true" />
+          Turn it on
+        </button>
+      </div>
+    </form>
+  );
+}

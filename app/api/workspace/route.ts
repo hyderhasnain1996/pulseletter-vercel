@@ -73,6 +73,7 @@ const schema = z.object({
         issueId: str.optional(),
         channel: str.optional(),
         group: str.optional(),
+        recipients: z.array(str).max(500).optional(),
         lastRun: str.optional(),
         nextRun: str.optional(),
         lastResult: str.optional(),

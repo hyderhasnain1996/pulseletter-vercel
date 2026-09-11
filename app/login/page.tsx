@@ -1,8 +1,8 @@
 import { auth, emailSignInReady, googleSignInReady, signIn } from "@/auth";
-import { redirect } from "next/navigation";
 import { LandingShell } from "./landing-shell";
 import { HeroContent } from "./hero-content";
 import { SignInCard } from "./sign-in-card";
+import { ContinueCard } from "./continue-card";
 import "./landing.css";
 
 export const metadata = {
@@ -17,8 +17,18 @@ export default async function LoginPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const session = await auth();
-  if (session?.user) redirect("/");
   await searchParams; // the card reports its own errors in place
+
+  /* Signed in or not, this page is what the address opens. Someone already
+     signed in is offered the way through rather than being thrown straight
+     into the studio. */
+  if (session?.user)
+    return (
+      <LandingShell
+        showcase={<HeroContent />}
+        auth={<ContinueCard name={session.user.name ?? session.user.email ?? ""} />}
+      />
+    );
 
   const google = googleSignInReady();
   const emailLink = emailSignInReady();
@@ -36,7 +46,7 @@ export default async function LoginPage({
           <form
             action={async () => {
               "use server";
-              await signIn("google", { redirectTo: "/" });
+              await signIn("google", { redirectTo: "/dashboard" });
             }}
           >
             <button type="submit">Continue with Google</button>
@@ -49,7 +59,7 @@ export default async function LoginPage({
               "use server";
               await signIn("resend", {
                 email: String(formData.get("email")),
-                redirectTo: "/",
+                redirectTo: "/dashboard",
               });
             }}
           >

@@ -51,7 +51,7 @@ export function SignInCard({
       if (res?.error) {
         setError("That username and password did not match. Please try again.");
       } else {
-        window.location.href = "/";
+        window.location.href = "/dashboard";
         return; // keep the button busy while the browser navigates
       }
     } catch {

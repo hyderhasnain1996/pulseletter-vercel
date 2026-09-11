@@ -131,11 +131,18 @@ export async function GET(req: Request) {
             .where(inArray(pushSubscriptions.endpoint, gone));
         result = `Notified ${sent} device${sent === 1 ? "" : "s"}`;
       } else {
+        /* A chosen list of people wins over the group: picking names is the
+           more specific instruction of the two. */
+        const chosen = a.recipients?.length
+          ? new Set(a.recipients.map((e) => e.toLowerCase()))
+          : undefined;
         const recipients = state.contacts.filter(
           (c) =>
             c.subscribed &&
             c.email &&
-            (!a.group || a.group === "All contacts" || c.group === a.group),
+            (chosen
+              ? chosen.has(c.email.toLowerCase())
+              : !a.group || a.group === "All contacts" || c.group === a.group),
         );
         if (!recipients.length) {
           result = "No subscribed contacts";

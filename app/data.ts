@@ -49,6 +49,9 @@ export type Automation = {
   channel?: string;
   /** Contact group for email, or "All contacts". */
   group?: string;
+  /** Specific email addresses. When set, these are used instead of the
+      group — it is how "pick a few people" is stored. */
+  recipients?: string[];
   /** ISO timestamps, written by the scheduler. */
   lastRun?: string;
   nextRun?: string;

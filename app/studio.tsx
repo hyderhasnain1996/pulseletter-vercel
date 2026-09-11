@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { AutomationForm } from "./automation-form";
 import {
   Activity,
   LayoutDashboard,
@@ -111,7 +112,7 @@ import {
   resolvePhotos,
 } from "./import-newsletter";
 const nav = [
-  ["Dashboard", LayoutDashboard, "/"],
+  ["Dashboard", LayoutDashboard, "/dashboard"],
   ["Newsletters", FileText, "/newsletters"],
   ["Contacts & Groups", Users, "/contacts"],
   ["Automations", Workflow, "/automations"],
@@ -1150,7 +1151,7 @@ export default function Studio() {
     <SidebarProvider>
       <Sidebar className="studio-sidebar">
         <SidebarHeader>
-          <button className="brand" onClick={() => go("/")}>
+          <button className="brand" onClick={() => go("/dashboard")}>
             <span className="brand-icon">
               <Activity size={23} />
             </span>
@@ -1265,7 +1266,7 @@ export default function Studio() {
               Your newsletters <ArrowRight size={14} />
             </button>
           </div>
-          {path === "/" && (
+          {path === "/dashboard" && (
             <>
               <div className="page-heading">
                 <div>
@@ -2056,9 +2057,13 @@ export default function Studio() {
                           <small>
                             {a.frequency} · {a.channel ?? "Email"} ·{" "}
                             {issue ? issue.title : "Most recent newsletter"}
-                            {a.channel !== "Phone alert" && a.group
-                              ? ` · ${a.group}`
-                              : ""}
+                            {a.channel === "Phone alert"
+                              ? ""
+                              : a.recipients?.length
+                                ? ` · ${a.recipients.length} chosen ${a.recipients.length === 1 ? "person" : "people"}`
+                                : a.group
+                                  ? ` · ${a.group}`
+                                  : ""}
                           </small>
                           <small className="auto-when">
                             {a.paused
@@ -2199,8 +2204,10 @@ export default function Studio() {
             {modal === "send"
               ? "Add addresses or numbers and send straight away."
               : modal === "create"
-              ? "Describe your theme and let AI write it — or build it yourself."
-                : "Your newsletter studio"}
+                ? "Describe your theme and let AI write it — or build it yourself."
+                : modal === "automation"
+                  ? "Set it once. PulseLetter sends it on schedule from then on."
+                  : "Your newsletter studio"}
           </DialogDescription>
           {modal === "create" && (
             <Tabs defaultValue="ai">
@@ -2848,11 +2855,11 @@ export default function Studio() {
             </form>
           )}
           {modal === "automation" && (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const f = new FormData(e.currentTarget);
-                const frequency = String(f.get("frequency"));
+            <AutomationForm
+              issues={data.issues}
+              contacts={data.contacts}
+              groups={groups}
+              onCreate={(a) => {
                 /* First run is tomorrow at 09:00 UTC, so creating one never
                    fires a send in the same moment. */
                 const first = new Date();
@@ -2864,72 +2871,19 @@ export default function Studio() {
                     ...data.automations,
                     {
                       id: uid(),
-                      name: String(f.get("name")),
-                      frequency,
-                      channel: String(f.get("channel")),
-                      issueId: String(f.get("issueId")),
-                      group: String(f.get("group")),
+                      ...a,
                       paused: false,
                       nextRun: first.toISOString(),
                     },
                   ],
                 });
                 setModal("");
-                toast.success("Automation is on — first send " + fmtDate(first.toISOString()));
+                toast.success(
+                  "Automation is on — first send " +
+                    fmtDate(first.toISOString()),
+                );
               }}
-            >
-              <label>
-                Name it
-                <input name="name" required placeholder="Weekly issue" />
-              </label>
-
-              <label>
-                Send which newsletter
-                <select name="issueId" defaultValue="">
-                  <option value="">The most recently edited one</option>
-                  {data.issues.map((i) => (
-                    <option key={i.id} value={i.id}>
-                      {i.title}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label>
-                How
-                <select name="channel" defaultValue="Email">
-                  <option value="Email">Email</option>
-                  <option value="Phone alert">Phone alert</option>
-                </select>
-              </label>
-
-              <label>
-                To whom
-                <select name="group" defaultValue="All contacts">
-                  <option value="All contacts">All subscribed contacts</option>
-                  {groups.map((g) => (
-                    <option key={g} value={g}>
-                      {g}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label>
-                How often
-                <select name="frequency" defaultValue="Weekly">
-                  <option value="Daily">Every day</option>
-                  <option value="Weekly">Every week</option>
-                  <option value="Monthly">Every month</option>
-                </select>
-              </label>
-
-              <p>
-                Sends run at 09:00 UTC. Phone alerts go to everyone who turned
-                notifications on; group applies to email.
-              </p>
-              <button className="primary">Turn it on</button>
-            </form>
+            />
           )}
         </DialogContent>
       </Dialog>
