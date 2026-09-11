@@ -48,6 +48,17 @@ const motionStore = {
   },
 };
 
+/* Motes are declared rather than randomised: a random position would differ
+   between the server render and the browser and trip hydration. */
+const MOTES = [
+  { left: "8%", duration: 26, delay: 0, size: 7, color: "#6554d9" },
+  { left: "21%", duration: 34, delay: 9, size: 5, color: "#41b8d8" },
+  { left: "37%", duration: 30, delay: 17, size: 6, color: "#8f7cf0" },
+  { left: "58%", duration: 38, delay: 4, size: 5, color: "#43c7a5" },
+  { left: "74%", duration: 28, delay: 21, size: 7, color: "#5b8ff0" },
+  { left: "89%", duration: 36, delay: 13, size: 5, color: "#c08ce8" },
+];
+
 export function LandingShell({
   showcase,
   auth,
@@ -87,10 +98,27 @@ export function LandingShell({
       data-hidden="false"
     >
       <div className="lp-bg" aria-hidden="true">
+        <div className="lp-aurora" />
         <div className="lp-dots" />
         <div className="lp-blob lp-blob-1" />
         <div className="lp-blob lp-blob-2" />
         <div className="lp-blob lp-blob-3" />
+        <div className="lp-blob lp-blob-4" />
+        {MOTES.map((m, i) => (
+          <span
+            key={i}
+            className="lp-mote"
+            style={{
+              left: m.left,
+              bottom: "-10px",
+              background: m.color,
+              animationDuration: `${m.duration}s`,
+              animationDelay: `-${m.delay}s`,
+              width: m.size,
+              height: m.size,
+            }}
+          />
+        ))}
       </div>
 
       <div className="lp-inner">

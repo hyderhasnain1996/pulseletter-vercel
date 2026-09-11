@@ -12,8 +12,8 @@ html:has(.lp) body {
   --bg: #f8faff;
   --card: #ffffff;
   --ink: #17243b;
-  --ink-dim: #58677e;
-  --brand: #6554d9;
+  --ink-dim: #4e5c73;
+  --brand: #5a48cc;
   --brand-hover: #5442c2;
   --lavender: #eae4ff;
   --sky: #e1f2ff;
@@ -46,58 +46,145 @@ html:has(.lp) body {
 }
 .lp-dots {
   position: absolute;
-  inset: 0;
-  background-image: radial-gradient(#17243b0f 1px, transparent 1px);
+  inset: -10%;
+  background-image: radial-gradient(#17243b12 1px, transparent 1px);
   background-size: 26px 26px;
-  mask-image: radial-gradient(120% 80% at 50% 0%, #000 20%, transparent 75%);
+  mask-image: radial-gradient(120% 80% at 50% 0%, #000 20%, transparent 78%);
+  animation: lp-dots-drift 40s linear infinite;
 }
+@keyframes lp-dots-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(26px, 26px, 0);
+  }
+}
+
+/* A slow sweep of colour behind everything, so the page is never quite
+   still even where there is no content. */
+.lp-aurora {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150vmax;
+  height: 150vmax;
+  margin: -75vmax 0 0 -75vmax;
+  background: conic-gradient(
+    from 0deg,
+    #eae4ff 0deg,
+    #e1f2ff 80deg,
+    #dff7ef 160deg,
+    #fdeef5 240deg,
+    #eae4ff 360deg
+  );
+  opacity: 0.5;
+  filter: blur(60px);
+  animation: lp-spin-slow 44s linear infinite;
+  will-change: transform;
+}
+@keyframes lp-spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .lp-blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
+  filter: blur(70px);
   will-change: transform;
 }
 .lp-blob-1 {
-  width: 42vw;
-  max-width: 560px;
+  width: 40vw;
+  max-width: 540px;
   aspect-ratio: 1;
-  top: -12%;
+  top: -10%;
   left: -6%;
-  background: #eae4ff;
+  background: #d9ccff;
+  opacity: 0.85;
   animation: lp-drift-a 26s ease-in-out infinite alternate;
 }
 .lp-blob-2 {
-  width: 38vw;
-  max-width: 520px;
+  width: 36vw;
+  max-width: 500px;
   aspect-ratio: 1;
-  bottom: -18%;
-  left: 22%;
-  background: #dff7ef;
+  bottom: -16%;
+  left: 20%;
+  background: #bff0dd;
+  opacity: 0.8;
   animation: lp-drift-b 30s ease-in-out infinite alternate;
 }
 .lp-blob-3 {
   width: 34vw;
-  max-width: 470px;
+  max-width: 460px;
   aspect-ratio: 1;
-  top: 6%;
+  top: 4%;
   right: -8%;
-  background: #e1f2ff;
+  background: #c7e6ff;
+  opacity: 0.85;
   animation: lp-drift-a 22s ease-in-out infinite alternate-reverse;
+}
+.lp-blob-4 {
+  width: 26vw;
+  max-width: 360px;
+  aspect-ratio: 1;
+  bottom: 6%;
+  right: 8%;
+  background: #ffd9ec;
+  opacity: 0.6;
+  animation: lp-drift-c 34s ease-in-out infinite alternate;
 }
 @keyframes lp-drift-a {
   from {
     transform: translate3d(0, 0, 0) scale(1);
   }
   to {
-    transform: translate3d(3%, 4%, 0) scale(1.12);
+    transform: translate3d(6%, 7%, 0) scale(1.18);
   }
 }
 @keyframes lp-drift-b {
   from {
-    transform: translate3d(0, 0, 0) scale(1.06);
+    transform: translate3d(0, 0, 0) scale(1.08);
   }
   to {
-    transform: translate3d(-4%, -3%, 0) scale(0.94);
+    transform: translate3d(-8%, -6%, 0) scale(0.9);
+  }
+}
+@keyframes lp-drift-c {
+  from {
+    transform: translate3d(0, 0, 0) scale(0.95);
+  }
+  to {
+    transform: translate3d(-7%, -9%, 0) scale(1.15);
+  }
+}
+
+/* A handful of slow motes rising through the page. Transform only. */
+.lp-mote {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #6554d9;
+  opacity: 0;
+  animation: lp-rise-mote linear infinite;
+  will-change: transform, opacity;
+}
+@keyframes lp-rise-mote {
+  0% {
+    transform: translate3d(0, 30vh, 0) scale(0.6);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.5;
+  }
+  80% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: translate3d(22px, -78vh, 0) scale(1.1);
+    opacity: 0;
   }
 }
 
@@ -134,7 +221,7 @@ html:has(.lp) body {
 .lp-foot {
   margin-top: 26px;
   font-size: 12.5px;
-  color: #5d6c84;
+  color: #4e5c73;
   text-align: center;
 }
 
@@ -196,7 +283,7 @@ html:has(.lp) body {
   color: var(--ink);
 }
 .lp-grad {
-  background: linear-gradient(96deg, #6554d9 0%, #2f7df6 95%);
+  background: linear-gradient(96deg, #5a48cc 0%, #2565d6 95%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -231,7 +318,7 @@ html:has(.lp) body {
 .lp-showcase-head p {
   margin: 0;
   font-size: 12.5px;
-  color: #64738a;
+  color: #4e5c73;
 }
 .lp-stage {
   --cs-px: 0px;
@@ -860,10 +947,16 @@ html:has(.lp) body {
 
 /* ---- Paused, hidden, reduced motion ------------------------------------- */
 .lp[data-motion="off"] .lp-blob,
+.lp[data-motion="off"] .lp-aurora,
+.lp[data-motion="off"] .lp-dots,
+.lp[data-motion="off"] .lp-mote,
 .lp[data-motion="off"] .cs-slot,
 .lp[data-motion="off"] .cs-ring,
 .lp[data-motion="off"] .lp-mark svg,
 .lp[data-hidden="true"] .lp-blob,
+.lp[data-hidden="true"] .lp-aurora,
+.lp[data-hidden="true"] .lp-dots,
+.lp[data-hidden="true"] .lp-mote,
 .lp[data-hidden="true"] .cs-slot,
 .lp[data-hidden="true"] .cs-ring,
 .lp[data-hidden="true"] .lp-mark svg {
@@ -883,6 +976,10 @@ html:has(.lp) body {
   }
   .cs {
     transform: none !important;
+  }
+  .lp-mote,
+  .lp-aurora {
+    display: none;
   }
 }
 
