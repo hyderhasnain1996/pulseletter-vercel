@@ -1060,6 +1060,92 @@ export default function Studio() {
       </article>
     );
   }
+  /* The full issue is what a reader is sent, so it stands on its own:
+     no sidebar, no workspace chrome, just the newsletter. */
+  if (issue && path.includes("/read"))
+    return (
+      <div className="reader-page" style={themeVars(issue.theme)}>
+          <article className="reader" style={themeVars(issue.theme)}>
+            <div className="reader-bar">
+              <span className="reader-brand-small">
+                {data.brand.toUpperCase()}
+              </span>
+              <span>
+                {issue.category} · {issue.issue}
+              </span>
+            </div>
+            <header className="reader-head">
+              <span className="reader-brand">
+                {data.brand.toUpperCase()}
+              </span>
+              <h1>{issue.title}</h1>
+              <p className="reader-meta">
+                Updated {fmtDate(issue.updated)} ·{" "}
+                {issue.blocks.filter((b) => b.text).length} sections ·{" "}
+                {Math.max(
+                  1,
+                  Math.round(
+                    issue.blocks.reduce(
+                      (n2, b) => n2 + b.text.split(/\s+/).filter(Boolean).length,
+                      0,
+                    ) / 200,
+                  ),
+                )}{" "}
+                min read
+              </p>
+            </header>
+            <div className="reader-notify">
+              <NotifyButton publicKey={vapidKey} />
+            </div>
+            <div className="reader-body">
+              {issue.blocks.map((b) =>
+                b.type === "Divider" ? (
+                  <hr key={b.id} />
+                ) : b.type === "Title" ? null : b.type === "Image" ? (
+                  b.src ? (
+                    <figure key={b.id}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={b.src} alt={b.text || "Newsletter image"} />
+                      {b.text && <figcaption>{b.text}</figcaption>}
+                    </figure>
+                  ) : null
+                ) : b.type === "Video" ? (
+                  b.src ? (
+                    <p key={b.id}>
+                      <a href={b.src} target="_blank" rel="noopener noreferrer">
+                        ▶ Watch the video
+                      </a>
+                    </p>
+                  ) : null
+                ) : b.type === "Button" ? (
+                  <p key={b.id}>
+                    <span className="doc-button">{b.text}</span>
+                  </p>
+                ) : b.type === "Featured story" ? (
+                  <h2 key={b.id}>{b.text}</h2>
+                ) : b.type === "Details" ? (
+                  // The whole point of this page: nothing stays folded away.
+                  <div key={b.id} className="reader-detail">
+                    {b.text.split(/\n{2,}/).map((para, k) => (
+                      <p key={k}>{para}</p>
+                    ))}
+                  </div>
+                ) : b.type === "Introduction" ? (
+                  <p key={b.id} className="reader-lead">
+                    {b.text}
+                  </p>
+                ) : (
+                  <p key={b.id}>{b.text}</p>
+                ),
+              )}
+            </div>
+            <footer className="reader-foot">
+              {data.brand} · Thoughtfully curated. Made to be shared.
+            </footer>
+          </article>
+      </div>
+    );
+
   return (
     <SidebarProvider>
       <Sidebar className="studio-sidebar">
@@ -1613,89 +1699,6 @@ export default function Studio() {
                 </aside>
               </div>
             </>
-          )}
-          {issue && path.includes("/read") && (
-            <article className="reader" style={themeVars(issue.theme)}>
-              <div className="reader-bar">
-                <button
-                  className="back"
-                  onClick={() => go("/newsletters/" + issue.id)}
-                >
-                  ← Back to newsletter
-                </button>
-                <span>
-                  {issue.category} · {issue.issue}
-                </span>
-              </div>
-              <header className="reader-head">
-                <span className="reader-brand">
-                  {data.brand.toUpperCase()}
-                </span>
-                <h1>{issue.title}</h1>
-                <p className="reader-meta">
-                  Updated {fmtDate(issue.updated)} ·{" "}
-                  {issue.blocks.filter((b) => b.text).length} sections ·{" "}
-                  {Math.max(
-                    1,
-                    Math.round(
-                      issue.blocks.reduce(
-                        (n2, b) => n2 + b.text.split(/\s+/).filter(Boolean).length,
-                        0,
-                      ) / 200,
-                    ),
-                  )}{" "}
-                  min read
-                </p>
-              </header>
-              <div className="reader-notify">
-                <NotifyButton publicKey={vapidKey} />
-              </div>
-              <div className="reader-body">
-                {issue.blocks.map((b) =>
-                  b.type === "Divider" ? (
-                    <hr key={b.id} />
-                  ) : b.type === "Title" ? null : b.type === "Image" ? (
-                    b.src ? (
-                      <figure key={b.id}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={b.src} alt={b.text || "Newsletter image"} />
-                        {b.text && <figcaption>{b.text}</figcaption>}
-                      </figure>
-                    ) : null
-                  ) : b.type === "Video" ? (
-                    b.src ? (
-                      <p key={b.id}>
-                        <a href={b.src} target="_blank" rel="noopener noreferrer">
-                          ▶ Watch the video
-                        </a>
-                      </p>
-                    ) : null
-                  ) : b.type === "Button" ? (
-                    <p key={b.id}>
-                      <span className="doc-button">{b.text}</span>
-                    </p>
-                  ) : b.type === "Featured story" ? (
-                    <h2 key={b.id}>{b.text}</h2>
-                  ) : b.type === "Details" ? (
-                    // The whole point of this page: nothing stays folded away.
-                    <div key={b.id} className="reader-detail">
-                      {b.text.split(/\n{2,}/).map((para, k) => (
-                        <p key={k}>{para}</p>
-                      ))}
-                    </div>
-                  ) : b.type === "Introduction" ? (
-                    <p key={b.id} className="reader-lead">
-                      {b.text}
-                    </p>
-                  ) : (
-                    <p key={b.id}>{b.text}</p>
-                  ),
-                )}
-              </div>
-              <footer className="reader-foot">
-                {data.brand} · Thoughtfully curated. Made to be shared.
-              </footer>
-            </article>
           )}
           {issue && !path.includes("/editor") && !path.includes("/read") && (
             <>

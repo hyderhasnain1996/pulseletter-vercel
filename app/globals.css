@@ -2477,3 +2477,30 @@ video.doc-media {
   font-size: 11px;
   color: var(--muted-foreground);
 }
+
+/* ---- Full issue as a standalone page ------------------------------------ */
+.reader-page {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: color-mix(in srgb, var(--doc-bg, #f7f6f1) 55%, #000 6%);
+}
+.reader-page .reader {
+  margin: 0 auto;
+  box-shadow: 0 10px 40px #00000014;
+}
+@media (max-width: 720px) {
+  .reader-page {
+    padding: 0;
+  }
+  .reader-page .reader {
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    min-height: 100vh;
+  }
+}
+.reader-brand-small {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--doc-accent, #244944);
+}
