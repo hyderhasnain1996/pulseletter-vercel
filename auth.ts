@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { type NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
 import Resend from "next-auth/providers/resend";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
@@ -10,7 +10,7 @@ import { users, accounts, sessions, verificationTokens } from "./db/schema";
    Email links work with the same Resend key that sends newsletters, so no
    extra account is needed. Google is added only when its credentials exist,
    which keeps the app bootable before anyone has set it up. */
-const providers = [];
+const providers: NextAuthConfig["providers"] = [];
 
 if (process.env.AUTH_RESEND_KEY)
   providers.push(
