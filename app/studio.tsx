@@ -100,7 +100,8 @@ import {
   renderEmail,
   renderSms,
   smsSegments,
-  SMS_LIMIT,
+  smsLimit,
+  needsUnicodeSms,
   readUrl,
 } from "./render-newsletter";
 import { parseCSV } from "./csv";
@@ -2570,11 +2571,14 @@ export default function Studio() {
                       <span className="sms-label">They receive</span>
                       <p className="sms-bubble">{text}</p>
                       <p className="sms-meta">
-                        {text.length} characters ·{" "}
+                        {text.length} of {smsLimit(text)} characters ·{" "}
                         {parts === 1
                           ? "one message"
                           : `${parts} messages (charged as ${parts})`}
-                        {text.length > SMS_LIMIT ? " · shorten the title to fit one" : ""}
+                        {needsUnicodeSms(text)
+                          ? " · non-Latin text, so the limit is 70"
+                          : ""}
+                        {parts > 1 ? " · shorten the title to fit one" : ""}
                       </p>
                     </div>
                   );

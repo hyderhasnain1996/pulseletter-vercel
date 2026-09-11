@@ -66,6 +66,22 @@ and trial accounts can only text numbers you have verified.
 
 Email needs none of that, so it stays the cheaper way to reach most readers.
 
+### Message length
+
+One segment is 140 bytes: 160 characters of plain Latin text, but only 70 if
+the message contains any non-Latin character — Korean, Japanese, Arabic or an
+emoji. The wording is trimmed to fit a single segment, dropping the intro and
+then shortening the title as needed, because some networks do not rejoin split
+messages and they arrive as separate fragments.
+
+### South Korea (+82)
+
+Twilio can reach Korean numbers with an international long code, but domestic
+long codes, short codes and alphanumeric sender IDs are not supported, the
+sender is automatically prefixed with 009 or 006, two-way replies do not work,
+and split messages are not rejoined. With a Korean title the whole message has
+to fit 70 characters including the link, so it will usually be the title alone.
+
 ## Running locally
 
 ```bash
