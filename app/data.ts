@@ -36,16 +36,30 @@ export type Campaign = {
   snapshot: Issue;
   recipients: Contact[];
 };
+export type Automation = {
+  id: string;
+  name: string;
+  /* Daily, Weekly or Monthly. The scheduler runs once a day and decides
+     which of these are due. */
+  frequency: string;
+  paused: boolean;
+  /** Which newsletter goes out. Empty means the most recently updated one. */
+  issueId?: string;
+  /** "Email" or "Phone alert". */
+  channel?: string;
+  /** Contact group for email, or "All contacts". */
+  group?: string;
+  /** ISO timestamps, written by the scheduler. */
+  lastRun?: string;
+  nextRun?: string;
+  lastResult?: string;
+};
+
 export type State = {
   issues: Issue[];
   contacts: Contact[];
   campaigns: Campaign[];
-  automations: {
-    id: string;
-    name: string;
-    frequency: string;
-    paused: boolean;
-  }[];
+  automations: Automation[];
   brand: string;
 };
 export const templates = [

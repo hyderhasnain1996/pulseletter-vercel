@@ -53,6 +53,28 @@ email, no password. Google sign-in appears only when `AUTH_GOOGLE_ID` and
 address that owns the Resend account** — fine for a first test, not for real
 subscribers.
 
+## Automations
+
+An automation sends a newsletter on its own: pick the issue, the channel
+(email or phone alert), who receives it and how often. Vercel calls
+`/api/cron/run` once a day at 09:00 UTC and it sends whatever is due, then
+records when each automation last ran and what happened.
+
+Two settings are needed:
+
+| Variable | Why |
+| --- | --- |
+| `CRON_SECRET` | Any long random string. The route refuses to run without it, so nobody can trigger sends by visiting the URL. |
+| `SITE_ORIGIN` | The address used for links in scheduled sends, e.g. `https://your-app.vercel.app`. |
+
+Scheduled sends use the same delivery as the Send panel, so whatever works
+there works here — email needs a verified sender, phone alerts need the VAPID
+keys.
+
+Note that Vercel's Hobby plan runs cron jobs once a day. Daily, weekly and
+monthly automations all work on that, because the route decides what is due
+rather than relying on the schedule itself.
+
 ## Sending texts
 
 Texts carry a short line and a link to the full issue, because a newsletter

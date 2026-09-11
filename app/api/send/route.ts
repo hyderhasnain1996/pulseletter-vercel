@@ -1,4 +1,11 @@
 import { getUser } from "../../session";
+import {
+  sendEmail,
+  sendSms,
+  emailReady,
+  smsReady,
+  type Outcome,
+} from "../../lib/deliver";
 import { z } from "zod";
 
 /* Direct send.
@@ -17,71 +24,6 @@ const payload = z.object({
   text: z.string().max(2000).optional(),
 });
 
-type Outcome = { to: string; ok: boolean; error?: string };
-
-/* Providers explain their refusals in the response body — an unverified
-   number, a blocked country, a sender that is not yours. Passing that text
-   through turns "provider 400" into something actionable. */
-async function providerError(res: Response) {
-  try {
-    const body = (await res.json()) as { message?: string; code?: number };
-    if (body?.message)
-      return body.code ? `${body.message} (code ${body.code})` : body.message;
-  } catch {
-    // Body was not JSON; fall back to the status.
-  }
-  return `provider returned ${res.status}`;
-}
-
-async function sendEmail(
-  to: string,
-  subject: string,
-  html: string,
-): Promise<Outcome> {
-  const key = process.env.EMAIL_API_KEY;
-  const from = process.env.EMAIL_FROM;
-  if (!key || !from) return { to, ok: false, error: "not configured" };
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${key}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ from, to, subject, html }),
-    });
-    if (!res.ok) return { to, ok: false, error: await providerError(res) };
-    return { to, ok: true };
-  } catch {
-    return { to, ok: false, error: "network error" };
-  }
-}
-
-async function sendSms(to: string, body: string): Promise<Outcome> {
-  const sid = process.env.SMS_ACCOUNT_SID;
-  const token = process.env.SMS_AUTH_TOKEN;
-  const from = process.env.SMS_FROM;
-  if (!sid || !token || !from)
-    return { to, ok: false, error: "not configured" };
-  try {
-    const res = await fetch(
-      `https://api.twilio.com/2010-04-01/Accounts/${sid}/Messages.json`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: "Basic " + btoa(`${sid}:${token}`),
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({ To: to, From: from, Body: body }),
-      },
-    );
-    if (!res.ok) return { to, ok: false, error: await providerError(res) };
-    return { to, ok: true };
-  } catch {
-    return { to, ok: false, error: "network error" };
-  }
-}
-
 export async function POST(req: Request) {
   const user = await getUser();
   if (!user)
@@ -98,9 +40,7 @@ export async function POST(req: Request) {
   }
 
   const email = body.channel === "Email";
-  const ready = email
-    ? Boolean(process.env.EMAIL_API_KEY && process.env.EMAIL_FROM)
-    : Boolean(process.env.SMS_ACCOUNT_SID && process.env.SMS_AUTH_TOKEN && process.env.SMS_FROM);
+  const ready = email ? emailReady() : smsReady();
   if (!ready)
     return Response.json(
       {

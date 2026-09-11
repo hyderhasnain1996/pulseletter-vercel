@@ -2030,7 +2030,10 @@ export default function Studio() {
                 <div>
                   <div className="eyebrow">A RHYTHM THAT WORKS FOR YOU</div>
                   <h1>Keep the conversation going.</h1>
-                  <p>Prepare a recurring newsletter workflow.</p>
+                  <p>
+                    Pick a newsletter, a channel and how often. It goes out on
+                    its own from then on.
+                  </p>
                 </div>
                 <button
                   className="primary"
@@ -2040,50 +2043,95 @@ export default function Studio() {
                   New automation
                 </button>
               </div>
+
               <div className="panel">
                 {data.automations.length ? (
-                  data.automations.map((a) => (
-                    <div className="record" key={a.id}>
-                      <Workflow size={22} />
-                      <span>
-                        {a.name}
-                        <small>{a.frequency} · UTC · Approval required</small>
-                      </span>
-                      <span className="badge draft">
-                        {a.paused
-                          ? "Paused"
-                          : "Draft — scheduler not configured"}
-                      </span>
-                      <Switch
-                        checked={!a.paused}
-                        aria-label={"Pause " + a.name}
-                        onCheckedChange={(v) => {
-                          save({
-                            ...data,
-                            automations: data.automations.map((x) =>
-                              x.id === a.id ? { ...x, paused: !v } : x,
-                            ),
-                          });
-                          toast.success(
-                            v
-                              ? "Automation draft resumed"
-                              : "Automation paused",
-                          );
-                        }}
-                      />
-                    </div>
-                  ))
+                  data.automations.map((a) => {
+                    const issue = data.issues.find((i) => i.id === a.issueId);
+                    return (
+                      <div className="record auto-row" key={a.id}>
+                        <Workflow size={22} />
+                        <span>
+                          {a.name}
+                          <small>
+                            {a.frequency} · {a.channel ?? "Email"} ·{" "}
+                            {issue ? issue.title : "Most recent newsletter"}
+                            {a.channel !== "Phone alert" && a.group
+                              ? ` · ${a.group}`
+                              : ""}
+                          </small>
+                          <small className="auto-when">
+                            {a.paused
+                              ? "Paused"
+                              : a.nextRun
+                                ? `Next send ${fmtDateTime(a.nextRun)}`
+                                : "Next send at the next daily run"}
+                            {a.lastResult
+                              ? ` · Last run: ${a.lastResult}`
+                              : ""}
+                          </small>
+                        </span>
+                        <span
+                          className={"badge " + (a.paused ? "draft" : "ready")}
+                        >
+                          {a.paused ? "Paused" : "On"}
+                        </span>
+                        <Switch
+                          checked={!a.paused}
+                          aria-label={"Turn " + a.name + (a.paused ? " on" : " off")}
+                          onCheckedChange={(v) => {
+                            save({
+                              ...data,
+                              automations: data.automations.map((x) =>
+                                x.id === a.id ? { ...x, paused: !v } : x,
+                              ),
+                            });
+                            toast.success(
+                              v ? "Automation is on" : "Automation paused",
+                            );
+                          }}
+                        />
+                        <button
+                          className="auto-remove"
+                          aria-label={"Delete " + a.name}
+                          onClick={() => {
+                            save({
+                              ...data,
+                              automations: data.automations.filter(
+                                (x) => x.id !== a.id,
+                              ),
+                            });
+                            toast.success("Automation removed");
+                          }}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    );
+                  })
                 ) : (
                   <div className="empty">
                     <Workflow />
-                    <h2>Find your publishing rhythm</h2>
+                    <h2>Send it without thinking about it</h2>
                     <p>
-                      Create a weekly or monthly draft. Automatic dispatch
-                      requires worker setup.
+                      Choose a newsletter, a channel and how often. PulseLetter
+                      sends it on schedule from then on.
                     </p>
+                    <button
+                      className="primary"
+                      onClick={() => setModal("automation")}
+                    >
+                      <Plus size={16} />
+                      Create your first automation
+                    </button>
                   </div>
                 )}
               </div>
+
+              <p className="footnote">
+                Scheduled sends run once a day at 09:00 UTC. They use the same
+                delivery as the Send panel, so whatever works there works here.
+              </p>
             </>
           )}
           {path === "/reports" && (
@@ -2804,6 +2852,12 @@ export default function Studio() {
               onSubmit={(e) => {
                 e.preventDefault();
                 const f = new FormData(e.currentTarget);
+                const frequency = String(f.get("frequency"));
+                /* First run is tomorrow at 09:00 UTC, so creating one never
+                   fires a send in the same moment. */
+                const first = new Date();
+                first.setUTCDate(first.getUTCDate() + 1);
+                first.setUTCHours(9, 0, 0, 0);
                 save({
                   ...data,
                   automations: [
@@ -2811,32 +2865,70 @@ export default function Studio() {
                     {
                       id: uid(),
                       name: String(f.get("name")),
-                      frequency: String(f.get("frequency")),
-                      paused: true,
+                      frequency,
+                      channel: String(f.get("channel")),
+                      issueId: String(f.get("issueId")),
+                      group: String(f.get("group")),
+                      paused: false,
+                      nextRun: first.toISOString(),
                     },
                   ],
                 });
                 setModal("");
-                toast.success("Automation saved as a paused draft");
+                toast.success("Automation is on — first send " + fmtDate(first.toISOString()));
               }}
             >
               <label>
-                Name
-                <input name="name" required />
+                Name it
+                <input name="name" required placeholder="Weekly issue" />
               </label>
+
               <label>
-                Frequency
-                <input
-                  name="frequency"
-                  required
-                  placeholder="Every Monday at 09:00 UTC"
-                />
+                Send which newsletter
+                <select name="issueId" defaultValue="">
+                  <option value="">The most recently edited one</option>
+                  {data.issues.map((i) => (
+                    <option key={i.id} value={i.id}>
+                      {i.title}
+                    </option>
+                  ))}
+                </select>
               </label>
+
+              <label>
+                How
+                <select name="channel" defaultValue="Email">
+                  <option value="Email">Email</option>
+                  <option value="Phone alert">Phone alert</option>
+                </select>
+              </label>
+
+              <label>
+                To whom
+                <select name="group" defaultValue="All contacts">
+                  <option value="All contacts">All subscribed contacts</option>
+                  {groups.map((g) => (
+                    <option key={g} value={g}>
+                      {g}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label>
+                How often
+                <select name="frequency" defaultValue="Weekly">
+                  <option value="Daily">Every day</option>
+                  <option value="Weekly">Every week</option>
+                  <option value="Monthly">Every month</option>
+                </select>
+              </label>
+
               <p>
-                Saved paused. A durable scheduling worker must be configured
-                before automatic sends can run.
+                Sends run at 09:00 UTC. Phone alerts go to everyone who turned
+                notifications on; group applies to email.
               </p>
-              <button className="primary">Save automation draft</button>
+              <button className="primary">Turn it on</button>
             </form>
           )}
         </DialogContent>

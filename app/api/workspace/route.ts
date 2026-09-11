@@ -65,7 +65,18 @@ const schema = z.object({
     .max(500),
   automations: z
     .array(
-      z.object({ id: str, name: str, frequency: str, paused: z.boolean() }),
+      z.object({
+        id: str,
+        name: str,
+        frequency: str,
+        paused: z.boolean(),
+        issueId: str.optional(),
+        channel: str.optional(),
+        group: str.optional(),
+        lastRun: str.optional(),
+        nextRun: str.optional(),
+        lastResult: str.optional(),
+      }),
     )
     .max(100),
 });

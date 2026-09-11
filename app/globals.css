@@ -2505,3 +2505,26 @@ video.doc-media {
   color: var(--doc-accent, #244944);
 }
 
+
+/* Automations list */
+.auto-row {
+  align-items: center;
+  gap: 12px;
+}
+.auto-when {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted-foreground);
+}
+.auto-remove {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  color: var(--muted-foreground);
+}
+.auto-remove:hover {
+  background: #b3382c1f;
+  color: #e08b83;
+}
