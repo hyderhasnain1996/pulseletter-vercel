@@ -11,6 +11,9 @@ export default async function LoginPage({
   const session = await auth();
   if (session?.user) redirect("/");
   const { error } = await searchParams;
+  /* Without a secret Auth.js cannot issue a session, and sign-in fails with
+     a 500 that says nothing useful on the page. Say what is wrong instead. */
+  const missingSecret = !process.env.AUTH_SECRET && !process.env.NEXTAUTH_SECRET;
 
   return (
     <div className="login">
@@ -30,6 +33,15 @@ export default async function LoginPage({
       <div className="login-form">
         <h1>Welcome back.</h1>
         <p>Sign in to open your workspace.</p>
+
+        {missingSecret && (
+          <p className="login-warn">
+            <strong>Sign-in is not configured on the server.</strong>
+            <br />
+            Set the AUTH_SECRET environment variable, then redeploy. Without it
+            no session can be created, so signing in will always fail.
+          </p>
+        )}
 
         {error && (
           <p className="login-warn">
