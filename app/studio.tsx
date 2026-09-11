@@ -19,7 +19,6 @@ import {
   ChevronDown,
   ChevronRight,
   Clock,
-  Check,
   CheckCheck,
   TriangleAlert,
   MoreHorizontal,
@@ -115,7 +114,6 @@ const nav = [
   ["Dashboard", LayoutDashboard, "/"],
   ["Newsletters", FileText, "/newsletters"],
   ["Contacts & Groups", Users, "/contacts"],
-  ["Campaigns", Send, "/campaigns"],
   ["Automations", Workflow, "/automations"],
   ["Reports", ChartNoAxesCombined, "/reports"],
 ] as const;
@@ -291,11 +289,6 @@ export default function Studio() {
     [sendResult, setSendResult] = useState<string | null>(null),
     [history, setHistory] = useState<Issue[]>([]),
     [future, setFuture] = useState<Issue[]>([]),
-    [step, setStep] = useState(0),
-    [campaignIssue, setCampaignIssue] = useState("sample-0"),
-    [channel, setChannel] = useState("Email"),
-    [schedule, setSchedule] = useState(""),
-    [group, setGroup] = useState("All contacts"),
     [view, setView] = useState("Cards"),
     [saving, setSaving] = useState(false);
   useEffect(() => {
@@ -475,13 +468,6 @@ export default function Studio() {
       ? "Newsletter details"
       : nav.find((x) => x[2] === path)?.[0] ||
         "Campaign details";
-  const campaign = data.campaigns.find((c) => path.endsWith(c.id));
-  const eligible = data.contacts.filter(
-    (c) =>
-      (channel === "Email" ? c.subscribed : c.smsSubscribed === true) &&
-      (group === "All contacts" || c.group === group) &&
-      (channel === "Email" ? c.email : c.phone),
-  );
   async function create(template: string) {
     const sample =
       initial.issues[templates.indexOf(template)] || initial.issues[0];
@@ -1288,16 +1274,11 @@ export default function Studio() {
                     <br />A new opportunity.
                   </h3>
                   <p>
-                    Plan your next issue with
-                    <br />a saved campaign draft.
+                    Write your next issue,
+                    <br />then send it straight away.
                   </p>
-                  <button
-                    onClick={() => {
-                      setStep(0);
-                      setModal("campaign");
-                    }}
-                  >
-                    Plan a campaign <ArrowRight size={15} />
+                  <button onClick={() => setModal("create")}>
+                    Create a newsletter <ArrowRight size={15} />
                   </button>
                   <div className="schedule-foot">
                     <span className="badge draft">
@@ -1735,7 +1716,6 @@ export default function Studio() {
                 <TabsList>
                   {[
                     "preview",
-                    "campaigns",
                     "recipients",
                     "performance",
                     "versions",
@@ -1790,19 +1770,20 @@ export default function Studio() {
                       </span>
                       <h3>Ready for its next chapter?</h3>
                       <p>
-                        Create a campaign to choose your audience and review
-                        your send.
+                        Add addresses or notify subscribed phones, and send it
+                        straight away.
                       </p>
                       <button
                         className="primary"
                         onClick={() => {
-                          setCampaignIssue(issue.id);
-                          setStep(0);
-                          setModal("campaign");
+                          setSendList([]);
+                          setSendDraft("");
+                          setSendResult(null);
+                          setModal("send");
                         }}
                       >
                         <Send size={16} />
-                        Create campaign
+                        Send this issue
                       </button>
                       <hr />
                       <h3>Publication</h3>
@@ -1813,29 +1794,6 @@ export default function Studio() {
                       <h3>Last updated</h3>
                       <p>{fmtDateTime(issue.updated)}</p>
                     </aside>
-                  </div>
-                </TabsContent>
-                <TabsContent value="campaigns">
-                  <div className="panel">
-                    {data.campaigns
-                      .filter((c) => c.issueId === issue.id)
-                      .map((c) => (
-                        <button
-                          className="record"
-                          key={c.id}
-                          onClick={() => go("/campaigns/" + c.id)}
-                        >
-                          {c.title}
-                          <span>{c.status}</span>
-                        </button>
-                      ))}
-                    {!data.campaigns.some((c) => c.issueId === issue.id) && (
-                      <div className="empty">
-                        <Send />
-                        <h3>No campaigns yet</h3>
-                        <p>Create your first campaign from this newsletter.</p>
-                      </div>
-                    )}
                   </div>
                 </TabsContent>
                 <TabsContent value="recipients">
@@ -1961,112 +1919,6 @@ export default function Studio() {
               </p>
             </>
           )}
-          {path === "/campaigns" && (
-            <>
-              <div className="page-heading">
-                <div>
-                  <div className="eyebrow">FROM YOUR STUDIO TO THEIR INBOX</div>
-                  <h1>Make the connection.</h1>
-                  <p>Plan every send with a little more intention.</p>
-                </div>
-                <button
-                  className="primary"
-                  onClick={() => {
-                    setStep(0);
-                    setModal("campaign");
-                  }}
-                >
-                  <Plus size={17} />
-                  Create campaign
-                </button>
-              </div>
-              <div className="panel">
-                {data.campaigns.length ? (
-                  data.campaigns.map((c) => (
-                    <button
-                      className="record"
-                      key={c.id}
-                      onClick={() => go("/campaigns/" + c.id)}
-                    >
-                      <Send size={20} />
-                      <span>
-                        {c.title}
-                        <small>
-                          {c.channel} · {c.recipients.length} eligible
-                          recipients
-                        </small>
-                      </span>
-                      <span className="badge draft">{c.status}</span>
-                      <ChevronRight size={18} />
-                    </button>
-                  ))
-                ) : (
-                  <div className="empty">
-                    <Send />
-                    <h2>Something worth sending?</h2>
-                    <p>
-                      Start with a newsletter. We’ll help with the next steps.
-                    </p>
-                    <button
-                      className="primary"
-                      onClick={() => {
-                        setStep(0);
-                        setModal("campaign");
-                      }}
-                    >
-                      Create your first campaign
-                    </button>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-          {path.startsWith("/campaigns/") &&
-            (campaign ? (
-              <>
-                <div className="page-heading">
-                  <div>
-                    <h1>{campaign.title}</h1>
-                    <p>
-                      {campaign.channel} · {campaign.status} ·{" "}
-                      {campaign.date || "Unscheduled"}
-                    </p>
-                  </div>
-                  <button
-                    className="secondary"
-                    onClick={() =>
-                      save({
-                        ...data,
-                        campaigns: data.campaigns.map((x) =>
-                          x.id === campaign.id
-                            ? { ...x, status: "Canceled" }
-                            : x,
-                        ),
-                      })
-                    }
-                  >
-                    Cancel pending campaign
-                  </button>
-                </div>
-                <div className="panel">
-                  <h2>
-                    Audience · {campaign.recipients.length} eligible recipients
-                  </h2>
-                  <p>Demo campaign. No messages have been dispatched.</p>
-                  {campaign.recipients.map((r) => (
-                    <div className="record" key={r.id}>
-                      {r.name}
-                      <span>{r.email}</span>
-                      <span className="badge draft">Not dispatched</span>
-                    </div>
-                  ))}
-                </div>
-                <h2 className="spaced">Immutable campaign content</h2>
-                {renderDocument(campaign.snapshot)}
-              </>
-            ) : (
-              <div className="empty">Campaign not found</div>
-            ))}
           {path === "/automations" && (
             <>
               <div className="page-heading">
@@ -2181,7 +2033,6 @@ export default function Studio() {
                 {
                   create: "A great issue starts here.",
                   send: "Send this issue",
-                  campaign: "Create a campaign",
                   contact: "Meet your next reader",
                   import: "Import your contacts",
                   automation: "Create an automation",
@@ -2196,8 +2047,6 @@ export default function Studio() {
               ? "Add addresses or numbers and send straight away."
               : modal === "create"
               ? "Describe your theme and let AI write it — or build it yourself."
-              : modal === "campaign"
-                ? "Demo workflow · no real messages will be sent."
                 : "Your newsletter studio"}
           </DialogDescription>
           {modal === "create" && (
@@ -2837,185 +2686,6 @@ export default function Studio() {
               </p>
               <button className="primary">Save automation draft</button>
             </form>
-          )}
-          {modal === "campaign" && (
-            <div className="wizard">
-              <div className="wizard-progress">
-                {[
-                  "Content",
-                  "Audience",
-                  "Channel",
-                  "Review",
-                  "Test",
-                  "Schedule",
-                  "Confirm",
-                ].map((s, i) => (
-                  <span key={s} className={i <= step ? "done" : ""} title={s}>
-                    {i < step ? <Check size={13} /> : i + 1}
-                  </span>
-                ))}
-              </div>
-              <h3>
-                {
-                  [
-                    "Choose your newsletter",
-                    "Who is it for?",
-                    "Choose a channel",
-                    "Review your message",
-                    "Test your message",
-                    "Choose your timing",
-                    "One final look",
-                  ][step]
-                }
-              </h3>
-              {step === 0 && (
-                <Select value={campaignIssue} onValueChange={setCampaignIssue}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {data.issues
-                      .filter((n) => n.status !== "Archived")
-                      .map((n) => (
-                        <SelectItem value={n.id} key={n.id}>
-                          {n.title}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-              )}
-              {step === 1 && (
-                <>
-                  <Choice
-                    value={group}
-                    onChange={setGroup}
-                    items={[
-                      "All contacts",
-                      ...Array.from(new Set(data.contacts.map((c) => c.group))),
-                    ]}
-                  />
-                  <p>
-                    {eligible.length} eligible ·{" "}
-                    {data.contacts.length - eligible.length} excluded (consent,
-                    channel, or group)
-                  </p>
-                </>
-              )}
-              {step === 2 && (
-                <>
-                  <Choice
-                    value={channel}
-                    onChange={setChannel}
-                    items={["Email", "SMS"]}
-                  />
-                  <p>Provider not configured. Demo drafts only.</p>
-                </>
-              )}
-              {step === 3 && (
-                <div className="review-message">
-                  <h3>
-                    {data.issues.find((n) => n.id === campaignIssue)?.title}
-                  </h3>
-                  <p>
-                    {
-                      data.issues.find((n) => n.id === campaignIssue)?.blocks[1]
-                        ?.text
-                    }
-                  </p>
-                </div>
-              )}
-              {step === 4 && (
-                <>
-                  <p>
-                    A real test requires a configured provider. Preview the
-                    content before continuing.
-                  </p>
-                  <button
-                    className="secondary"
-                    onClick={() =>
-                      toast.info("Preview checked. No test message was sent.")
-                    }
-                  >
-                    <Eye size={16} />
-                    Check demo preview
-                  </button>
-                </>
-              )}
-              {step === 5 && (
-                <label>
-                  Scheduled date and time (UTC)
-                  <input
-                    type="datetime-local"
-                    value={schedule}
-                    onInput={(e) => setSchedule(e.currentTarget.value)}
-                    onChange={(e) => setSchedule(e.target.value)}
-                  />
-                </label>
-              )}
-              {step === 6 && (
-                <>
-                  <div className="review-message">
-                    <h3>
-                      {data.issues.find((n) => n.id === campaignIssue)?.title}
-                    </h3>
-                    <p>
-                      {channel} · {eligible.length} eligible recipients
-                    </p>
-                    <p>
-                      {schedule ? schedule + " UTC" : "Immediate (demo only)"}
-                    </p>
-                    <p>Sender: not configured · Mobile cost: unavailable</p>
-                    <p>
-                      A content snapshot will be saved. No delivery job will
-                      run.
-                    </p>
-                  </div>
-                </>
-              )}
-              <div className="row wizard-buttons">
-                <button disabled={step === 0} onClick={() => setStep(step - 1)}>
-                  Back
-                </button>
-                <button
-                  className="primary"
-                  onClick={() => {
-                    if (step < 6) {
-                      if (
-                        step === 5 &&
-                        schedule &&
-                        new Date(schedule + "Z").getTime() < Date.now()
-                      ) {
-                        toast.error("Choose a future date");
-                        return;
-                      }
-                      setStep(step + 1);
-                    } else {
-                      const n = data.issues.find((n) => n.id === campaignIssue);
-                      if (!n) return;
-                      const c = {
-                        id: uid(),
-                        title: n.title,
-                        issueId: n.id,
-                        channel,
-                        date: schedule
-                          ? schedule + "Z"
-                          : new Date().toISOString(),
-                        status: schedule ? "Scheduled (demo)" : "Draft (demo)",
-                        snapshot: structuredClone(n),
-                        recipients: structuredClone(eligible),
-                      };
-                      save({ ...data, campaigns: [c, ...data.campaigns] });
-                      setModal("");
-                      go("/campaigns/" + c.id);
-                      toast.success("Demo campaign saved. No messages sent.");
-                    }
-                  }}
-                >
-                  {step === 6 ? "Confirm demo campaign" : "Continue"}
-                  <ArrowRight size={15} />
-                </button>
-              </div>
-            </div>
           )}
         </DialogContent>
       </Dialog>
