@@ -19,6 +19,20 @@ const payload = z.object({
 
 type Outcome = { to: string; ok: boolean; error?: string };
 
+/* Providers explain their refusals in the response body — an unverified
+   number, a blocked country, a sender that is not yours. Passing that text
+   through turns "provider 400" into something actionable. */
+async function providerError(res: Response) {
+  try {
+    const body = (await res.json()) as { message?: string; code?: number };
+    if (body?.message)
+      return body.code ? `${body.message} (code ${body.code})` : body.message;
+  } catch {
+    // Body was not JSON; fall back to the status.
+  }
+  return `provider returned ${res.status}`;
+}
+
 async function sendEmail(
   to: string,
   subject: string,
@@ -36,7 +50,7 @@ async function sendEmail(
       },
       body: JSON.stringify({ from, to, subject, html }),
     });
-    if (!res.ok) return { to, ok: false, error: `provider ${res.status}` };
+    if (!res.ok) return { to, ok: false, error: await providerError(res) };
     return { to, ok: true };
   } catch {
     return { to, ok: false, error: "network error" };
@@ -61,7 +75,7 @@ async function sendSms(to: string, body: string): Promise<Outcome> {
         body: new URLSearchParams({ To: to, From: from, Body: body }),
       },
     );
-    if (!res.ok) return { to, ok: false, error: `provider ${res.status}` };
+    if (!res.ok) return { to, ok: false, error: await providerError(res) };
     return { to, ok: true };
   } catch {
     return { to, ok: false, error: "network error" };
