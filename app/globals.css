@@ -2374,3 +2374,106 @@ video.doc-media {
   line-height: 1.85;
   color: var(--doc-muted, #536568);
 }
+
+/* ---- Groups and contacts ------------------------------------------------ */
+.group-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 14px;
+}
+.group-bar button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--foreground);
+}
+.group-bar button span {
+  padding: 1px 7px;
+  border-radius: 10px;
+  background: var(--border);
+  font-size: 11px;
+}
+.group-bar button:hover {
+  border-color: #4db2bd;
+}
+.group-bar button.active {
+  border-color: #4db2bd;
+  background: #4db2bd1f;
+  color: #4db2bd;
+}
+.group-bar button.active span {
+  background: #4db2bd33;
+}
+.group-new {
+  color: var(--muted-foreground) !important;
+  border-style: dashed !important;
+}
+.cell-select {
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 13px;
+  cursor: pointer;
+}
+.cell-select:hover {
+  border-color: var(--border);
+}
+.cell-select:focus {
+  outline: none;
+  border-color: #4db2bd;
+}
+.badge.toggle {
+  cursor: pointer;
+}
+.badge.toggle:hover {
+  filter: brightness(1.15);
+}
+
+/* CSV import */
+.csv-drop {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 22px;
+  margin-bottom: 12px;
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--muted-foreground);
+}
+.csv-drop:hover {
+  border-color: #4db2bd;
+  background: #4db2bd12;
+}
+.csv-drop span {
+  font-size: 13px;
+  color: var(--foreground);
+}
+.csv-drop small {
+  font-size: 11px;
+}
+.csv-consent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 14px 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.csv-consent input {
+  margin-top: 3px;
+  width: auto;
+}
+.csv-consent small {
+  display: block;
+  margin-top: 3px;
+  font-size: 11px;
+  color: var(--muted-foreground);
+}

@@ -283,6 +283,11 @@ export default function Studio() {
       "Email",
     ),
     [pushCount, setPushCount] = useState<number | null>(null),
+    [groupFilter, setGroupFilter] = useState(""),
+    [newGroup, setNewGroup] = useState(""),
+    [csvText, setCsvText] = useState(""),
+    [csvName, setCsvName] = useState(""),
+    [csvConsent, setCsvConsent] = useState(false),
     [sendList, setSendList] = useState<string[]>([]),
     [sendDraft, setSendDraft] = useState(""),
     [sending, setSending] = useState(false),
@@ -451,6 +456,34 @@ export default function Studio() {
   };
   const issue = data.issues.find((x) => path.includes(x.id));
   const aiPreview = parseDraft(aiDraft);
+  const groups = [
+    ...new Set(data.contacts.map((c) => c.group).filter(Boolean)),
+  ].sort();
+  const inGroup = (name: string) =>
+    data.contacts.filter((c) => c.group === name);
+
+  /* Editing a contact in place: the table is where people actually fix a
+     wrong group or grant consent, so both are changeable from the row. */
+  /* Contacts this channel can actually reach: subscribed, with the right
+     detail on file, and optionally narrowed to one group. */
+  const reachable = (group?: string) =>
+    data.contacts
+      .filter((c) => (group ? c.group === group : true))
+      .filter((c) =>
+        sendChannel === "Email"
+          ? c.subscribed && c.email
+          : c.smsSubscribed && c.phone,
+      )
+      .map((c) => (sendChannel === "Email" ? c.email : c.phone));
+
+  function updateContact(id: string, patch: Partial<(typeof data.contacts)[0]>) {
+    save({
+      ...data,
+      contacts: data.contacts.map((c) =>
+        c.id === id ? { ...c, ...patch } : c,
+      ),
+    });
+  }
   const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? "";
   useEffect(() => {
     if (modal !== "send" || sendChannel !== "Push") return;
@@ -1875,6 +1908,42 @@ export default function Studio() {
                   </button>
                 </div>
               </div>
+              <div className="group-bar">
+                <button
+                  className={groupFilter === "" ? "active" : ""}
+                  onClick={() => setGroupFilter("")}
+                >
+                  Everyone <span>{data.contacts.length}</span>
+                </button>
+                {groups.map((g) => (
+                  <button
+                    key={g}
+                    className={groupFilter === g ? "active" : ""}
+                    onClick={() => setGroupFilter(groupFilter === g ? "" : g)}
+                  >
+                    {g} <span>{inGroup(g).length}</span>
+                  </button>
+                ))}
+                <button
+                  className="group-new"
+                  onClick={() => {
+                    const name = window.prompt("Name the new group")?.trim();
+                    if (!name) return;
+                    if (groups.includes(name)) {
+                      setGroupFilter(name);
+                      return;
+                    }
+                    // A group exists once someone is in it.
+                    setNewGroup(name);
+                    toast.success(
+                      `“${name}” is ready — put someone in it using the Group column.`,
+                    );
+                  }}
+                >
+                  <Plus size={14} />
+                  New group
+                </button>
+              </div>
               <div className="panel">
                 <Table>
                   <TableHeader>
@@ -1887,7 +1956,9 @@ export default function Studio() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {data.contacts.map((c) => (
+                    {data.contacts
+                      .filter((c) => !groupFilter || c.group === groupFilter)
+                      .map((c) => (
                       <TableRow key={c.id}>
                         <TableCell>
                           <span className="contact-name">
@@ -1898,15 +1969,45 @@ export default function Studio() {
                           </span>
                         </TableCell>
                         <TableCell>{c.email}</TableCell>
-                        <TableCell>{c.group}</TableCell>
                         <TableCell>
-                          <span
+                          <select
+                            className="cell-select"
+                            value={c.group}
+                            onChange={(e) => {
+                              if (e.target.value === "__new") {
+                                const name = window
+                                  .prompt("Move to which group?", c.group)
+                                  ?.trim();
+                                if (name) updateContact(c.id, { group: name });
+                                return;
+                              }
+                              updateContact(c.id, { group: e.target.value });
+                            }}
+                          >
+                            {[...new Set([...groups, c.group, newGroup])]
+                              .filter(Boolean)
+                              .sort()
+                              .map((g) => (
+                                <option key={g} value={g}>
+                                  {g}
+                                </option>
+                              ))}
+                            <option value="__new">New group…</option>
+                          </select>
+                        </TableCell>
+                        <TableCell>
+                          <button
                             className={
-                              "badge " + (c.subscribed ? "ready" : "draft")
+                              "badge toggle " +
+                              (c.subscribed ? "ready" : "draft")
+                            }
+                            title="Click to change"
+                            onClick={() =>
+                              updateContact(c.id, { subscribed: !c.subscribed })
                             }
                           >
                             {c.subscribed ? "Subscribed" : "Not subscribed"}
-                          </span>
+                          </button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -1914,8 +2015,9 @@ export default function Studio() {
                 </Table>
               </div>
               <p className="footnote">
-                Sample contacts use example.com addresses. Importing a contact
-                never grants consent.
+                Click a subscription to change it. Only subscribed people
+                receive email — importing someone does not grant consent on
+                their behalf.
               </p>
             </>
           )}
@@ -2321,13 +2423,7 @@ export default function Studio() {
               <div className="send-quick">
                 <button
                   onClick={() => {
-                    const list = data.contacts
-                      .filter((c) =>
-                        sendChannel === "Email"
-                          ? c.subscribed && c.email
-                          : c.smsSubscribed && c.phone,
-                      )
-                      .map((c) => (sendChannel === "Email" ? c.email : c.phone));
+                    const list = reachable();
                     if (!list.length) {
                       toast.error("No subscribed contacts for this channel.");
                       return;
@@ -2336,8 +2432,21 @@ export default function Studio() {
                   }}
                 >
                   <Users size={14} />
-                  Add my subscribed contacts
+                  Everyone ({reachable().length})
                 </button>
+                {groups.map((g) => {
+                  const list = reachable(g);
+                  if (!list.length) return null;
+                  return (
+                    <button
+                      key={g}
+                      onClick={() => addRecipients(list.join(","))}
+                    >
+                      <Users size={14} />
+                      {g} ({list.length})
+                    </button>
+                  );
+                })}
                 {!!sendList.length && (
                   <button onClick={() => setSendList([])}>Clear all</button>
                 )}
@@ -2621,30 +2730,70 @@ export default function Studio() {
                     email: email.toLowerCase(),
                     group: group || "Imported",
                     phone: "",
-                    subscribed: false,
+                    subscribed: csvConsent,
                   });
                 }
                 save({ ...data, contacts });
                 setModal("");
+                setCsvText("");
+                setCsvName("");
+                setCsvConsent(false);
                 toast.success(
                   `${contacts.length - data.contacts.length} imported; ${skipped} invalid or duplicate rows skipped`,
                 );
               }}
             >
               <p>
-                Paste CSV with name and email headers, and an optional group
-                column. Columns are matched by their headers; quoted values are
-                supported.
+                Choose a CSV file, or paste the rows below. It needs
+                <strong> name</strong> and <strong>email</strong> columns, and
+                may include a <strong>group</strong> column.
               </p>
+
+              <label className="csv-drop">
+                <input
+                  type="file"
+                  accept=".csv,text/csv,text/plain"
+                  hidden
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setCsvText(await file.text());
+                    setCsvName(file.name);
+                    e.target.value = "";
+                  }}
+                />
+                <Upload size={20} />
+                <span>{csvName ? csvName + " loaded" : "Choose a CSV file"}</span>
+                <small>or paste the rows below</small>
+              </label>
+
               <textarea
                 name="csv"
                 required
-                placeholder={
-                  "name,email,group\nTaylor,taylor@example.com,Community"
-                }
+                value={csvText}
+                onChange={(e) => {
+                  setCsvText(e.target.value);
+                  setCsvName("");
+                }}
+                placeholder={"name,email,group"}
               />
-              <p>Imported contacts remain unsubscribed.</p>
-              <button className="primary">Validate & import</button>
+
+              <label className="csv-consent">
+                <input
+                  type="checkbox"
+                  checked={csvConsent}
+                  onChange={(e) => setCsvConsent(e.target.checked)}
+                />
+                <span>
+                  These people agreed to receive this newsletter.
+                  <small>
+                    Tick only if true. Left unticked, they are imported as not
+                    subscribed and will not be emailed.
+                  </small>
+                </span>
+              </label>
+
+              <button className="primary">Import contacts</button>
             </form>
           )}
           {modal === "automation" && (
