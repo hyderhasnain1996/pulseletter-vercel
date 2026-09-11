@@ -2342,3 +2342,22 @@ video.doc-media {
   color: var(--doc-muted, #536568);
   text-decoration: underline;
 }
+
+/* Notification offer sits under the headline, where it is actually seen. */
+.reader-notify {
+  margin: 0 44px;
+  padding: 18px 20px;
+  border: 1px solid var(--doc-rule, #ccd3d2);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--doc-accent, #244944) 7%, transparent);
+}
+.reader-notify .notify-box {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+@media (max-width: 720px) {
+  .reader-notify {
+    margin: 0 20px;
+  }
+}

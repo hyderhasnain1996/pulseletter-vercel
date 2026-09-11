@@ -1640,6 +1640,9 @@ export default function Studio() {
                   min read
                 </p>
               </header>
+              <div className="reader-notify">
+                <NotifyButton publicKey={vapidKey} />
+              </div>
               <div className="reader-body">
                 {issue.blocks.map((b) =>
                   b.type === "Divider" ? (
@@ -1683,7 +1686,6 @@ export default function Studio() {
                 )}
               </div>
               <footer className="reader-foot">
-                <NotifyButton publicKey={vapidKey} />
                 {data.brand} · Thoughtfully curated. Made to be shared.
               </footer>
             </article>
