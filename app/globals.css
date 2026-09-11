@@ -2297,3 +2297,48 @@ video.doc-media {
   font-size: 11px;
   color: var(--muted-foreground);
 }
+
+/* ---- Notify me --------------------------------------------------------- */
+.notify-box {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  margin-bottom: 22px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--doc-rule, #ccd3d2);
+}
+.notify-on-button {
+  padding: 12px 22px;
+  border-radius: 30px;
+  background: var(--doc-accent, #244944);
+  color: var(--doc-on-accent, #fff);
+  font-size: 14px;
+  cursor: pointer;
+  border: 0;
+}
+.notify-on-button:hover {
+  opacity: 0.9;
+}
+.notify-on-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.notify-note {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--doc-muted, #536568);
+}
+.notify-warn {
+  color: #b3382c;
+}
+.notify-on {
+  margin: 0;
+  font-size: 13px;
+  color: var(--doc-accent, #244944);
+}
+.notify-off {
+  font-size: 12px;
+  color: var(--doc-muted, #536568);
+  text-decoration: underline;
+}

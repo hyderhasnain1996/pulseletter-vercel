@@ -14,6 +14,16 @@ export const workspaces = pgTable("workspaces", {
   updated: text("updated").notNull(),
 });
 
+/* Readers who allowed notifications on their phone. The endpoint is the
+   browser's own push address and is unique per device, so it doubles as the
+   key — re-subscribing the same device updates rather than duplicates. */
+export const pushSubscriptions = pgTable("push_subscription", {
+  endpoint: text("endpoint").primaryKey(),
+  p256dh: text("p256dh").notNull(),
+  auth: text("auth").notNull(),
+  created: text("created").notNull(),
+});
+
 /* Tables below are Auth.js's own shape — names and columns are fixed by the
    Drizzle adapter, so keep them as they are. */
 

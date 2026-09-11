@@ -107,6 +107,7 @@ import {
 import { parseCSV } from "./csv";
 import { compressImage, toEmbed } from "./media";
 import { themes, themeVars } from "./themes";
+import { NotifyButton } from "./notify-button";
 import {
   buildPrompt,
   chatUrl,
@@ -283,7 +284,10 @@ export default function Studio() {
     [aiDraft, setAiDraft] = useState(""),
     [importing, setImporting] = useState(false),
     [aiTheme, setAiTheme] = useState("classic"),
-    [sendChannel, setSendChannel] = useState<"Email" | "SMS">("Email"),
+    [sendChannel, setSendChannel] = useState<"Email" | "Push" | "SMS">(
+      "Email",
+    ),
+    [pushCount, setPushCount] = useState<number | null>(null),
     [sendList, setSendList] = useState<string[]>([]),
     [sendDraft, setSendDraft] = useState(""),
     [sending, setSending] = useState(false),
@@ -457,6 +461,15 @@ export default function Studio() {
   };
   const issue = data.issues.find((x) => path.includes(x.id));
   const aiPreview = parseDraft(aiDraft);
+  const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? "";
+  useEffect(() => {
+    if (modal !== "send" || sendChannel !== "Push") return;
+    setPushCount(null);
+    fetch("/api/push/subscribe")
+      .then((r) => r.json())
+      .then((d: { count?: number }) => setPushCount(d.count ?? 0))
+      .catch(() => setPushCount(0));
+  }, [modal, sendChannel]);
   const [origin, setOrigin] = useState("");
   useEffect(() => setOrigin(window.location.origin), []);
   const title = path.includes("/editor")
@@ -1670,6 +1683,7 @@ export default function Studio() {
                 )}
               </div>
               <footer className="reader-foot">
+                <NotifyButton publicKey={vapidKey} />
                 {data.brand} · Thoughtfully curated. Made to be shared.
               </footer>
             </article>
@@ -2457,7 +2471,7 @@ export default function Studio() {
           {modal === "send" && issue && (
             <div className="send-box">
               <div className="send-channel">
-                {(["Email", "SMS"] as const).map((c) => (
+                {(["Email", "Push", "SMS"] as const).map((c) => (
                   <button
                     key={c}
                     className={sendChannel === c ? "active" : ""}
@@ -2469,14 +2483,22 @@ export default function Studio() {
                   >
                     {c === "Email" ? (
                       <Send size={15} />
+                    ) : c === "Push" ? (
+                      <Bell size={15} />
                     ) : (
                       <Smartphone size={15} />
                     )}
-                    {c === "Email" ? "Email" : "Mobile"}
+                    {c === "Email"
+                      ? "Email"
+                      : c === "Push"
+                        ? "Phone alert"
+                        : "Text"}
                   </button>
                 ))}
               </div>
 
+              {sendChannel !== "Push" && (
+                <>
               <div className="chips-field">
                 <span className="chips-label">
                   {sendChannel === "Email" ? "Send to" : "Text to"}
@@ -2556,8 +2578,28 @@ export default function Studio() {
                   <button onClick={() => setSendList([])}>Clear all</button>
                 )}
               </div>
+                </>
+              )}
 
-              {sendChannel === "Email" ? (
+              {sendChannel === "Push" ? (
+                <div className="sms-preview">
+                  <span className="sms-label">Every subscribed phone</span>
+                  <p className="sms-bubble">
+                    <strong>{issue.title}</strong>
+                    <br />
+                    {issue.blocks
+                      .find((b) => b.type === "Introduction")
+                      ?.text.slice(0, 90) || "Tap to read the new issue."}
+                  </p>
+                  <p className="sms-meta">
+                    {pushCount === null
+                      ? "Counting subscribed devices…"
+                      : pushCount === 0
+                        ? "No one has turned on notifications yet. Share the full issue link — readers tap “Notify me” at the bottom."
+                        : `${pushCount} device${pushCount === 1 ? "" : "s"} subscribed · free to send`}
+                  </p>
+                </div>
+              ) : sendChannel === "Email" ? (
                 <p className="send-what">
                   Each person gets the short version — cover photo, intro and
                   key points — with a button to the full issue.
@@ -2588,10 +2630,49 @@ export default function Studio() {
               <div className="ai-launch">
                 <button
                   className="primary"
-                  disabled={!sendList.length || sending}
+                  disabled={
+                    sending ||
+                    (sendChannel === "Push" ? !pushCount : !sendList.length)
+                  }
                   onClick={async () => {
                     setSending(true);
                     setSendResult(null);
+                    if (sendChannel === "Push") {
+                      try {
+                        const res = await fetch("/api/push/send", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            title: issue.title,
+                            body:
+                              issue.blocks
+                                .find((b) => b.type === "Introduction")
+                                ?.text.slice(0, 120) ??
+                              "Tap to read the new issue.",
+                            url: readUrl(issue, origin),
+                          }),
+                        });
+                        const body = (await res.json()) as {
+                          error?: string;
+                          sent?: number;
+                          failed?: number;
+                        };
+                        if (!res.ok)
+                          setSendResult(body.error ?? "Unable to send.");
+                        else {
+                          setSendResult(
+                            `Notified ${body.sent} device${body.sent === 1 ? "" : "s"}.` +
+                              (body.failed ? ` ${body.failed} failed.` : ""),
+                          );
+                          if (body.sent) toast.success("Notification sent");
+                        }
+                      } catch {
+                        setSendResult("Could not reach the server.");
+                      } finally {
+                        setSending(false);
+                      }
+                      return;
+                    }
                     try {
                       const res = await fetch("/api/send", {
                         method: "POST",
@@ -2637,11 +2718,15 @@ export default function Studio() {
                   <Send size={16} />
                   {sending
                     ? "Sending…"
-                    : sendList.length === 1
-                      ? "Send to 1 person"
-                      : sendList.length
-                        ? `Send to ${sendList.length} people`
-                        : "Add someone first"}
+                    : sendChannel === "Push"
+                      ? pushCount
+                        ? `Notify ${pushCount} device${pushCount === 1 ? "" : "s"}`
+                        : "No devices yet"
+                      : sendList.length === 1
+                        ? "Send to 1 person"
+                        : sendList.length
+                          ? `Send to ${sendList.length} people`
+                          : "Add someone first"}
                 </button>
                 <button onClick={() => setModal("")}>Cancel</button>
               </div>
