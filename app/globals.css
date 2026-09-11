@@ -2239,3 +2239,35 @@ video.doc-media {
   font-size: 13px;
   padding: 5px 2px;
 }
+
+/* ---- Sign-in extras ----------------------------------------------------- */
+.login-warn {
+  padding: 10px 12px;
+  border: 1px solid #b3382c66;
+  border-radius: 8px;
+  background: #b3382c1f;
+  color: #f0b7b1;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0;
+  color: var(--muted-foreground);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.login-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

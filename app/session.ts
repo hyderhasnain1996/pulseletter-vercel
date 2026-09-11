@@ -13,6 +13,7 @@ export async function getUser(): Promise<AppUser | null> {
   const user = session?.user;
   if (!user?.email) return null;
   return {
+    // Set by the jwt/session callbacks in auth.ts; stable per account.
     userId: (user as { id?: string }).id ?? user.email,
     displayName: user.name ?? user.email,
     email: user.email,

@@ -1,5 +1,7 @@
-import { signIn, auth, authConfigured } from "@/auth";
+import { auth, emailSignInReady, googleSignInReady } from "@/auth";
 import { redirect } from "next/navigation";
+import { PasswordForm } from "./password-form";
+import { signIn } from "@/auth";
 
 export default async function LoginPage({
   searchParams,
@@ -9,10 +11,6 @@ export default async function LoginPage({
   const session = await auth();
   if (session?.user) redirect("/");
   const { error } = await searchParams;
-  const ready = authConfigured();
-  const google = Boolean(
-    process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET,
-  );
 
   return (
     <div className="login">
@@ -28,36 +26,37 @@ export default async function LoginPage({
         </h1>
         <p>Your newsletter studio, all in one place.</p>
       </div>
+
       <div className="login-form">
-        <h1>Welcome.</h1>
+        <h1>Welcome back.</h1>
         <p>Sign in to open your workspace.</p>
 
-        {!ready && (
-          <p className="login-warn">
-            Sign-in is not configured yet. Set DATABASE_URL and AUTH_RESEND_KEY
-            (and optionally AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET), then reload.
-          </p>
-        )}
         {error && (
           <p className="login-warn">
-            That sign-in attempt did not complete. Please try again.
+            Those details were not recognised. Please try again.
           </p>
         )}
 
-        {google && (
+        <PasswordForm />
+
+        {(emailSignInReady() || googleSignInReady()) && (
+          <div className="login-divider">
+            <span>or</span>
+          </div>
+        )}
+
+        {googleSignInReady() && (
           <form
             action={async () => {
               "use server";
               await signIn("google", { redirectTo: "/" });
             }}
           >
-            <button className="primary" type="submit">
-              Continue with Google
-            </button>
+            <button type="submit">Continue with Google</button>
           </form>
         )}
 
-        {ready && (
+        {emailSignInReady() && (
           <form
             action={async (formData: FormData) => {
               "use server";
@@ -76,9 +75,7 @@ export default async function LoginPage({
                 placeholder="you@company.com"
               />
             </label>
-            <button className="primary" type="submit">
-              Email me a sign-in link
-            </button>
+            <button type="submit">Email me a sign-in link</button>
           </form>
         )}
       </div>
