@@ -1,4 +1,5 @@
 import webpush from "web-push";
+import nodemailer from "nodemailer";
 import type { Issue } from "../data";
 import { renderEmail, renderSms, readUrl } from "../render-newsletter";
 
@@ -22,8 +23,61 @@ async function providerError(res: Response) {
   return `provider returned ${res.status}`;
 }
 
-export const emailReady = () =>
+/* Two ways to send email.
+
+   SMTP is the one that reaches any address: signed in to a mailbox you own
+   (a Gmail App Password, for instance), a message goes wherever you address
+   it. Resend without a verified domain only delivers to the account owner,
+   so where both are configured SMTP wins. */
+export const smtpReady = () =>
+  Boolean(
+    process.env.SMTP_HOST &&
+      process.env.SMTP_USER &&
+      process.env.SMTP_PASS &&
+      emailFrom(),
+  );
+const resendReady = () =>
   Boolean(process.env.EMAIL_API_KEY && process.env.EMAIL_FROM);
+export const emailReady = () => smtpReady() || resendReady();
+
+/** The From address. With SMTP it defaults to the mailbox being signed into,
+    so EMAIL_FROM is optional there. */
+function emailFrom() {
+  return process.env.EMAIL_FROM || process.env.SMTP_USER || "";
+}
+
+/* One connection, reused. Built on first use so importing this module never
+   opens a socket. */
+let mailer: nodemailer.Transporter | undefined;
+function transport() {
+  if (!mailer) {
+    const port = Number(process.env.SMTP_PORT || 465);
+    mailer = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port,
+      secure: port === 465, // 587 starts plain and upgrades with STARTTLS
+      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+    });
+  }
+  return mailer;
+}
+
+async function sendOverSmtp(
+  to: string,
+  subject: string,
+  html: string,
+): Promise<Outcome> {
+  try {
+    await transport().sendMail({ from: emailFrom(), to, subject, html });
+    return { to, ok: true };
+  } catch (err) {
+    /* The mail server explains refusals in the message — a wrong App
+       Password, a daily limit, a rejected recipient — so pass it through
+       instead of a generic failure. */
+    const m = err instanceof Error ? err.message : "send failed";
+    return { to, ok: false, error: m.split("\n")[0].slice(0, 200) };
+  }
+}
 export const smsReady = () =>
   Boolean(
     process.env.SMS_ACCOUNT_SID &&
@@ -38,7 +92,8 @@ export async function sendEmail(
   subject: string,
   html: string,
 ): Promise<Outcome> {
-  if (!emailReady()) return { to, ok: false, error: "not configured" };
+  if (smtpReady()) return sendOverSmtp(to, subject, html);
+  if (!resendReady()) return { to, ok: false, error: "not configured" };
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",

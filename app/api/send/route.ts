@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     return Response.json(
       {
         error: email
-          ? "Email sending is not configured. Set EMAIL_API_KEY and EMAIL_FROM on the server."
+          ? "Email sending is not configured. Set SMTP_HOST, SMTP_USER and SMTP_PASS to send through your own mailbox, or EMAIL_API_KEY and EMAIL_FROM to send through Resend."
           : "SMS sending is not configured. Set SMS_ACCOUNT_SID, SMS_AUTH_TOKEN and SMS_FROM on the server.",
         configured: false,
       },

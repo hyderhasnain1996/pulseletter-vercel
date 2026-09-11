@@ -27,8 +27,8 @@ page, and send it to your readers.
    | `DATABASE_URL` | Saving your work | Vercel Postgres or Neon |
    | `AUTH_SECRET` | Signing you in | `npx auth secret` |
    | `AUTH_RESEND_KEY` | Email sign-in links | [resend.com](https://resend.com) |
-   | `EMAIL_API_KEY` | Sending newsletters | the same Resend key |
-   | `EMAIL_FROM` | Sending newsletters | an address at a domain you verified |
+   | `SMTP_HOST` / `SMTP_USER` / `SMTP_PASS` | Sending newsletters to anyone | your own mailbox — see below |
+   | `EMAIL_API_KEY` / `EMAIL_FROM` | Sending newsletters via Resend | the same Resend key |
    | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Google sign-in (optional) | Google Cloud Console |
 
 5. Deploy, then create the database tables once:
@@ -48,10 +48,27 @@ email, no password. Google sign-in appears only when `AUTH_GOOGLE_ID` and
 
 ### Sending
 
-`EMAIL_FROM` must use a domain verified in Resend. The test sender
-`onboarding@resend.dev` needs no verification but **only delivers to the email
-address that owns the Resend account** — fine for a first test, not for real
-subscribers.
+There are two ways to send, and SMTP is used when both are configured.
+
+**SMTP — your own mailbox.** The way to reach any address without owning a
+domain. For Gmail, turn on 2-step verification, create an [App
+Password](https://myaccount.google.com/apppasswords), and set:
+
+```
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_USER=you@gmail.com
+SMTP_PASS=the-16-character-app-password
+```
+
+The App Password is not your Google password, and Gmail allows roughly 500
+recipients a day. `EMAIL_FROM` is optional here — it defaults to `SMTP_USER`.
+
+**Resend — an email API.** Better deliverability at volume, but `EMAIL_FROM`
+must use a domain verified in Resend. Until a domain is verified, Resend
+**only delivers to the email address that owns the Resend account** — no
+matter what domain the recipient is at. That is a Resend restriction, not a
+limit of this app.
 
 ## Automations
 
