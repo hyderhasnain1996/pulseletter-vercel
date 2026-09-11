@@ -1158,13 +1158,6 @@ export default function Studio() {
             {data.brand}
             <span className="brand-period">.</span>
           </button>
-          <button className="workspace" onClick={() => go("/newsletters")}>
-            <span className="workspace-avatar">P</span>
-            <span>
-              My workspace<small>Private studio</small>
-            </span>
-            <ChevronDown size={15} />
-          </button>
         </SidebarHeader>
         <SidebarContent>
           <span className="nav-caption">WORKSPACE</span>

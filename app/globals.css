@@ -191,36 +191,10 @@ svg {
   margin-left: -9px;
   color: var(--primary);
 }
-.workspace {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-align: left;
-  border: 1px solid var(--border);
-  padding: 11px;
-  border-radius: 9px;
-  width: 100%;
-  font-size: 14px;
-  color: var(--foreground);
-}
-.workspace small,
 .profile small {
   display: block;
   color: var(--muted-foreground);
   font-size: 12px;
-}
-.workspace > svg {
-  margin-left: auto;
-}
-.workspace-avatar {
-  height: 32px;
-  width: 32px;
-  background: #26314a;
-  border: 1px solid #39455e;
-  border-radius: 7px;
-  display: grid;
-  place-items: center;
-  color: #c9cffa;
 }
 .nav-caption {
   font-size: 12px;
@@ -1441,12 +1415,6 @@ hr {
   height: 690px;
   background: white;
   border-radius: 7px;
-}
-.workspace {
-  font-size: 12px;
-}
-.workspace small {
-  white-space: nowrap;
 }
 
 /* ---- Direct-on-the-page editing ---------------------------------------- */
