@@ -16,7 +16,32 @@ const urlBase64ToUint8Array = (base64: string) => {
   return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
 };
 
-type State = "checking" | "unsupported" | "ready" | "on" | "busy" | "blocked";
+type State =
+  | "checking"
+  | "unsupported"
+  | "ios-install"
+  | "in-app"
+  | "ready"
+  | "on"
+  | "busy"
+  | "blocked";
+
+/* iOS only allows notifications for a site the reader has installed, and never
+   inside another app's built-in browser. Telling them which of the two applies
+   is the difference between a dead end and two taps. */
+const isIOS = () =>
+  /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+const isInAppBrowser = () =>
+  /FBAN|FBAV|Instagram|Line|KAKAOTALK|NAVER|Twitter|WhatsApp|WeChat/i.test(
+    navigator.userAgent,
+  );
+
+const isInstalled = () =>
+  window.matchMedia("(display-mode: standalone)").matches ||
+  ("standalone" in navigator &&
+    (navigator as Navigator & { standalone?: boolean }).standalone === true);
 
 export function NotifyButton({ publicKey }: { publicKey: string }) {
   const [state, setState] = useState<State>("checking");
@@ -24,8 +49,11 @@ export function NotifyButton({ publicKey }: { publicKey: string }) {
 
   useEffect(() => {
     if (!publicKey) return setState("unsupported");
+    if (isInAppBrowser()) return setState("in-app");
     if (!("serviceWorker" in navigator) || !("PushManager" in window))
-      return setState("unsupported");
+      return setState(isIOS() && !isInstalled() ? "ios-install" : "unsupported");
+    if (typeof Notification === "undefined")
+      return setState(isIOS() && !isInstalled() ? "ios-install" : "unsupported");
     if (Notification.permission === "denied") return setState("blocked");
 
     navigator.serviceWorker
@@ -37,11 +65,42 @@ export function NotifyButton({ publicKey }: { publicKey: string }) {
 
   if (state === "checking") return null;
 
+  if (state === "in-app")
+    return (
+      <div className="notify-box">
+        <p className="notify-title">Get new issues on your phone</p>
+        <p className="notify-note">
+          You are viewing this inside another app. Tap the ••• or share icon and
+          choose <strong>Open in browser</strong> (Safari or Chrome), then come
+          back to this page to turn notifications on.
+        </p>
+      </div>
+    );
+
+  if (state === "ios-install")
+    return (
+      <div className="notify-box">
+        <p className="notify-title">Get new issues on your iPhone</p>
+        <ol className="notify-steps">
+          <li>
+            Tap the <strong>Share</strong> button at the bottom of Safari
+          </li>
+          <li>
+            Choose <strong>Add to Home Screen</strong>
+          </li>
+          <li>Open PulseLetter from your Home Screen and tap Notify me</li>
+        </ol>
+        <p className="notify-note">
+          Apple only allows notifications for sites added this way. It takes two
+          taps and costs nothing.
+        </p>
+      </div>
+    );
+
   if (state === "unsupported")
     return (
       <p className="notify-note">
-        This browser cannot show notifications. On an iPhone, add this page to
-        your Home Screen first, then open it from there.
+        This browser cannot show notifications. Try Chrome or Safari.
       </p>
     );
 

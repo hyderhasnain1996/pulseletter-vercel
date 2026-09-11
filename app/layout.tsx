@@ -10,7 +10,18 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
+    // iOS uses this one when the site is added to the Home Screen.
+    apple: "/icon-180.png",
   },
+  appleWebApp: {
+    capable: true,
+    title: "PulseLetter",
+    statusBarStyle: "default",
+  },
+};
+
+export const viewport = {
+  themeColor: "#0b101a",
 };
 
 export default function RootLayout({
