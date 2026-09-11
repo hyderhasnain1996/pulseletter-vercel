@@ -262,7 +262,7 @@ export default function Studio() {
     path = usePathname();
   const [data, setData] = useState<State>(initial),
     [persisted, setPersisted] = useState(false),
-    [light, setLight] = useState(false),
+    [light, setLight] = useState(true),
     [search, setSearch] = useState(""),
     [modal, setModal] = useState(""),
     [filter, setFilter] = useState("All statuses"),
@@ -291,7 +291,8 @@ export default function Studio() {
     [view, setView] = useState("Cards"),
     [saving, setSaving] = useState(false);
   useEffect(() => {
-    const savedTheme = localStorage.getItem("pulse-theme") === "light";
+    // Light unless this visitor has chosen dark before.
+    const savedTheme = localStorage.getItem("pulse-theme") !== "dark";
     queueMicrotask(() => setLight(savedTheme));
     fetch("/api/workspace")
       .then((r) => {
