@@ -1,6 +1,4 @@
 "use client";
-/* Dispatch-owned sign-in requires a top-level browser navigation. */
-/* eslint-disable @next/next/no-html-link-for-pages */
 import { useEffect, useState, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -11,7 +9,6 @@ import {
   Send,
   Workflow,
   ChartNoAxesCombined,
-  Settings,
   Search,
   Bell,
   Sun,
@@ -477,7 +474,7 @@ export default function Studio() {
     : issue
       ? "Newsletter details"
       : nav.find((x) => x[2] === path)?.[0] ||
-        (path === "/settings" ? "Settings" : "Campaign details");
+        "Campaign details";
   const campaign = data.campaigns.find((c) => path.endsWith(c.id));
   const eligible = data.contacts.filter(
     (c) =>
@@ -1055,7 +1052,7 @@ export default function Studio() {
             {data.brand}
             <span className="brand-period">.</span>
           </button>
-          <button className="workspace" onClick={() => go("/settings")}>
+          <button className="workspace" onClick={() => go("/newsletters")}>
             <span className="workspace-avatar">P</span>
             <span>
               My workspace<small>Private studio</small>
@@ -1101,10 +1098,6 @@ export default function Studio() {
           </div>
         </SidebarContent>
         <SidebarFooter>
-          <button className="settings-nav" onClick={() => go("/settings")}>
-            <Settings size={18} />
-            Settings
-          </button>
           <div className="profile">
             <span className="avatar">JD</span>
             <span>
@@ -1163,8 +1156,8 @@ export default function Studio() {
                 — sample content, no real messages sent
               </span>
             </span>
-            <button onClick={() => go("/settings")}>
-              Set up your workspace <ArrowRight size={14} />
+            <button onClick={() => go("/newsletters")}>
+              Your newsletters <ArrowRight size={14} />
             </button>
           </div>
           {path === "/" && (
@@ -1339,8 +1332,8 @@ export default function Studio() {
                     Connect your email provider to send your first newsletter.
                   </p>
                 </div>
-                <button onClick={() => go("/settings")}>
-                  Complete setup <ArrowRight size={16} />
+                <button onClick={() => setModal("create")}>
+                  Create a newsletter <ArrowRight size={16} />
                 </button>
               </div>
             </>
@@ -2169,86 +2162,6 @@ export default function Studio() {
                 <p>
                   Opens are approximate; automated systems can affect clicks.
                 </p>
-              </div>
-            </>
-          )}
-          {path === "/settings" && (
-            <>
-              <div className="page-heading">
-                <div>
-                  <div className="eyebrow">MAKE YOURSELF AT HOME</div>
-                  <h1>Your studio. Your signature.</h1>
-                  <p>
-                    Branding, preferences, and the connections that power your
-                    work.
-                  </p>
-                </div>
-              </div>
-              <div className="settings-grid">
-                <section className="panel">
-                  <h2>Brand identity</h2>
-                  <label>
-                    Organization name
-                    <input
-                      defaultValue={data.brand}
-                      onBlur={(e) =>
-                        save({
-                          ...data,
-                          brand: e.target.value || "PulseLetter",
-                        })
-                      }
-                    />
-                  </label>
-                  <div className="record">
-                    Light appearance
-                    <Switch checked={light} onCheckedChange={setLight} />
-                  </div>
-                  <label>
-                    Workspace timezone
-                    <Choice value="UTC" onChange={() => {}} items={["UTC"]} />
-                  </label>
-                </section>
-                <section className="panel">
-                  <h2>Sending connections</h2>
-                  {["Email provider", "SMS provider", "WhatsApp"].map((p) => (
-                    <div className="record" key={p}>
-                      <span>{p}</span>
-                      <span className="badge draft">Not configured</span>
-                    </div>
-                  ))}
-                  <p>
-                    Real sending is disabled. API keys must be configured on the
-                    server.
-                  </p>
-                  <button
-                    className="secondary"
-                    onClick={() => setModal("setup")}
-                  >
-                    View setup requirements <ArrowUpRight size={15} />
-                  </button>
-                </section>
-                <section className="panel">
-                  <h2>Workspace access</h2>
-                  <p>
-                    {persisted
-                      ? "Workspace storage connected."
-                      : "You are exploring a demo session. Sign in to save to a private workspace."}
-                  </p>
-                  <a className="primary" href="/login">
-                    Sign in
-                  </a>
-                </section>
-                <section className="panel">
-                  <h2>Activity</h2>
-                  <p>
-                    {data.issues.length} newsletter drafts ·{" "}
-                    {data.campaigns.length} campaign drafts
-                  </p>
-                  <p>
-                    All sending is off. No charges or real recipients are
-                    involved.
-                  </p>
-                </section>
               </div>
             </>
           )}
