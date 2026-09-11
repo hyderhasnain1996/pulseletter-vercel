@@ -2614,6 +2614,11 @@ export default function Studio() {
                     <div className="sms-preview">
                       <span className="sms-label">They receive</span>
                       <p className="sms-bubble">{text}</p>
+                      <p className="send-what">
+                        Texts need a paid messaging account. If yours is still
+                        on a trial, this will be refused — <strong>Phone
+                        alert</strong> reaches the same phone for free.
+                      </p>
                       <p className="sms-meta">
                         {text.length} of {smsLimit(text)} characters ·{" "}
                         {parts === 1
@@ -2697,18 +2702,25 @@ export default function Studio() {
                         error?: string;
                         sent?: number;
                         failed?: number;
+                        results?: { ok: boolean; error?: string }[];
                       };
                       if (!res.ok) {
                         setSendResult(body.error ?? "Unable to send right now.");
-                      } else {
+                      } else if (body.failed) {
+                        // Show why it failed, not just that it did.
+                        const reason = body.results?.find((r) => !r.ok)?.error;
                         setSendResult(
                           `Sent to ${body.sent} of ${sendList.length}.` +
-                            (body.failed ? ` ${body.failed} failed.` : ""),
+                            (reason ? ` ${reason}` : ""),
                         );
                         if (body.sent) {
                           toast.success("Sent");
                           setSendList([]);
                         }
+                      } else {
+                        setSendResult(`Sent to ${body.sent} of ${sendList.length}.`);
+                        toast.success("Sent");
+                        setSendList([]);
                       }
                     } catch {
                       setSendResult("Could not reach the server.");
