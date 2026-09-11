@@ -653,22 +653,34 @@ kbd {
 }
 .issue-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 22px;
 }
+
+/* Newsletter cards.
+
+   Every cover is the same height and the headline is clamped, so a long
+   title cannot push one card's details out of line with its neighbours'. */
 .issue-card {
+  display: flex;
+  flex-direction: column;
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 11px;
+  border-radius: 16px;
   overflow: hidden;
   animation: enter 0.3s both;
   transition:
-    transform 0.2s,
-    border-color 0.2s;
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
 .issue-card:hover {
-  transform: translateY(-3px);
-  border-color: #526175;
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+  box-shadow: 0 18px 38px -22px color-mix(in srgb, var(--foreground) 55%, transparent);
+}
+.issue-card:focus-within {
+  border-color: var(--primary);
 }
 .cover {
   display: flex;
@@ -676,48 +688,77 @@ kbd {
   text-align: left;
   padding: 22px;
   width: 100%;
-  min-height: 206px;
-  color: #172631;
+  height: 232px;
+  color: #17262f;
   position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.cover-sheen {
+  position: absolute;
+  inset: -40% -20% auto -20%;
+  height: 150%;
+  z-index: -1;
+  background: radial-gradient(
+    60% 55% at 78% 8%,
+    #ffffffb8,
+    transparent 70%
+  );
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.issue-card:hover .cover-sheen {
+  transform: translate3d(-6%, 4%, 0) scale(1.08);
 }
 .cover-0 {
-  background: #d9e7e4;
+  background: linear-gradient(155deg, #e4efeb 0%, #c9ded8 55%, #b9d3cd 100%);
 }
 .cover-1 {
-  background: #dedaf0;
-  color: #332c4b;
+  background: linear-gradient(155deg, #e8e4f6 0%, #d5cfee 55%, #c6bfe6 100%);
+  color: #2f2947;
 }
 .cover-2 {
-  background: #ebdfc8;
-  color: #3a3229;
+  background: linear-gradient(155deg, #f4ead8 0%, #e7d7ba 55%, #dfcaa6 100%);
+  color: #3a3126;
 }
 .cover-brand {
   font-size: 9px;
   font-weight: 700;
-  letter-spacing: 1px;
+  letter-spacing: 1.4px;
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
   width: 100%;
-  border-bottom: 1px solid #152b3226;
-  padding-bottom: 8px;
+  border-bottom: 1px solid currentColor;
+  border-color: color-mix(in srgb, currentColor 22%, transparent);
+  padding-bottom: 9px;
 }
 .cover-brand > span {
-  font-weight: 400;
+  font-weight: 500;
   font-size: 8px;
+  opacity: 0.62;
 }
 .cover-issue {
-  font-size: 7px;
-  letter-spacing: 1px;
-  margin-top: 15px;
+  font-size: 8px;
+  letter-spacing: 1.6px;
+  margin-top: 16px;
+  opacity: 0.65;
 }
 .cover strong {
-  font-family: Georgia, serif;
-  font-size: 29px;
-  line-height: 1.06;
-  letter-spacing: -0.9px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 28px;
+  line-height: 1.1;
+  letter-spacing: -0.7px;
   font-weight: 400;
-  max-width: 245px;
-  margin-top: 8px;
+  margin-top: 9px;
+  /* Three lines and no more, so one long headline cannot push a card's
+     details out of line with its neighbours'. The height cap does the work
+     on its own; the clamp adds the ellipsis where the browser supports it. */
+  max-height: 3.3em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
 }
 .cover-bottom {
   margin-top: auto;
@@ -725,36 +766,97 @@ kbd {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
   width: 100%;
-  font-size: 8px;
-  letter-spacing: 0.2px;
+}
+.cover-cat {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+.cover-go {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.issue-card:hover .cover-go {
+  background: currentColor;
+  transform: translate(2px, -2px);
+}
+.issue-card:hover .cover-go > svg {
+  color: #fff;
 }
 .issue-info {
-  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 16px 18px 15px;
 }
 .issue-info .row {
   justify-content: space-between;
+  align-items: center;
 }
 .issue-info h3 {
-  font-size: 14px;
+  font-size: 14.5px;
+  line-height: 1.35;
   margin-top: 11px;
 }
 .issue-info p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 12px;
-  margin: 7px 0 15px;
+  color: var(--muted-foreground);
+  margin: 7px 0 16px;
 }
 .issue-info p span {
-  margin-left: 5px;
+  padding-left: 8px;
+  border-left: 1px solid var(--border);
 }
 .details-link {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding-top: 12px;
+  margin-top: auto;
+  padding-top: 13px;
   border-top: 1px solid var(--border);
-  font-size: 12px;
-  color: #b8c5d7;
+  font-size: 12.5px;
+  font-weight: 550;
+  color: var(--muted-foreground);
+  transition: color 0.2s ease;
+}
+.details-link > svg {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.details-link:hover,
+.issue-card:hover .details-link {
+  color: var(--primary);
+}
+.details-link:hover > svg {
+  transform: translateX(3px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .issue-card,
+  .issue-card:hover,
+  .cover-sheen,
+  .cover-go,
+  .details-link > svg {
+    transition: none;
+    transform: none;
+    animation: none;
+  }
 }
 .setup-strip {
   display: flex;

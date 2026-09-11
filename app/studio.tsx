@@ -644,15 +644,20 @@ export default function Studio() {
         <button
           className={"cover cover-" + (templates.indexOf(n.category) % 3)}
           onClick={() => go("/newsletters/" + n.id)}
+          aria-label={"Open " + n.title}
         >
+          {/* Light across the paper. Decoration only. */}
+          <span className="cover-sheen" aria-hidden="true" />
           <span className="cover-brand">
             {data.brand.toUpperCase()} <span>JOURNAL</span>
           </span>
           <span className="cover-issue">{n.issue} / SEPTEMBER 2026</span>
           <strong>{n.blocks[0]?.text || n.title}</strong>
           <span className="cover-bottom">
-            {n.category}
-            <ArrowUpRight size={18} />
+            <span className="cover-cat">{n.category}</span>
+            <span className="cover-go" aria-hidden="true">
+              <ArrowUpRight size={15} />
+            </span>
           </span>
         </button>
         <div className="issue-info">
@@ -703,8 +708,9 @@ export default function Studio() {
             {new Date(n.updated).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
-            })}{" "}
-            <span>· By you</span>
+              timeZone: "UTC",
+            })}
+            <span>By you</span>
           </p>
           <button
             className="details-link"
