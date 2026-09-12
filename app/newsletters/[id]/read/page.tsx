@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getDb, hasDatabase } from "@/db";
 import { workspaces } from "@/db/schema";
 import { themeVars } from "@/app/themes";
+import { layoutClass } from "@/app/layouts";
 import { NotifyButton } from "@/app/notify-button";
 import type { Issue, State } from "@/app/data";
 
@@ -67,7 +68,7 @@ export default async function ReadIssue({
 
   return (
     <div className="reader-page" style={themeVars(issue.theme)}>
-      <article className="reader">
+      <article className={"reader " + layoutClass(issue.layout)}>
         <div className="reader-bar">
           <span className="reader-brand-small">{brand.toUpperCase()}</span>
           <span>

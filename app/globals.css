@@ -2822,3 +2822,207 @@ video.doc-media {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ---- Newsletter layouts ------------------------------------------------
+   A theme sets the colours; a layout sets the shape. Each of these restyles
+   the same markup, so switching one never loses content. They apply to the
+   editor canvas and the reading page alike. */
+
+/* Magazine — a masthead you cannot miss, a drop cap, images to the edge. */
+.layout-magazine.document,
+.layout-magazine.reader {
+  --doc-measure: 660px;
+}
+.layout-magazine .doc-brand,
+.layout-magazine .reader-head,
+.layout-magazine .reader-brand {
+  justify-content: center;
+  text-align: center;
+  letter-spacing: 4px;
+  font-size: 11px;
+  border-bottom-width: 3px;
+  padding-bottom: 14px;
+}
+.layout-magazine h1,
+.layout-magazine .reader-head h1 {
+  font-size: 60px;
+  letter-spacing: -2.2px;
+  line-height: 1.02;
+  text-align: center;
+}
+.layout-magazine .reader-meta,
+.layout-magazine .doc-brand span {
+  text-align: center;
+}
+.layout-magazine h2 {
+  font-size: 31px;
+  padding-top: 14px;
+  border-top: 2px solid var(--doc-rule, #ccd3d2);
+}
+/* The opening paragraph leads with a raised capital. Only the first, and
+   only where a paragraph actually starts the text. */
+.layout-magazine .doc-block:first-of-type p::first-letter,
+.layout-magazine .reader-body > p:first-of-type::first-letter {
+  float: left;
+  font-family: var(--doc-head, Georgia, serif);
+  font-size: 62px;
+  line-height: 0.82;
+  padding: 6px 10px 0 0;
+  color: var(--doc-accent, #244944);
+}
+.layout-magazine .doc-media {
+  width: 100%;
+  border-radius: 0;
+}
+.layout-magazine p {
+  font-size: 16.5px;
+}
+
+/* Digest — compact and ruled, for a round-up of short items. */
+.layout-digest h1,
+.layout-digest .reader-head h1 {
+  font-size: 32px;
+  letter-spacing: -0.6px;
+}
+.layout-digest h2 {
+  font-size: 19px;
+  margin: 10px 0 6px;
+  letter-spacing: 0;
+}
+.layout-digest p {
+  font-size: 14px;
+  line-height: 1.65;
+}
+.layout-digest .doc-block,
+.layout-digest .reader-body > * {
+  padding: 12px 0;
+}
+.layout-digest .doc-block + .doc-block,
+.layout-digest .reader-body > * + * {
+  border-top: 1px solid var(--doc-rule, #ccd3d2);
+}
+.layout-digest .doc-media {
+  max-height: 240px;
+  object-fit: cover;
+}
+.layout-digest .doc-brand,
+.layout-digest .reader-brand {
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+}
+
+/* Bulletin — every section boxed, so each one reads as its own note. */
+.layout-bulletin .doc-block,
+.layout-bulletin .reader-body > * {
+  background: #ffffff5c;
+  border: 1px solid var(--doc-rule, #ccd3d2);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+}
+.layout-bulletin .doc-block:has(h1),
+.layout-bulletin .reader-body > h1 {
+  background: none;
+  border: 0;
+  padding: 0;
+}
+.layout-bulletin h1,
+.layout-bulletin .reader-head h1 {
+  font-size: 40px;
+  text-align: center;
+}
+.layout-bulletin h2 {
+  font-size: 22px;
+  margin: 0 0 10px;
+}
+.layout-bulletin .doc-media {
+  border-radius: 8px;
+}
+.layout-bulletin .doc-brand,
+.layout-bulletin .reader-head,
+.layout-bulletin .reader-brand {
+  justify-content: center;
+  text-align: center;
+  border-bottom: 0;
+  margin-bottom: 18px;
+}
+
+/* Narrower screens: the magazine masthead would otherwise dominate. */
+@media (max-width: 640px) {
+  .layout-magazine h1,
+  .layout-magazine .reader-head h1 {
+    font-size: 38px;
+    letter-spacing: -1px;
+  }
+  .layout-magazine .doc-block:first-of-type p::first-letter,
+  .layout-magazine .reader-body > p:first-of-type::first-letter {
+    font-size: 46px;
+  }
+}
+
+/* The layout picker, beside the theme picker. */
+.layout-picker {
+  display: grid;
+  gap: 7px;
+}
+.layout-picker button {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+.layout-picker button:hover {
+  border-color: var(--input);
+}
+.layout-picker button.active {
+  border-color: var(--primary);
+  background: var(--accent);
+}
+.layout-picker strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+.layout-picker small {
+  font-size: 11.5px;
+  color: var(--muted-foreground);
+  line-height: 1.4;
+}
+
+/* Images on the reading page. The editor canvas styles .doc-media; the
+   reading page uses a plain figure, so each layout says its piece here too. */
+.layout-magazine .reader-body figure {
+  /* Out to the edge of the page, past the body padding. */
+  margin-left: -44px;
+  margin-right: -44px;
+}
+.layout-magazine .reader-body figure img {
+  border-radius: 0;
+}
+.layout-magazine .reader-body figcaption {
+  padding: 0 44px;
+}
+.layout-digest .reader-body figure img {
+  max-height: 260px;
+  object-fit: cover;
+}
+.layout-digest .reader-body h2 {
+  margin-top: 22px;
+}
+.layout-bulletin .reader-body figure {
+  margin: 0 0 12px;
+}
+@media (max-width: 640px) {
+  .layout-magazine .reader-body figure {
+    margin-left: -18px;
+    margin-right: -18px;
+  }
+  .layout-magazine .reader-body figcaption {
+    padding: 0 18px;
+  }
+}

@@ -14,6 +14,7 @@ const issue = z.object({
   issue: str,
   public: z.literal(false),
   theme: z.string().max(30).optional(),
+  layout: z.string().max(30).optional(),
   blocks: z
     .array(
       z.object({

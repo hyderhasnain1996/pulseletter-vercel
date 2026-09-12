@@ -104,6 +104,7 @@ import {
 import { parseCSV } from "./csv";
 import { compressImage, toEmbed } from "./media";
 import { themes, themeVars } from "./themes";
+import { layouts, layoutClass } from "./layouts";
 import { NotifyButton } from "./notify-button";
 import {
   buildPrompt,
@@ -280,6 +281,7 @@ export default function Studio() {
     [aiDraft, setAiDraft] = useState(""),
     [importing, setImporting] = useState(false),
     [aiTheme, setAiTheme] = useState("classic"),
+    [aiLayout, setAiLayout] = useState("classic"),
     [sendChannel, setSendChannel] = useState<"Email" | "Push" | "SMS">(
       "Email",
     ),
@@ -883,7 +885,9 @@ export default function Studio() {
     const live = path.includes("editor");
     return (
       <article
-        className={"document " + (mobile ? "mobile-doc" : "")}
+        className={
+          "document " + layoutClass(n.layout) + (mobile ? " mobile-doc" : "")
+        }
         style={themeVars(n.theme)}
         onClick={() => {
           setSelected("");
@@ -1072,7 +1076,10 @@ export default function Studio() {
   if (issue && path.includes("/read"))
     return (
       <div className="reader-page" style={themeVars(issue.theme)}>
-          <article className="reader" style={themeVars(issue.theme)}>
+          <article
+            className={"reader " + layoutClass(issue.layout)}
+            style={themeVars(issue.theme)}
+          >
             <div className="reader-bar">
               <span className="reader-brand-small">
                 {data.brand.toUpperCase()}
@@ -1690,6 +1697,23 @@ export default function Studio() {
                     ))}
                   </div>
                   <hr />
+                  <h3>Layout</h3>
+                  <div className="layout-picker">
+                    {layouts.map((l) => (
+                      <button
+                        key={l.id}
+                        className={
+                          (issue.layout ?? "classic") === l.id ? "active" : ""
+                        }
+                        aria-pressed={(issue.layout ?? "classic") === l.id}
+                        onClick={() => edit({ layout: l.id })}
+                      >
+                        <strong>{l.name}</strong>
+                        <small>{l.hint}</small>
+                      </button>
+                    ))}
+                  </div>
+                  <hr />
                   <h3>Newsletter status</h3>
                   <Choice
                     value={issue.status}
@@ -2292,6 +2316,23 @@ export default function Studio() {
                         ))}
                       </div>
                     </label>
+                    <label className="ai-field">
+                      Pick a layout
+                      <div className="layout-picker">
+                        {layouts.map((l) => (
+                          <button
+                            key={l.id}
+                            type="button"
+                            className={aiLayout === l.id ? "active" : ""}
+                            aria-pressed={aiLayout === l.id}
+                            onClick={() => setAiLayout(l.id)}
+                          >
+                            <strong>{l.name}</strong>
+                            <small>{l.hint}</small>
+                          </button>
+                        ))}
+                      </div>
+                    </label>
                     <button
                       className="ai-copy"
                       onClick={() => {
@@ -2347,6 +2388,7 @@ export default function Studio() {
                               Math.min(9, data.issues.length + 1),
                             public: false as const,
                             theme: aiTheme,
+                            layout: aiLayout,
                             blocks: draft.blocks,
                           };
                           await save({ ...data, issues: [n, ...data.issues] });

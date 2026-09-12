@@ -16,6 +16,8 @@ export type Issue = {
   public: boolean;
   /* Visual theme id from themes.ts; falls back to the first theme. */
   theme?: string;
+  /* Layout id from layouts.ts; decides the shape rather than the colours. */
+  layout?: string;
 };
 export type Contact = {
   id: string;
