@@ -33,6 +33,11 @@ export function GET() {
         SMTP_HOST: present("SMTP_HOST"),
         SMTP_USER: present("SMTP_USER"),
         SMTP_PASS: present("SMTP_PASS"),
+        HTTPSMS_API_KEY: present("HTTPSMS_API_KEY"),
+        HTTPSMS_FROM: present("HTTPSMS_FROM"),
+        SMS_ACCOUNT_SID: present("SMS_ACCOUNT_SID"),
+        SMS_AUTH_TOKEN: present("SMS_AUTH_TOKEN"),
+        SMS_FROM: present("SMS_FROM"),
       },
       /* Every variable name the server can see, so a misspelling or a
          variable attached to the wrong environment shows up plainly. */

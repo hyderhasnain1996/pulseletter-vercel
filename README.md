@@ -70,6 +70,34 @@ must use a domain verified in Resend. Until a domain is verified, Resend
 matter what domain the recipient is at. That is a Resend restriction, not a
 limit of this app.
 
+### Texting an issue
+
+A newsletter can also go out as an SMS — the headline, the key points and a
+link through to the full issue. There are two ways to send one, and httpSMS is
+used when both are configured.
+
+**httpSMS — your own phone.** The same idea as SMTP, for text messages:
+[httpSMS](https://httpsms.com) relays through an Android phone you already
+own, so texts arrive from your own number and cost whatever your plan charges.
+There is no number to rent, and no trial-account restriction on who you can
+reach.
+
+1. Install the httpSMS app from Google Play on the phone that will send.
+2. Sign in and let it register the phone's number.
+3. Copy the API key from [httpsms.com/settings](https://httpsms.com/settings).
+
+```
+HTTPSMS_API_KEY=the-key-from-that-settings-page
+HTTPSMS_FROM=+15551234567
+```
+
+`HTTPSMS_FROM` is the sending phone's own number, in `+country` format. The
+phone has to be switched on and online to pass a message along; anything it
+could not hand over is listed in the httpSMS dashboard.
+
+**Twilio — a messaging API.** Bills per message and needs a rented number. A
+trial account can only text numbers you have verified in the console.
+
 ## Automations
 
 An automation sends a newsletter on its own: pick the issue, the channel

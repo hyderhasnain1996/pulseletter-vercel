@@ -78,12 +78,22 @@ async function sendOverSmtp(
     return { to, ok: false, error: m.split("\n")[0].slice(0, 200) };
   }
 }
-export const smsReady = () =>
+
+/* Two ways to send SMS, and httpSMS wins when both are set.
+
+   httpSMS relays through an Android phone you already own, so a text arrives
+   from your own number and costs whatever your plan charges. Twilio bills per
+   message and, on a trial account, only reaches numbers you have verified —
+   the same reason SMTP wins over Resend above. */
+export const httpSmsReady = () =>
+  Boolean(process.env.HTTPSMS_API_KEY && process.env.HTTPSMS_FROM);
+const twilioReady = () =>
   Boolean(
     process.env.SMS_ACCOUNT_SID &&
       process.env.SMS_AUTH_TOKEN &&
       process.env.SMS_FROM,
   );
+export const smsReady = () => httpSmsReady() || twilioReady();
 export const pushReady = () =>
   Boolean(process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY);
 
@@ -115,8 +125,32 @@ export async function sendEmail(
   }
 }
 
-export async function sendSms(to: string, body: string): Promise<Outcome> {
-  if (!smsReady()) return { to, ok: false, error: "not configured" };
+/* The phone has to be online and reachable for httpSMS to hand the message
+   over; a queued message that never leaves shows up in the httpSMS dashboard
+   rather than as an error here. */
+async function sendOverHttpSms(to: string, body: string): Promise<Outcome> {
+  try {
+    const res = await fetch("https://api.httpsms.com/v1/messages/send", {
+      method: "POST",
+      headers: {
+        "x-api-key": process.env.HTTPSMS_API_KEY!,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        content: body,
+        from: process.env.HTTPSMS_FROM,
+        to,
+      }),
+    });
+    if (!res.ok) return { to, ok: false, error: await providerError(res) };
+    return { to, ok: true };
+  } catch {
+    return { to, ok: false, error: "network error" };
+  }
+}
+
+async function sendOverTwilio(to: string, body: string): Promise<Outcome> {
   const sid = process.env.SMS_ACCOUNT_SID!;
   try {
     const res = await fetch(
@@ -140,6 +174,12 @@ export async function sendSms(to: string, body: string): Promise<Outcome> {
   } catch {
     return { to, ok: false, error: "network error" };
   }
+}
+
+export async function sendSms(to: string, body: string): Promise<Outcome> {
+  if (httpSmsReady()) return sendOverHttpSms(to, body);
+  if (twilioReady()) return sendOverTwilio(to, body);
+  return { to, ok: false, error: "not configured" };
 }
 
 export type PushTarget = { endpoint: string; p256dh: string; auth: string };

@@ -46,7 +46,7 @@ export async function POST(req: Request) {
       {
         error: email
           ? "Email sending is not configured. Set SMTP_HOST, SMTP_USER and SMTP_PASS to send through your own mailbox, or EMAIL_API_KEY and EMAIL_FROM to send through Resend."
-          : "SMS sending is not configured. Set SMS_ACCOUNT_SID, SMS_AUTH_TOKEN and SMS_FROM on the server.",
+          : "SMS sending is not configured. Set HTTPSMS_API_KEY and HTTPSMS_FROM to send through your own phone, or SMS_ACCOUNT_SID, SMS_AUTH_TOKEN and SMS_FROM to send through Twilio.",
         configured: false,
       },
       { status: 503 },
