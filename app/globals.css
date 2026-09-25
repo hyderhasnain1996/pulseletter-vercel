@@ -3327,56 +3327,6 @@ video.doc-media {
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 22%, transparent);
 }
 
-/* two cards that behave like a radio group */
-.qs-choices {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.55rem;
-}
-.qs-choice {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  text-align: left;
-  padding: 0.65rem 0.7rem;
-  color: var(--muted-foreground);
-  background: var(--background);
-  border: 1px solid var(--input);
-  border-radius: calc(var(--radius) - 0.35rem);
-  cursor: pointer;
-  transition:
-    border-color 0.2s ease,
-    color 0.2s ease,
-    background 0.2s ease,
-    transform 0.2s cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-.qs-choice:hover:not(:disabled) {
-  transform: translateY(-1px);
-  border-color: var(--ring);
-}
-.qs-choice:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-.qs-choice.is-on {
-  color: var(--accent-foreground);
-  background: var(--accent);
-  border-color: var(--primary);
-}
-.qs-choice span {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-.qs-choice strong {
-  font-size: 0.82rem;
-  font-weight: 600;
-}
-.qs-choice small {
-  font-size: 0.72rem;
-  opacity: 0.8;
-}
-
 /* recipients */
 .qs-chips {
   display: flex;
@@ -3555,7 +3505,6 @@ video.doc-media {
   .qs-drop,
   .qs-drop-icon,
   .qs-canvas img,
-  .qs-choice,
   .qs-send {
     transition: none;
   }

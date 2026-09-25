@@ -317,77 +317,50 @@ export function QuickSend({
 
           {file?.kind !== "html" && (
             <>
+              {/* One menu rather than a pair of cards: choosing a newsletter
+                  and choosing whether to link at all were never two decisions,
+                  and "none" belongs in the same list as the issues. */}
               <div className="qs-field qs-reveal" style={{ ["--i" as string]: 1 }}>
-                <label>When someone taps the picture</label>
-                <div className="qs-choices">
-                  <button
-                    className={"qs-choice" + (linkTo === "" ? " is-on" : "")}
-                    onClick={() => setLinkTo("")}
-                  >
-                    <ImagePlus size={15} />
-                    <span>
-                      <strong>Just the picture</strong>
-                      <small>Nothing happens</small>
-                    </span>
-                  </button>
-                  <button
-                    className={"qs-choice" + (linkTo !== "" ? " is-on" : "")}
-                    onClick={() =>
-                      setLinkTo(linkTo || issues[0]?.id || "")
-                    }
-                    disabled={!issues.length}
-                  >
-                    <Link2 size={15} />
-                    <span>
-                      <strong>Open a newsletter</strong>
-                      <small>The full issue</small>
-                    </span>
-                  </button>
-                </div>
+                <label htmlFor="qs-issue">When someone taps the picture</label>
+                <select
+                  id="qs-issue"
+                  value={linkTo}
+                  onChange={(e) => setLinkTo(e.target.value)}
+                >
+                  <option value="">Nothing &mdash; just the picture</option>
+                  {issues.map((n) => (
+                    <option key={n.id} value={n.id}>
+                      Opens &ldquo;{n.title}&rdquo;
+                    </option>
+                  ))}
+                </select>
+                {/* The address the picture opens, shown plainly: it is the
+                    one thing here nobody can check by looking at it. */}
+                {href && (
+                  <div className="qs-link">
+                    <Link2 size={13} />
+                    <a href={href} target="_blank" rel="noreferrer">
+                      {href}
+                    </a>
+                    <button
+                      type="button"
+                      aria-label="Copy link"
+                      onClick={async () => {
+                        try {
+                          await navigator.clipboard.writeText(href);
+                          toast.success("Link copied");
+                        } catch {
+                          toast.error("Your browser would not let us copy.");
+                        }
+                      }}
+                    >
+                      <Copy size={12} />
+                    </button>
+                  </div>
+                )}
               </div>
 
-              {linkTo !== "" && (
-                <div className="qs-field qs-reveal" style={{ ["--i" as string]: 2 }}>
-                  <label htmlFor="qs-issue">Which newsletter</label>
-                  <select
-                    id="qs-issue"
-                    value={linkTo}
-                    onChange={(e) => setLinkTo(e.target.value)}
-                  >
-                    {issues.map((n) => (
-                      <option key={n.id} value={n.id}>
-                        {n.title}
-                      </option>
-                    ))}
-                  </select>
-                  {/* The address the picture opens, shown plainly: it is the
-                      one thing here nobody can check by looking at it. */}
-                  {href && (
-                    <div className="qs-link">
-                      <Link2 size={13} />
-                      <a href={href} target="_blank" rel="noreferrer">
-                        {href}
-                      </a>
-                      <button
-                        type="button"
-                        aria-label="Copy link"
-                        onClick={async () => {
-                          try {
-                            await navigator.clipboard.writeText(href);
-                            toast.success("Link copied");
-                          } catch {
-                            toast.error("Your browser would not let us copy.");
-                          }
-                        }}
-                      >
-                        <Copy size={12} />
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              <div className="qs-field qs-reveal" style={{ ["--i" as string]: 3 }}>
+              <div className="qs-field qs-reveal" style={{ ["--i" as string]: 2 }}>
                 <label htmlFor="qs-caption">
                   A line under the picture <small>optional</small>
                 </label>
