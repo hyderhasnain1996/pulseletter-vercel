@@ -3711,3 +3711,78 @@ video.doc-media {
     flex: 1;
   }
 }
+
+/* Save sits beside Send: keeping a picture and sending it are two things
+   you may want, in either order. */
+.qs-actions {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+.qs-actions .qs-send {
+  flex: 1;
+}
+.qs-keep {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 0.15rem;
+  padding: 0.8rem 0.95rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--foreground);
+  background: var(--background);
+  border: 1px solid var(--input);
+  border-radius: calc(var(--radius) - 0.35rem);
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    color 0.18s ease,
+    transform 0.14s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+.qs-keep:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-1.5px);
+}
+.qs-keep:active:not(:disabled) {
+  transform: translateY(1px);
+}
+/* Saved is a state, not a disabled button, so it reads as done. */
+.qs-keep:disabled {
+  color: var(--ok, var(--primary));
+  border-color: currentColor;
+  cursor: default;
+  opacity: 1;
+}
+
+/* Deleting is the one thing here that cannot be undone. */
+.menu-danger {
+  color: var(--destructive);
+}
+.menu-danger:hover,
+.menu-danger:focus {
+  color: var(--destructive);
+}
+button.danger {
+  background: var(--destructive);
+  color: var(--background);
+}
+button.danger:hover {
+  background: var(--destructive);
+  color: var(--background);
+  filter: brightness(1.08);
+}
+
+@media (max-width: 420px) {
+  .qs-actions {
+    flex-direction: column;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .qs-keep {
+    transition: none;
+  }
+}

@@ -9,6 +9,7 @@ import {
   Trash2,
   Sparkles,
   CheckCheck,
+  Save,
   MousePointerClick,
   FileText,
   Monitor,
@@ -42,11 +43,15 @@ export function QuickSend({
   issues,
   contacts,
   origin,
+  onKeep,
 }: {
   brand: string;
   issues: Issue[];
   contacts: Contact[];
   origin: string;
+  /* Keeps the picture as a newsletter of its own. Returns it, so a send can
+     say it saved one as well without doing the work twice. */
+  onKeep: (picture: { title: string; src: string; caption: string }) => Issue;
 }) {
   const [file, setFile] = useState<Ready | null>(null);
   const [reading, setReading] = useState(false);
@@ -60,6 +65,7 @@ export function QuickSend({
   const [list, setList] = useState<string[]>([]);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
+  const [kept, setKept] = useState(false);
   const [result, setResult] = useState("");
 
   const { t } = useT();
@@ -99,6 +105,7 @@ export function QuickSend({
         const source = await chosen.text();
         if (!source.trim()) throw Error(t("qs.emptyFile"));
         setFile({ kind: "html", source, name: chosen.name });
+        setKept(false);
         toast.success(t("qs.readyHtml"));
       } catch (e) {
         toast.error(e instanceof Error ? e.message : t("qs.unreadable"));
@@ -116,6 +123,7 @@ export function QuickSend({
       /* Same shrink the editor uses, so a phone photo does not arrive as a
          12MB attachment nobody can download on mobile data. */
       setFile({ kind: "image", src: await compressImage(chosen), name: chosen.name });
+      setKept(false);
       toast.success(t("qs.readyImage"));
     } catch (e) {
       toast.error(e instanceof Error ? e.message : t("qs.badImage"));
@@ -152,6 +160,17 @@ export function QuickSend({
     });
   }
 
+  function keep() {
+    if (file?.kind !== "image" || kept) return;
+    onKeep({
+      title: subject || brand,
+      src: file.src,
+      caption: caption.trim(),
+    });
+    setKept(true);
+    toast.success(t("qs.saved"));
+  }
+
   async function send() {
     if (!file || !list.length || sending) return;
     setSending(true);
@@ -181,10 +200,22 @@ export function QuickSend({
             (reason ? ` ${reason}` : ""),
         );
       } else {
+        /* Something that went to real people is worth keeping a copy of,
+           so sending saves it too unless it is already saved. */
+        const alsoKept = file?.kind === "image" && !kept;
+        if (alsoKept) {
+          onKeep({
+            title: subject || brand,
+            src: file.src,
+            caption: caption.trim(),
+          });
+          setKept(true);
+        }
         setResult(
-          body.sent === 1
+          (body.sent === 1
             ? t("qs.okOne")
-            : t("qs.okMany", { n: body.sent ?? 0 }),
+            : t("qs.okMany", { n: body.sent ?? 0 })) +
+            (alsoKept ? " " + t("qs.savedOnSend") : ""),
         );
         toast.success(t("qs.onItsWay"));
       }
@@ -447,6 +478,18 @@ export function QuickSend({
             </p>
           </div>
 
+          <div className="qs-actions">
+            {file?.kind === "image" && (
+              <button
+                className="qs-keep"
+                type="button"
+                disabled={kept}
+                onClick={keep}
+              >
+                {kept ? <CheckCheck size={15} /> : <Save size={15} />}
+                {kept ? t("qs.saved") : t("qs.save")}
+              </button>
+            )}
           <button
             className={"qs-send" + (sending ? " is-sending" : "")}
             disabled={!canSend}
@@ -468,6 +511,7 @@ export function QuickSend({
               </>
             )}
           </button>
+          </div>
 
           {result && (
             <p className="qs-result">

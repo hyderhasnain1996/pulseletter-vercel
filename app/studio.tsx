@@ -76,6 +76,16 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Select,
   SelectTrigger,
   SelectValue,
@@ -285,7 +295,8 @@ export default function Studio() {
     [history, setHistory] = useState<Issue[]>([]),
     [future, setFuture] = useState<Issue[]>([]),
     [view, setView] = useState("Cards"),
-    [saving, setSaving] = useState(false);
+    [saving, setSaving] = useState(false),
+    [deleting, setDeleting] = useState<Issue | null>(null);
   const { t } = useT();
   useEffect(() => {
     // Light unless this visitor has chosen dark before.
@@ -636,6 +647,34 @@ export default function Studio() {
     );
   }
 
+  /* A picture newsletter is kept as an ordinary issue with the picture in
+     it, so it lists, opens, archives and deletes like everything else rather
+     than becoming a second kind of thing with its own rules. */
+  function keepPicture(picture: {
+    title: string;
+    src: string;
+    caption: string;
+  }) {
+    const blocks: Issue["blocks"] = [
+      { id: uid(), type: "Title", text: picture.title },
+      { id: uid(), type: "Image", text: picture.caption, src: picture.src },
+    ];
+    if (picture.caption)
+      blocks.push({ id: uid(), type: "Introduction", text: picture.caption });
+    const next: Issue = {
+      id: uid(),
+      title: picture.title,
+      category: t("qs.pictureIssue"),
+      status: "Ready",
+      updated: new Date().toISOString().slice(0, 10),
+      issue: "ISSUE " + String(data.issues.length + 1).padStart(3, "0"),
+      public: false,
+      blocks,
+    };
+    save({ ...data, issues: [next, ...data.issues] });
+    return next;
+  }
+
   function duplicate(n: Issue) {
     const copy = {
       ...structuredClone(n),
@@ -687,7 +726,7 @@ export default function Studio() {
                   onClick={() => go("/newsletters/" + n.id + "/editor")}
                 >{t("nl.edit")}</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => duplicate(n)}>
-                  Duplicate
+                  {t("act.duplicate")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
@@ -711,6 +750,12 @@ export default function Studio() {
                   }}
                 >
                   {n.status === "Archived" ? t("act.Restore") : t("act.Archive")}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="menu-danger"
+                  onClick={() => setDeleting(n)}
+                >
+                  {t("act.delete")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -1885,6 +1930,7 @@ export default function Studio() {
               issues={data.issues}
               contacts={data.contacts}
               origin={origin}
+              onKeep={keepPicture}
             />
           )}
           {path === "/contacts" && (
@@ -2855,6 +2901,39 @@ export default function Studio() {
           )}
         </DialogContent>
       </Dialog>
+      {/* Deleting cannot be undone, so it asks first and says plainly what
+          archiving would do instead. */}
+      <AlertDialog
+        open={!!deleting}
+        onOpenChange={(open) => !open && setDeleting(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("del.title")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("del.body", { title: deleting?.title ?? "" })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("del.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              className="danger"
+              onClick={() => {
+                if (!deleting) return;
+                save({
+                  ...data,
+                  issues: data.issues.filter((x) => x.id !== deleting.id),
+                });
+                setDeleting(null);
+                toast.success(t("del.done"));
+                if (path.includes(deleting.id)) go("/newsletters");
+              }}
+            >
+              {t("del.confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <Toaster
         theme={light ? "light" : "dark"}
         position="bottom-right"

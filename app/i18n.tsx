@@ -610,6 +610,30 @@ const dict = {
     en: "Nothing needs your attention",
     ko: "확인할 항목이 없습니다",
   },
+
+  /* ---- keeping and removing an issue ---- */
+  "act.duplicate": { en: "Duplicate", ko: "복제" },
+  "act.delete": { en: "Delete", ko: "삭제" },
+  "del.title": { en: "Delete this newsletter?", ko: "이 뉴스레터를 삭제할까요?" },
+  "del.body": {
+    en: "“{title}” and everything in it goes for good. Archiving keeps it out of the way instead, and can be undone.",
+    ko: "“{title}”와 그 안의 내용이 완전히 사라집니다. 보관하면 목록에서만 치워 두고 언제든 되돌릴 수 있습니다.",
+  },
+  "del.cancel": { en: "Keep it", ko: "그대로 두기" },
+  "del.confirm": { en: "Delete for good", ko: "완전히 삭제" },
+  "del.done": { en: "Newsletter deleted", ko: "뉴스레터를 삭제했습니다" },
+
+  /* ---- keeping a picture issue ---- */
+  "qs.save": { en: "Save", ko: "저장" },
+  "qs.saved": {
+    en: "Saved to your newsletters",
+    ko: "내 뉴스레터에 저장했습니다",
+  },
+  "qs.savedOnSend": {
+    en: "Sent, and saved to your newsletters.",
+    ko: "발송했고, 내 뉴스레터에 저장했습니다.",
+  },
+  "qs.pictureIssue": { en: "Picture", ko: "사진" },
 } satisfies Record<string, Record<Lang, string>>;
 
 export type Key = keyof typeof dict;
