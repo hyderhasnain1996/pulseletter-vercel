@@ -12,8 +12,10 @@ import {
   MousePointerClick,
   FileText,
   Monitor,
+  Users,
+  Copy,
 } from "lucide-react";
-import type { Issue } from "./data";
+import type { Contact, Issue } from "./data";
 import { compressImage } from "./media";
 import { renderImageEmail, readUrl } from "./render-newsletter";
 import { splitRecipients } from "./recipients";
@@ -37,10 +39,12 @@ const isHtmlFile = (f: File) =>
 export function QuickSend({
   brand,
   issues,
+  contacts,
   origin,
 }: {
   brand: string;
   issues: Issue[];
+  contacts: Contact[];
   origin: string;
 }) {
   const [file, setFile] = useState<Ready | null>(null);
@@ -62,6 +66,21 @@ export function QuickSend({
 
   const linked = issues.find((n) => n.id === linkTo);
   const href = linked ? readUrl(linked, origin) : undefined;
+
+  /* Whole audiences, not one address at a time. A group is only worth
+     offering if somebody in it has agreed to email and left an address, so
+     the count on the button is what would actually be sent, not the size of
+     the group. */
+  const mailable = contacts.filter((c) => c.subscribed && c.email);
+  const audiences: { name: string; emails: string[] }[] = [
+    { name: "Everyone", emails: mailable.map((c) => c.email) },
+    ...[...new Set(mailable.map((c) => c.group).filter(Boolean))]
+      .sort()
+      .map((group) => ({
+        name: group,
+        emails: mailable.filter((c) => c.group === group).map((c) => c.email),
+      })),
+  ].filter((a) => a.emails.length);
 
   /* A subject is the one thing a picture cannot supply for itself, so the
      chosen newsletter's title stands in until someone types over it. Derived
@@ -341,6 +360,30 @@ export function QuickSend({
                       </option>
                     ))}
                   </select>
+                  {/* The address the picture opens, shown plainly: it is the
+                      one thing here nobody can check by looking at it. */}
+                  {href && (
+                    <div className="qs-link">
+                      <Link2 size={13} />
+                      <a href={href} target="_blank" rel="noreferrer">
+                        {href}
+                      </a>
+                      <button
+                        type="button"
+                        aria-label="Copy link"
+                        onClick={async () => {
+                          try {
+                            await navigator.clipboard.writeText(href);
+                            toast.success("Link copied");
+                          } catch {
+                            toast.error("Your browser would not let us copy.");
+                          }
+                        }}
+                      >
+                        <Copy size={12} />
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -361,6 +404,31 @@ export function QuickSend({
 
           <div className="qs-field qs-reveal" style={{ ["--i" as string]: 4 }}>
             <label htmlFor="qs-to">Send to</label>
+            {audiences.length > 0 && (
+              <div className="qs-groups">
+                {audiences.map((a) => {
+                  const already = a.emails.every((e) => list.includes(e));
+                  return (
+                    <button
+                      key={a.name}
+                      type="button"
+                      className={"qs-group" + (already ? " is-on" : "")}
+                      onClick={() =>
+                        setList((l) =>
+                          already
+                            ? l.filter((e) => !a.emails.includes(e))
+                            : [...new Set([...l, ...a.emails])],
+                        )
+                      }
+                    >
+                      <Users size={12} />
+                      {a.name}
+                      <span>{a.emails.length}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
             <div className="qs-chips">
               {list.map((address) => (
                 <span key={address} className="qs-to">

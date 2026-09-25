@@ -1891,6 +1891,7 @@ export default function Studio() {
             <QuickSend
               brand={data.brand}
               issues={data.issues}
+              contacts={data.contacts}
               origin={origin}
             />
           )}

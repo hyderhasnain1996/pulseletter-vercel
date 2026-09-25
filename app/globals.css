@@ -3565,3 +3565,111 @@ video.doc-media {
     animation: none;
   }
 }
+
+/* ---- the address the picture opens ---- */
+.qs-link {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  margin-top: 0.15rem;
+  padding: 0.4rem 0.4rem 0.4rem 0.6rem;
+  font-size: 0.76rem;
+  color: var(--muted-foreground);
+  background: var(--secondary);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 0.4rem);
+  animation: qs-rise 0.3s ease both;
+}
+.qs-link > svg {
+  flex-shrink: 0;
+  color: var(--primary);
+}
+.qs-link a {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: inherit;
+  text-decoration: none;
+}
+.qs-link a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+.qs-link button {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--muted-foreground);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 0.5rem);
+  cursor: pointer;
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease;
+}
+.qs-link button:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* ---- whole audiences ---- */
+.qs-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.qs-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  color: var(--muted-foreground);
+  background: var(--background);
+  border: 1px solid var(--input);
+  border-radius: 999px;
+  padding: 0.28rem 0.55rem 0.28rem 0.6rem;
+  cursor: pointer;
+  transition:
+    color 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+.qs-group:hover {
+  transform: translateY(-1px);
+  border-color: var(--ring);
+}
+.qs-group.is-on {
+  color: var(--accent-foreground);
+  background: var(--accent);
+  border-color: var(--primary);
+}
+.qs-group > svg {
+  opacity: 0.75;
+}
+.qs-group span {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.7rem;
+  padding: 0.05rem 0.35rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--foreground) 10%, transparent);
+}
+.qs-group.is-on span {
+  background: color-mix(in oklab, var(--primary) 26%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qs-link {
+    animation: none;
+  }
+  .qs-group,
+  .qs-link button {
+    transition: none;
+  }
+}
