@@ -1,4 +1,6 @@
+"use client";
 import { ChannelShowcase } from "./channel-showcase";
+import { useT } from "../i18n";
 
 /* The left column: what the workspace is, then the channel showcase.
 
@@ -6,19 +8,19 @@ import { ChannelShowcase } from "./channel-showcase";
    and prepare it for channels. Which of those channels really deliver is
    stated on each one rather than implied here. */
 export function HeroContent() {
+  const { t } = useT();
   return (
     <>
-      <p className="lp-eyebrow lp-rise lp-d1">CREATE. CONNECT. SHARE.</p>
+      <p className="lp-eyebrow lp-rise lp-d1">{t("lp.eyebrow")}</p>
 
       <h1 className="lp-headline lp-rise lp-d2">
-        Beautiful newsletters.
+        {t("lp.headline1")}
         <br />
-        <span className="lp-grad">Meaningful connections.</span>
+        <span className="lp-grad">{t("lp.headline2")}</span>
       </h1>
 
       <p className="lp-lede lp-rise lp-d2">
-        Create your newsletter, shape your story, and prepare it for the
-        channels your audience uses.
+        {t("lp.lede")}
       </p>
 
       <ChannelShowcase />

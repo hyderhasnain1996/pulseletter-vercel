@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { AutomationForm } from "./automation-form";
 import { QuickSend } from "./quick-send";
 import { splitRecipients } from "./recipients";
-import { LanguageProvider, useLangState, firstLang, translator, type Key } from "./i18n";
+import { LanguageToggle, useT, type Key } from "./i18n";
 import {
   Activity,
   LayoutDashboard,
@@ -17,7 +17,6 @@ import {
   Bell,
   Sun,
   Moon,
-  Languages,
   Plus,
   ArrowUpRight,
   ArrowRight,
@@ -282,17 +281,11 @@ export default function Studio() {
     [future, setFuture] = useState<Issue[]>([]),
     [view, setView] = useState("Cards"),
     [saving, setSaving] = useState(false);
-  const { lang, setLang, set: setLangRaw } = useLangState();
-  const t = translator(lang);
+  const { t } = useT();
   useEffect(() => {
     // Light unless this visitor has chosen dark before.
     const savedTheme = localStorage.getItem("pulse-theme") !== "dark";
-    const savedLang = firstLang();
-    queueMicrotask(() => {
-      setLight(savedTheme);
-      setLangRaw(savedLang);
-      document.documentElement.lang = savedLang;
-    });
+    queueMicrotask(() => setLight(savedTheme));
     fetch("/api/workspace")
       .then((r) => {
         if (!r.ok) throw Error();
@@ -1154,7 +1147,6 @@ export default function Studio() {
     );
 
   return (
-    <LanguageProvider lang={lang} setLang={setLang}>
     <SidebarProvider>
       <Sidebar className="studio-sidebar">
         <SidebarHeader>
@@ -1238,15 +1230,7 @@ export default function Studio() {
               />
               <kbd>⌘ K</kbd>
             </div>
-            <button
-              className="lang-toggle"
-              aria-label={t("action.language")}
-              title={t("action.language")}
-              onClick={() => setLang(lang === "en" ? "ko" : "en")}
-            >
-              <Languages size={16} />
-              <span>{lang === "en" ? "EN" : "한국어"}</span>
-            </button>
+            <LanguageToggle />
             <button
               aria-label={t("action.theme")}
               onClick={() => setLight(!light)}
@@ -2943,6 +2927,5 @@ export default function Studio() {
         richColors
       />
     </SidebarProvider>
-    </LanguageProvider>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useRef, useState, type ReactNode } from "react";
 import { signIn } from "next-auth/react";
+import { useT } from "../i18n";
 import { ArrowRight, Eye, EyeOff, Lock, User, TriangleAlert } from "lucide-react";
 
 /* Username and password sign-in.
@@ -14,11 +15,12 @@ import { ArrowRight, Eye, EyeOff, Lock, User, TriangleAlert } from "lucide-react
 
 export function SignInCard({
   alternatives,
-  configWarning,
+  notConfigured,
 }: {
   alternatives?: ReactNode;
-  configWarning?: string;
+  notConfigured?: boolean;
 }) {
+  const { t } = useT();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [touched, setTouched] = useState({ username: false, password: false });
@@ -49,13 +51,13 @@ export function SignInCard({
         redirect: false,
       });
       if (res?.error) {
-        setError("That username and password did not match. Please try again.");
+        setError(t("lp.noMatch"));
       } else {
         window.location.href = "/dashboard";
         return; // keep the button busy while the browser navigates
       }
     } catch {
-      setError("Could not reach the server. Please try again.");
+      setError(t("lp.unreachable"));
     }
     busyRef.current = false;
     setBusy(false);
@@ -75,13 +77,13 @@ export function SignInCard({
         </svg>
       </span>
 
-      <h1>Welcome back</h1>
-      <p className="lp-card-sub">Sign in to the Machine Learning Lab workspace.</p>
+      <h1>{t("lp.welcome")}</h1>
+      <p className="lp-card-sub">{t("lp.signInTo")}</p>
 
-      {configWarning && (
+      {notConfigured && (
         <div className="lp-alert">
           <TriangleAlert size={16} aria-hidden="true" />
-          <span>{configWarning}</span>
+          <span>{t("lp.notConfigured")}</span>
         </div>
       )}
 
@@ -97,7 +99,7 @@ export function SignInCard({
 
       <form onSubmit={submit} noValidate>
         <div className="lp-field">
-          <label htmlFor="lp-username">Username</label>
+          <label htmlFor="lp-username">{t("lp.username")}</label>
           <div className="lp-input-wrap">
             <User size={16} aria-hidden="true" />
             <input
@@ -111,18 +113,18 @@ export function SignInCard({
               onBlur={() => setTouched((t) => ({ ...t, username: true }))}
               aria-invalid={missingUser || undefined}
               aria-describedby={missingUser ? "lp-username-hint" : undefined}
-              placeholder="Your username"
+              placeholder={t("lp.usernameHint")}
             />
           </div>
           {missingUser && (
             <p className="lp-hint" id="lp-username-hint">
-              Enter your username.
+              {t("lp.enterUsername")}
             </p>
           )}
         </div>
 
         <div className="lp-field">
-          <label htmlFor="lp-password">Password</label>
+          <label htmlFor="lp-password">{t("lp.password")}</label>
           <div className="lp-input-wrap">
             <Lock size={16} aria-hidden="true" />
             <input
@@ -135,14 +137,14 @@ export function SignInCard({
               onBlur={() => setTouched((t) => ({ ...t, password: true }))}
               aria-invalid={missingPass || undefined}
               aria-describedby={missingPass ? "lp-password-hint" : undefined}
-              placeholder="Your password"
+              placeholder={t("lp.passwordHint")}
               style={{ paddingRight: 52 }}
             />
             <button
               type="button"
               className="lp-peek"
               onClick={() => setReveal((v) => !v)}
-              aria-label={reveal ? "Hide password" : "Show password"}
+              aria-label={reveal ? t("lp.hidePassword") : t("lp.showPassword")}
               aria-pressed={reveal}
             >
               {reveal ? (
@@ -154,7 +156,7 @@ export function SignInCard({
           </div>
           {missingPass && (
             <p className="lp-hint" id="lp-password-hint">
-              Enter your password.
+              {t("lp.enterPassword")}
             </p>
           )}
         </div>
@@ -176,7 +178,7 @@ export function SignInCard({
 
       {alternatives}
 
-      <p className="lp-cardfoot">A little pulse goes a long way.</p>
+      <p className="lp-cardfoot">{t("lp.foot")}</p>
     </div>
   );
 }

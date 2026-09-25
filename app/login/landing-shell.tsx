@@ -1,4 +1,5 @@
 "use client";
+import { LanguageToggle, useT } from "../i18n";
 
 import {
   useCallback,
@@ -66,6 +67,7 @@ export function LandingShell({
   showcase: ReactNode;
   auth: ReactNode;
 }) {
+  const { t } = useT();
   const root = useRef<HTMLDivElement>(null);
   const motion =
     useSyncExternalStore(
@@ -140,6 +142,7 @@ export function LandingShell({
             Machine Learning Lab
           </Link>
 
+          <div className="lp-top-actions">
           <button
             type="button"
             className="lp-motion lp-rise lp-d1"
@@ -151,8 +154,10 @@ export function LandingShell({
             ) : (
               <Play size={14} aria-hidden="true" />
             )}
-            {motion ? "Pause animations" : "Play animations"}
+            {motion ? t("lp.pause") : t("lp.play")}
           </button>
+          <LanguageToggle className="lp-lang" />
+          </div>
         </header>
 
         <div className="lp-columns">
@@ -160,10 +165,7 @@ export function LandingShell({
           <div className="lp-auth">{auth}</div>
         </div>
 
-        <p className="lp-foot">
-          Channel preview is a demonstration. Nothing is sent or published from
-          this page.
-        </p>
+        <p className="lp-foot">{t("ch.note")}</p>
       </div>
     </div>
   );

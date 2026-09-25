@@ -7,6 +7,7 @@ import {
   ChannelStill,
   type Capability,
 } from "@/components/ui/channel-stream";
+import { useT, type Key } from "../i18n";
 
 /* The showcase: a moving corridor of channel cards, with stable controls
    underneath.
@@ -15,10 +16,10 @@ import {
    below them, and selecting one only changes what this panel describes — no
    message is sent and nothing is published from this page. */
 
-const LABEL: Record<Capability, string> = {
-  available: "Available",
-  setup: "Needs a provider",
-  concept: "Concept preview",
+const LABEL: Record<Capability, Key> = {
+  available: "ch.cap.available",
+  setup: "ch.cap.setup",
+  concept: "ch.cap.concept",
 };
 
 /* Reduced motion is read through the store so the first render already knows,
@@ -37,6 +38,7 @@ const calm = {
 };
 
 export function ChannelShowcase() {
+  const { t } = useT();
   const [selected, setSelected] = useState("email");
   const reduced = useSyncExternalStore(calm.subscribe, calm.get, calm.server);
   const chips = useRef<(HTMLButtonElement | null)[]>([]);
@@ -101,8 +103,8 @@ export function ChannelShowcase() {
   return (
     <section className="lp-showcase-wrap" aria-labelledby="lp-channels-heading">
       <div className="lp-showcase-head">
-        <h2 id="lp-channels-heading">Channel preview</h2>
-        <p>A demonstration. Nothing is sent or published from this page.</p>
+        <h2 id="lp-channels-heading">{t("ch.heading")}</h2>
+        <p>{t("ch.note")}</p>
       </div>
 
       <div className="lp-stage lp-rise lp-d3" ref={stage}>
@@ -116,7 +118,7 @@ export function ChannelShowcase() {
       <div
         className="lp-chips"
         role="tablist"
-        aria-label="Channels"
+        aria-label={t("ch.channels")}
       >
         {CHANNELS.map((c, i) => {
           const on = c.id === selected;
@@ -138,7 +140,7 @@ export function ChannelShowcase() {
               onKeyDown={(e) => onKeyDown(e, i)}
             >
               <span className="lp-chip-logo">{c.logo}</span>
-              {c.name}
+              {t(`ch.${c.id}.name` as Key)}
             </button>
           );
         })}
@@ -156,13 +158,13 @@ export function ChannelShowcase() {
             {active.logo}
           </span>
           <div>
-            <strong>{active.name}</strong>
+            <strong>{t(`ch.${active.id}.name` as Key)}</strong>
             <span className={`lp-tagpill lp-tag-${active.capability}`}>
-              {LABEL[active.capability]}
+              {t(LABEL[active.capability])}
             </span>
           </div>
         </div>
-        <p>{active.detail}</p>
+        <p>{t(`ch.${active.id}.detail` as Key)}</p>
       </div>
     </section>
   );

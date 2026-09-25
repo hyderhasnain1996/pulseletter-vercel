@@ -1,5 +1,6 @@
 import { auth, emailSignInReady, googleSignInReady, signIn } from "@/auth";
 import { LandingShell } from "./landing-shell";
+import { LanguageProvider } from "../i18n";
 import { HeroContent } from "./hero-content";
 import { SignInCard } from "./sign-in-card";
 import { ContinueCard } from "./continue-card";
@@ -24,10 +25,14 @@ export default async function LoginPage({
      into the studio. */
   if (session?.user)
     return (
-      <LandingShell
-        showcase={<HeroContent />}
-        auth={<ContinueCard name={session.user.name ?? session.user.email ?? ""} />}
-      />
+      <LanguageProvider>
+        <LandingShell
+          showcase={<HeroContent />}
+          auth={
+            <ContinueCard name={session.user.name ?? session.user.email ?? ""} />
+          }
+        />
+      </LanguageProvider>
     );
 
   const google = googleSignInReady();
@@ -78,17 +83,21 @@ export default async function LoginPage({
       </div>
     ) : null;
 
-  const configWarning =
-    !process.env.AUTH_SECRET && !process.env.NEXTAUTH_SECRET
-      ? "Sign-in is not configured on the server. Set AUTH_SECRET, then redeploy."
-      : undefined;
+  /* A flag rather than a sentence: the card is what knows the language. */
+  const notConfigured =
+    !process.env.AUTH_SECRET && !process.env.NEXTAUTH_SECRET;
 
   return (
-    <LandingShell
-      showcase={<HeroContent />}
-      auth={
-        <SignInCard alternatives={alternatives} configWarning={configWarning} />
-      }
-    />
+    <LanguageProvider>
+      <LandingShell
+        showcase={<HeroContent />}
+        auth={
+          <SignInCard
+            alternatives={alternatives}
+            notConfigured={notConfigured}
+          />
+        }
+      />
+    </LanguageProvider>
   );
 }

@@ -1,11 +1,14 @@
+"use client";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { useT } from "../i18n";
 
 /* Shown in place of the sign-in form when someone is already signed in.
 
    The landing page is what the address opens either way; this is the door
    through to the studio rather than an automatic push into it. */
 export function ContinueCard({ name }: { name: string }) {
+  const { t } = useT();
   return (
     <div className="lp-card lp-rise lp-d4">
       <span className="lp-card-mark" aria-hidden="true">
@@ -35,11 +38,11 @@ export function ContinueCard({ name }: { name: string }) {
           <span>OR</span>
         </div>
         <form action="/api/auth/signout" method="get">
-          <button type="submit">Sign out</button>
+          <button type="submit">{t("lp.signOut")}</button>
         </form>
       </div>
 
-      <p className="lp-cardfoot">A little pulse goes a long way.</p>
+      <p className="lp-cardfoot">{t("lp.foot")}</p>
     </div>
   );
 }

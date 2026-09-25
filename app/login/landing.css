@@ -1063,3 +1063,36 @@ html:has(.lp) body {
     opacity: 0;
   }
 }
+
+/* The header's two controls sit together, and wrap rather than collide on a
+   narrow screen. */
+.lp-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.lp-top-actions .lp-lang {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(20, 30, 60, 0.1);
+  border-radius: 999px;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+.lp-top-actions .lp-lang:hover {
+  background: #fff;
+  border-color: rgba(20, 30, 60, 0.2);
+}
+.lp-top-actions .lp-lang span {
+  min-width: 2.4rem;
+  text-align: center;
+}

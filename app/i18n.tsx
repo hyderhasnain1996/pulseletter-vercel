@@ -1,8 +1,10 @@
 "use client";
+import { Languages } from "lucide-react";
 import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -156,6 +158,105 @@ const dict = {
     en: "{n} entries are not valid email addresses.",
     ko: "{n}개 항목이 올바른 이메일 주소가 아닙니다.",
   },
+
+  /* ---- landing and sign-in ---- */
+  "lp.eyebrow": { en: "CREATE. CONNECT. SHARE.", ko: "만들고. 잇고. 나눕니다." },
+  "lp.headline1": { en: "Beautiful newsletters.", ko: "아름다운 뉴스레터." },
+  "lp.headline2": { en: "Meaningful connections.", ko: "의미 있는 연결." },
+  "lp.lede": {
+    en: "Create your newsletter, shape your story, and prepare it for the channels your audience uses.",
+    ko: "뉴스레터를 만들고, 이야기를 다듬고, 독자가 쓰는 채널에 맞게 준비하세요.",
+  },
+  "lp.pause": { en: "Pause animations", ko: "애니메이션 멈춤" },
+  "lp.play": { en: "Play animations", ko: "애니메이션 재생" },
+  "lp.welcome": { en: "Welcome back", ko: "다시 오신 것을 환영합니다" },
+  "lp.signInTo": {
+    en: "Sign in to the Machine Learning Lab workspace.",
+    ko: "머신러닝 연구실 워크스페이스에 로그인하세요.",
+  },
+  "lp.username": { en: "Username", ko: "아이디" },
+  "lp.usernameHint": { en: "Your username", ko: "아이디를 입력하세요" },
+  "lp.password": { en: "Password", ko: "비밀번호" },
+  "lp.passwordHint": { en: "Your password", ko: "비밀번호를 입력하세요" },
+  "lp.showPassword": { en: "Show password", ko: "비밀번호 보기" },
+  "lp.hidePassword": { en: "Hide password", ko: "비밀번호 숨기기" },
+  "lp.signIn": { en: "Sign in", ko: "로그인" },
+  "lp.signOut": { en: "Sign out", ko: "로그아웃" },
+  "lp.foot": { en: "A little pulse goes a long way.", ko: "작은 신호가 먼 곳까지 닿습니다." },
+  "lp.or": { en: "OR", ko: "또는" },
+  "lp.google": { en: "Continue with Google", ko: "Google로 계속하기" },
+  "lp.email": { en: "Email", ko: "이메일" },
+  "lp.emailLink": { en: "Email me a sign-in link", ko: "로그인 링크 보내기" },
+  "lp.noMatch": {
+    en: "That username and password did not match. Please try again.",
+    ko: "아이디 또는 비밀번호가 일치하지 않습니다. 다시 시도해 주세요.",
+  },
+  "lp.unreachable": {
+    en: "Could not reach the server. Please try again.",
+    ko: "서버에 연결하지 못했습니다. 다시 시도해 주세요.",
+  },
+  "lp.notConfigured": {
+    en: "Sign-in is not configured on the server. Set AUTH_SECRET, then redeploy.",
+    ko: "서버에 로그인이 설정되어 있지 않습니다. AUTH_SECRET을 설정한 뒤 다시 배포하세요.",
+  },
+  "lp.enterUsername": { en: "Enter your username.", ko: "아이디를 입력하세요." },
+  "lp.enterPassword": { en: "Enter your password.", ko: "비밀번호를 입력하세요." },
+
+  /* ---- channel preview ---- */
+  "ch.heading": { en: "Channel preview", ko: "채널 미리보기" },
+  "ch.note": {
+    en: "A demonstration. Nothing is sent or published from this page.",
+    ko: "시연용입니다. 이 페이지에서는 아무것도 발송되거나 게시되지 않습니다.",
+  },
+  "ch.channels": { en: "Channels", ko: "채널" },
+  "ch.cap.available": { en: "Available", ko: "사용 가능" },
+  "ch.cap.setup": { en: "Needs a provider", ko: "공급자 설정 필요" },
+  "ch.cap.concept": { en: "Concept preview", ko: "컨셉 미리보기" },
+  "ch.email.name": { en: "Email", ko: "이메일" },
+  "ch.email.detail": {
+    en: "Send the issue to your contacts. A short version carries the cover, the opening and the key points, with a button through to the full issue.",
+    ko: "연락처로 이번 호를 보냅니다. 표지와 도입부, 핵심 내용만 담은 짧은 버전과 전체 호로 가는 버튼이 함께 전달됩니다.",
+  },
+  "ch.push.name": { en: "Phone alert", ko: "휴대폰 알림" },
+  "ch.push.detail": {
+    en: "Send a free notification to readers who asked for one. It arrives on their lock screen and opens the full issue.",
+    ko: "알림을 신청한 독자에게 무료로 보냅니다. 잠금 화면에 도착하고, 누르면 전체 호가 열립니다.",
+  },
+  "ch.link.name": { en: "Share link", ko: "링크 공유" },
+  "ch.link.detail": {
+    en: "Every issue has a public page. Copy the link and put it anywhere you already talk to people.",
+    ko: "모든 호에는 공개 페이지가 있습니다. 링크를 복사해 평소 사람들과 이야기하는 곳 어디에든 올리세요.",
+  },
+  "ch.sms.name": { en: "SMS", ko: "문자 메시지" },
+  "ch.sms.detail": {
+    en: "A short text with a link to the full issue. Ready in the app, but it needs a paid messaging account before anything can be sent.",
+    ko: "전체 호 링크를 담은 짧은 문자입니다. 앱에는 준비되어 있지만, 발송하려면 유료 메시지 계정이 필요합니다.",
+  },
+  "ch.whatsapp.name": { en: "WhatsApp", ko: "WhatsApp" },
+  "ch.whatsapp.detail": {
+    en: "How a message carrying your newsletter link could look. There is no WhatsApp integration in the app yet.",
+    ko: "뉴스레터 링크를 담은 메시지가 어떤 모습일지 보여 줍니다. 아직 WhatsApp 연동은 없습니다.",
+  },
+  "ch.telegram.name": { en: "Telegram", ko: "Telegram" },
+  "ch.telegram.detail": {
+    en: "How a channel post introducing your newsletter could look. Not connected to the app.",
+    ko: "뉴스레터를 소개하는 채널 게시물이 어떤 모습일지 보여 줍니다. 앱과 연결되어 있지 않습니다.",
+  },
+  "ch.linkedin.name": { en: "LinkedIn", ko: "LinkedIn" },
+  "ch.linkedin.detail": {
+    en: "How a professional post introducing the issue could look. Not connected to the app.",
+    ko: "이번 호를 소개하는 비즈니스 게시물이 어떤 모습일지 보여 줍니다. 앱과 연결되어 있지 않습니다.",
+  },
+  "ch.instagram.name": { en: "Instagram", ko: "Instagram" },
+  "ch.instagram.detail": {
+    en: "How a visual teaser for the issue could look. Not connected to the app.",
+    ko: "이번 호의 시각적 예고가 어떤 모습일지 보여 줍니다. 앱과 연결되어 있지 않습니다.",
+  },
+  "ch.facebook.name": { en: "Facebook", ko: "Facebook" },
+  "ch.facebook.detail": {
+    en: "How a page post pointing at the issue could look. Not connected to the app.",
+    ko: "이번 호로 안내하는 페이지 게시물이 어떤 모습일지 보여 줍니다. 앱과 연결되어 있지 않습니다.",
+  },
 } satisfies Record<string, Record<Lang, string>>;
 
 export type Key = keyof typeof dict;
@@ -195,32 +296,51 @@ const Ctx = createContext<{ lang: Lang; setLang: (l: Lang) => void; t: Translate
   t: translator("en"),
 });
 
-export function LanguageProvider({
-  lang,
-  setLang,
-  children,
-}: {
-  lang: Lang;
-  setLang: (l: Lang) => void;
-  children: ReactNode;
-}) {
-  const t = useMemo(() => translator(lang), [lang]);
-  return <Ctx.Provider value={{ lang, setLang, t }}>{children}</Ctx.Provider>;
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  /* Starts in English so the server's markup and the browser's first paint
+     agree; the stored or browser-preferred language is applied immediately
+     afterwards, which is one frame, not a flash. */
+  const [lang, setLangState] = useState<Lang>("en");
+  useEffect(() => {
+    const first = firstLang();
+    queueMicrotask(() => {
+      setLangState(first);
+      document.documentElement.lang = first;
+    });
+  }, []);
+
+  const setLang = useCallback((next: Lang) => {
+    setLangState(next);
+    document.documentElement.lang = next;
+    try {
+      localStorage.setItem(STORAGE, next);
+    } catch {
+      // private window; the choice simply will not outlive the tab
+    }
+  }, []);
+
+  const value = useMemo(
+    () => ({ lang, setLang, t: translator(lang) }),
+    [lang, setLang],
+  );
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
 export const useT = () => useContext(Ctx);
 
-/** Keeps the choice, and tells the page so the font stack can follow. */
-export function useLangState() {
-  const [lang, set] = useState<Lang>("en");
-  const setLang = useCallback((next: Lang) => {
-    set(next);
-    try {
-      localStorage.setItem(STORAGE, next);
-    } catch {
-      // nothing to do; the choice simply will not outlive the tab
-    }
-    document.documentElement.lang = next;
-  }, []);
-  return { lang, setLang, set };
+/** The switch itself, so every page offers the same one. */
+export function LanguageToggle({ className = "" }: { className?: string }) {
+  const { lang, setLang, t } = useT();
+  return (
+    <button
+      type="button"
+      className={"lang-toggle " + className}
+      aria-label={t("action.language")}
+      title={t("action.language")}
+      onClick={() => setLang(lang === "en" ? "ko" : "en")}
+    >
+      <Languages size={16} aria-hidden="true" />
+      <span>{lang === "en" ? "EN" : "한국어"}</span>
+    </button>
+  );
 }
