@@ -221,11 +221,20 @@ nav button.active {
   color: var(--sidebar-accent-foreground);
   box-shadow: inset 2px 0 var(--primary);
 }
+/* The number beside Custom newsletter. It had a fixed dark background and
+   no colour of its own, so in the light theme it was dark text on a dark
+   pill. Both halves come from the theme now, so it reads in either. */
 .nav-count {
   margin-left: auto;
-  font-size: 12px;
-  background: #1c4450;
-  border-radius: 4px;
+  min-width: 20px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 18px;
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border-radius: 999px;
   padding: 0 6px;
 }
 .sidebar-note {

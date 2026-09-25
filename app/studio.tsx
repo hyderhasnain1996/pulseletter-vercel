@@ -51,6 +51,8 @@ import {
   Share2,
   PanelBottom,
   ImagePlus,
+  ImageUp,
+  Newspaper as NewspaperIcon,
   Clapperboard,
   ChevronsDownUp,
   BookOpen,
@@ -117,10 +119,10 @@ import {
 } from "./import-newsletter";
 const nav = [
   ["nav.dashboard", LayoutDashboard, "/dashboard"],
-  ["nav.quick", ImagePlus, "/quick"],
-  ["nav.newsletters", FileText, "/newsletters"],
+  ["nav.quick", ImageUp, "/quick"],
+  ["nav.newsletters", NewspaperIcon, "/newsletters"],
   ["nav.contacts", Users, "/contacts"],
-  ["nav.automations", Workflow, "/automations"],
+  ["nav.automations", CalendarDays, "/automations"],
 ] as const;
 const uid = () => crypto.randomUUID();
 /* Session draft mirror, used when workspace storage is unavailable. */
@@ -623,7 +625,7 @@ export default function Studio() {
     return (
       <div className="start-actions">
         <button className="secondary" onClick={() => go("/quick")}>
-          <ImagePlus size={size} />
+          <ImageUp size={size} />
           {t("nav.quick")}
         </button>
         <button className="primary" onClick={() => setModal("create")}>
