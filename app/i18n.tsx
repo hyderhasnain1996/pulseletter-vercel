@@ -273,8 +273,6 @@ const dict = {
   "ct.title": { en: "Your audience starts here.", ko: "독자는 여기에서 시작됩니다." },
   "ct.whatImported": { en: "What will be imported", ko: "가져올 내용" },
   "db.bring": { en: "Bring your ideas to life, and your audience a little closer.", ko: "아이디어를 현실로, 독자를 조금 더 가까이." },
-  "db.closer": { en: "One step closer to your audience", ko: "독자에게 한 걸음 더" },
-  "db.connect": { en: "Connect your email provider to send your first newsletter.", ko: "이메일 공급자를 연결하면 첫 뉴스레터를 보낼 수 있습니다." },
   "db.delivery": { en: "Delivery overview", ko: "발송 개요" },
   "db.deliverySub": { en: "Your messages, over time", ko: "시간에 따른 발송 현황" },
   "db.empty": { en: "Your story is just getting started", ko: "이야기는 이제 막 시작됐습니다" },

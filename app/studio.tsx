@@ -1451,17 +1451,6 @@ export default function Studio() {
                   .slice(0, 3)
                   .map((n, i) => renderCard(n, i))}
               </div>
-              <div className="setup-strip">
-                <span className="setup-icon">
-                  <Send size={20} />
-                </span>
-                <div>
-                  <h3>{t("db.closer")}</h3>
-                  <p>{t("db.connect")}</p>
-                </div>
-                <button onClick={() => setModal("create")}>{t("md.createNewsletter")}<ArrowRight size={16} />
-                </button>
-              </div>
             </>
           )}
           {path === "/newsletters" && (
