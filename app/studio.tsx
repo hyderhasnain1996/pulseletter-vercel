@@ -121,7 +121,6 @@ const nav = [
   ["nav.newsletters", FileText, "/newsletters"],
   ["nav.contacts", Users, "/contacts"],
   ["nav.automations", Workflow, "/automations"],
-  ["nav.reports", ChartNoAxesCombined, "/reports"],
 ] as const;
 const uid = () => crypto.randomUUID();
 /* Session draft mirror, used when workspace storage is unavailable. */
@@ -2139,77 +2138,29 @@ export default function Studio() {
               </p>
             </>
           )}
-          {path === "/reports" && (
-            <>
-              <div className="page-heading">
-                <div>
-                  <div className="eyebrow">{t("an.eyebrow")}</div>
-                  <h1>{t("an.title")}</h1>
-                  <p>{t("an.sub")}</p>
-                </div>
-              </div>
-              <div className="stats">
-                {(
-                  [
-                    "an.emailDelivered",
-                    "an.smsDelivered",
-                    "an.uniqueRecipients",
-                    "an.failedMessages",
-                  ] as Key[]
-                ).map((stat) => (
-                  <div className="stat" key={stat}>
-                    <span>{t(stat)}</span>
-                    <strong>0</strong>
-                    <small>{t("an.noData")}</small>
-                  </div>
-                ))}
-              </div>
-              <div className="empty panel spaced">
-                <ChartNoAxesCombined />
-                <h2>{t("an.firstChapter")}</h2>
-                <p>
-                  Reports will appear when a connected provider reports delivery
-                  events.
-                </p>
-                <p>
-                  Opens are approximate; automated systems can affect clicks.
-                </p>
-              </div>
-            </>
-          )}
           <footer className="main-footer">
             <span>
-              <Activity size={13} /> A little pulse goes a long way.
+              <Activity size={13} /> {t("foot.pulse")}
             </span>
-            <span>Machine Learning Lab · Demo preview</span>
+            <span>
+              {data.brand} · {t("foot.demo")}
+            </span>
           </footer>
         </main>
       </div>
       <Dialog open={!!modal} onOpenChange={(v) => !v && setModal("")}>
         <DialogContent className={modal === "create" ? "wide-modal" : ""}>
           <DialogTitle>
-            {
-              (
-                {
-                  create: "A great issue starts here.",
-                  send: "Send this issue",
-                  contact: "Meet your next reader",
-                  import: "Import your contacts",
-                  automation: "Create an automation",
-                  notifications: "You’re all caught up",
-                  setup: "Connect your sending providers",
-                } as Record<string, string>
-              )[modal]
-            }
+            {modal ? t(("dlg." + modal) as Key) : ""}
           </DialogTitle>
           <DialogDescription>
             {modal === "send"
-              ? "Add addresses or numbers and send straight away."
+              ? t("dlg.sendSub")
               : modal === "create"
-                ? "Describe your theme and let AI write it — or build it yourself."
+                ? t("dlg.createSub")
                 : modal === "automation"
-                  ? "Set it once. The studio sends it on schedule from then on."
-                  : "Your newsletter studio"}
+                  ? t("dlg.automationSub")
+                  : t("dlg.default")}
           </DialogDescription>
           {modal === "create" && (
             <Tabs defaultValue="ai">

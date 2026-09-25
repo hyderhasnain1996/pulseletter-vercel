@@ -259,11 +259,6 @@ const dict = {
   },
 
   /* ---- studio: editor, dashboard, lists, contacts, modals ---- */
-  "an.eyebrow": { en: "THE BIGGER PICTURE", ko: "전체 그림" },
-  "an.firstChapter": { en: "Your first campaign is the first chapter.", ko: "첫 캠페인이 첫 장이 됩니다." },
-  "an.noData": { en: "No live delivery data", ko: "실시간 발송 데이터가 없습니다" },
-  "an.sub": { en: "Delivery and engagement, clearly separated.", ko: "발송과 반응을 나누어 보여 줍니다." },
-  "an.title": { en: "Every send tells a story.", ko: "모든 발송에는 이야기가 있습니다." },
   "au.empty": { en: "Send it without thinking about it", ko: "신경 쓰지 않아도 알아서 발송됩니다" },
   "au.first": { en: "Create your first automation", ko: "첫 자동 발송 만들기" },
   "au.removed": { en: "Automation removed", ko: "자동 발송을 삭제했습니다" },
@@ -364,10 +359,6 @@ const dict = {
     ko: "영상 파일은 아직 저장할 수 없습니다 — YouTube, Vimeo 또는 .mp4 링크를 붙여넣으세요.",
   },
   "ed.chooseImage": { en: "Please choose an image file.", ko: "이미지 파일을 선택하세요." },
-  "an.emailDelivered": { en: "Email delivered", ko: "이메일 발송" },
-  "an.smsDelivered": { en: "SMS delivered", ko: "문자 발송" },
-  "an.uniqueRecipients": { en: "Unique recipients", ko: "수신자 수" },
-  "an.failedMessages": { en: "Failed messages", ko: "실패한 메시지" },
 
   /* ---- automations form and phone alerts ---- */
   "af.channel": { en: "Channel", ko: "채널" },
@@ -391,7 +382,6 @@ const dict = {
 
   /* ---- nav, continued ---- */
   "nav.automations": { en: "Automations", ko: "자동 발송" },
-  "nav.reports": { en: "Reports", ko: "리포트" },
 
   /* ---- block types.  The key carries the stored type id, which never
      changes; only what is shown beside it does. ---- */
@@ -585,6 +575,33 @@ const dict = {
     en: "you@example.com",
     ko: "you@example.com",
   },
+
+  /* ---- dialog headings ---- */
+  "dlg.create": { en: "A great issue starts here.", ko: "좋은 뉴스레터는 여기에서 시작됩니다." },
+  "dlg.send": { en: "Send this issue", ko: "이번 호 보내기" },
+  "dlg.contact": { en: "Meet your next reader", ko: "새로운 독자를 맞이하세요" },
+  "dlg.import": { en: "Import your contacts", ko: "연락처 가져오기" },
+  "dlg.automation": { en: "Create an automation", ko: "자동 발송 만들기" },
+  "dlg.notifications": { en: "You’re all caught up", ko: "새로운 알림이 없습니다" },
+  "dlg.setup": { en: "Connect your sending providers", ko: "발송 공급자 연결" },
+  "dlg.sendSub": {
+    en: "Add addresses or numbers and send straight away.",
+    ko: "주소나 번호를 추가하고 바로 보내세요.",
+  },
+  "dlg.createSub": {
+    en: "Describe your theme and let AI write it — or build it yourself.",
+    ko: "주제를 설명하면 AI가 써 줍니다 — 직접 만들어도 됩니다.",
+  },
+  "dlg.automationSub": {
+    en: "Set it once. The studio sends it on schedule from then on.",
+    ko: "한 번만 설정하면 이후에는 일정에 맞춰 발송됩니다.",
+  },
+  "dlg.default": { en: "Your newsletter studio", ko: "뉴스레터 스튜디오" },
+  "foot.pulse": {
+    en: "A little pulse goes a long way.",
+    ko: "작은 신호가 먼 곳까지 닿습니다.",
+  },
+  "foot.demo": { en: "Demo preview", ko: "데모 미리보기" },
 } satisfies Record<string, Record<Lang, string>>;
 
 export type Key = keyof typeof dict;
