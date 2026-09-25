@@ -622,7 +622,7 @@ export default function Studio() {
   function startButtons(size: number) {
     return (
       <div className="start-actions">
-        <button className="ghost" onClick={() => go("/quick")}>
+        <button className="secondary" onClick={() => go("/quick")}>
           <ImagePlus size={size} />
           {t("nav.quick")}
         </button>

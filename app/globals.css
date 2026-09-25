@@ -3676,8 +3676,9 @@ video.doc-media {
   word-break: keep-all;
 }
 
-/* The pair of ways to start an issue, in a page heading. They wrap onto
-   their own line before they squeeze the headline beside them. */
+/* The pair of ways to start an issue, in a page heading. .primary and
+   .secondary already carry the shape; this only arranges them, and lets them
+   take the whole row rather than crushing the headline on a narrow screen. */
 .start-actions {
   display: flex;
   align-items: center;
@@ -3685,14 +3686,7 @@ video.doc-media {
   flex-wrap: wrap;
   justify-content: flex-end;
 }
-/* Quieter than .primary, so the two read as a choice rather than a pair of
-   equal shouts, but still plainly a button. */
-.start-actions .ghost {
-  color: var(--foreground);
-  background: var(--card);
-  border: 1px solid var(--border);
-}
-.start-actions .ghost:hover {
+.start-actions .secondary:hover {
   border-color: var(--primary);
   color: var(--primary);
 }
@@ -3706,6 +3700,5 @@ video.doc-media {
   }
   .start-actions button {
     flex: 1;
-    justify-content: center;
   }
 }
