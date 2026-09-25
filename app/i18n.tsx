@@ -26,8 +26,8 @@ const dict = {
   /* ---- chrome ---- */
   "nav.workspace": { en: "WORKSPACE", ko: "워크스페이스" },
   "nav.dashboard": { en: "Dashboard", ko: "대시보드" },
-  "nav.newsletters": { en: "Newsletters", ko: "뉴스레터" },
-  "nav.quick": { en: "Quick send", ko: "빠른 발송" },
+  "nav.newsletters": { en: "Custom newsletter", ko: "맞춤 뉴스레터" },
+  "nav.quick": { en: "Send a picture", ko: "사진으로 보내기" },
   "nav.contacts": { en: "Contacts & Groups", ko: "연락처 및 그룹" },
   "nav.editor": { en: "Newsletter editor", ko: "뉴스레터 편집기" },
   "title.issue": { en: "Newsletter details", ko: "뉴스레터 상세" },
@@ -55,7 +55,7 @@ const dict = {
   },
 
   /* ---- quick send ---- */
-  "qs.eyebrow": { en: "Quick send", ko: "빠른 발송" },
+  "qs.eyebrow": { en: "Send a picture", ko: "사진으로 보내기" },
   "qs.title": {
     en: "Send a picture as the whole newsletter.",
     ko: "사진 한 장을 그대로 뉴스레터로 보내세요.",

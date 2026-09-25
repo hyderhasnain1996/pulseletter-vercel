@@ -117,8 +117,8 @@ import {
 } from "./import-newsletter";
 const nav = [
   ["nav.dashboard", LayoutDashboard, "/dashboard"],
-  ["nav.newsletters", FileText, "/newsletters"],
   ["nav.quick", ImagePlus, "/quick"],
+  ["nav.newsletters", FileText, "/newsletters"],
   ["nav.contacts", Users, "/contacts"],
   ["nav.automations", Workflow, "/automations"],
   ["nav.reports", ChartNoAxesCombined, "/reports"],
