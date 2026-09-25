@@ -25,11 +25,11 @@ export function ContinueCard({ name }: { name: string }) {
 
       <h1>Welcome back{name ? `, ${name}` : ""}</h1>
       <p className="lp-card-sub">
-        You are signed in. Your drafts, contacts and schedules are waiting.
+        {t("lp.signedIn")}
       </p>
 
       <Link className="lp-submit" href="/dashboard">
-        Open the studio
+        {t("lp.openStudio")}
         <ArrowRight className="lp-arrow" size={17} aria-hidden="true" />
       </Link>
 

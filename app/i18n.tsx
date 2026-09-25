@@ -388,6 +388,158 @@ const dict = {
   "nb.openBrowser": { en: "Open in browser", ko: "브라우저에서 열기" },
   "nb.share": { en: "Share", ko: "공유" },
   "nb.thenNotify": { en: "Open ML Lab from your Home Screen and tap Notify me", ko: "홈 화면에서 ML Lab을 열고 알림 받기를 누르세요" },
+
+  /* ---- nav, continued ---- */
+  "nav.automations": { en: "Automations", ko: "자동 발송" },
+  "nav.reports": { en: "Reports", ko: "리포트" },
+
+  /* ---- block types.  The key carries the stored type id, which never
+     changes; only what is shown beside it does. ---- */
+  "blk.Title": { en: "Title", ko: "제목" },
+  "blk.Introduction": { en: "Introduction", ko: "도입부" },
+  "blk.Featured story": { en: "Featured story", ko: "주요 소식" },
+  "blk.Details": { en: "Details", ko: "자세히" },
+  "blk.Rich text": { en: "Rich text", ko: "본문" },
+  "blk.Image": { en: "Image", ko: "이미지" },
+  "blk.Video": { en: "Video", ko: "영상" },
+  "blk.Image caption": { en: "Image caption", ko: "이미지 설명" },
+  "blk.Article card": { en: "Article card", ko: "아티클 카드" },
+  "blk.Announcement": { en: "Announcement", ko: "공지" },
+  "blk.Event": { en: "Event", ko: "행사" },
+  "blk.Button": { en: "Button", ko: "버튼" },
+  "blk.Divider": { en: "Divider", ko: "구분선" },
+  "blk.Social links": { en: "Social links", ko: "소셜 링크" },
+  "blk.Footer": { en: "Footer", ko: "바닥글" },
+
+  /* starter copy dropped in when a block is added */
+  "seed.Title": { en: "Your headline goes here", ko: "여기에 제목을 입력하세요" },
+  "seed.Introduction": {
+    en: "A short, friendly opening line.",
+    ko: "짧고 친근한 첫 문장.",
+  },
+  "seed.Featured story": {
+    en: "The story you most want read.",
+    ko: "가장 읽히고 싶은 이야기.",
+  },
+  "seed.Details": {
+    en: "The longer explanation, tucked behind Read more.",
+    ko: "더 보기 뒤에 숨겨 둘 자세한 설명.",
+  },
+  "seed.Rich text": { en: "Write anything you like here.", ko: "무엇이든 자유롭게 쓰세요." },
+  "seed.Image": { en: "Add a caption", ko: "설명을 입력하세요" },
+  "seed.Video": { en: "Add a caption", ko: "설명을 입력하세요" },
+  "seed.Image caption": {
+    en: "A few words about the picture.",
+    ko: "사진에 대한 짧은 설명.",
+  },
+  "seed.Article card": { en: "A link worth clicking.", ko: "눌러 볼 만한 링크." },
+  "seed.Announcement": { en: "Something worth knowing.", ko: "알아 둘 만한 소식." },
+  "seed.Event": { en: "What, where and when.", ko: "무엇을, 어디서, 언제." },
+  "seed.Button": { en: "Read more", ko: "더 보기" },
+  "seed.Divider": { en: "", ko: "" },
+  "seed.Social links": { en: "Find us anywhere.", ko: "어디서든 만나요." },
+  "seed.Footer": { en: "Thanks for reading.", ko: "읽어 주셔서 고맙습니다." },
+
+  /* ---- statuses and views ---- */
+  "st.All statuses": { en: "All statuses", ko: "모든 상태" },
+  "st.Draft": { en: "Draft", ko: "초안" },
+  "st.Ready": { en: "Ready", ko: "발송 준비" },
+  "st.Archived": { en: "Archived", ko: "보관됨" },
+  "vw.Cards": { en: "Cards", ko: "카드" },
+  "vw.Table": { en: "Table", ko: "표" },
+  "act.Archive": { en: "Archive", ko: "보관" },
+  "act.Restore": { en: "Restore", ko: "복원" },
+  "act.Archived": { en: "Archived", ko: "보관했습니다" },
+  "act.Restored": { en: "Restored", ko: "복원했습니다" },
+
+  /* ---- automations form ---- */
+  "af.Daily": { en: "Daily", ko: "매일" },
+  "af.Weekly": { en: "Weekly", ko: "매주" },
+  "af.Monthly": { en: "Monthly", ko: "매월" },
+  "af.Every day": { en: "Every day", ko: "하루에 한 번" },
+  "af.Every week": { en: "Every week", ko: "일주일에 한 번" },
+  "af.Every month": { en: "Every month", ko: "한 달에 한 번" },
+  "af.The usual rhythm": { en: "The usual rhythm", ko: "가장 흔한 주기" },
+  "af.Everyone": { en: "Everyone", ko: "전체" },
+  "af.Pick people": { en: "Pick people", ko: "직접 고르기" },
+  "af.Email": { en: "Email", ko: "이메일" },
+  "af.Phone alert": { en: "Phone alert", ko: "휴대폰 알림" },
+  "af.All contacts": { en: "All contacts", ko: "모든 연락처" },
+  "af.turnOn": { en: "Turn it on", ko: "켜기" },
+  "af.noMatch": { en: "Nobody matches that search.", ko: "검색 결과가 없습니다." },
+  "af.noneYet": {
+    en: "No subscribed contacts yet. Add someone on Contacts & Groups first.",
+    ko: "아직 수신 동의한 연락처가 없습니다. 먼저 연락처 및 그룹에서 추가하세요.",
+  },
+  "af.pickOne": { en: "Choose at least one person.", ko: "한 명 이상 선택하세요." },
+  "af.pushNote": {
+    en: "Phone alerts reach every device that turned notifications on. There is no group to choose.",
+    ko: "휴대폰 알림은 알림을 켠 모든 기기에 전달됩니다. 그룹을 고를 필요가 없습니다.",
+  },
+
+  /* ---- phone alerts ---- */
+  "nb.notifyMe": { en: "Notify me", ko: "알림 받기" },
+  "nb.notifyNew": { en: "Notify me of new issues", ko: "새 호 알림 받기" },
+  "nb.moment": { en: "Just a moment…", ko: "잠시만요…" },
+  "nb.turnOff": { en: "Turn off", ko: "알림 끄기" },
+  "nb.free": {
+    en: "Free. Arrives on your phone like a message — no app, no sign-up.",
+    ko: "무료입니다. 앱도 가입도 없이 문자처럼 휴대폰에 도착합니다.",
+  },
+  "nb.unsupported": {
+    en: "This browser cannot show notifications. Try Chrome or Safari.",
+    ko: "이 브라우저는 알림을 지원하지 않습니다. Chrome이나 Safari를 사용해 보세요.",
+  },
+  "nb.blocked": {
+    en: "Notifications are blocked for this site. Allow them in your browser settings.",
+    ko: "이 사이트의 알림이 차단되어 있습니다. 브라우저 설정에서 허용해 주세요.",
+  },
+  "nb.saveFailed": {
+    en: "Could not save your subscription.",
+    ko: "알림 설정을 저장하지 못했습니다.",
+  },
+  "nb.refused": {
+    en: "Your browser refused the request.",
+    ko: "브라우저가 요청을 거부했습니다.",
+  },
+  "nb.appleNote": {
+    en: "Apple only allows notifications for sites added this way. It takes two taps.",
+    ko: "Apple은 이렇게 추가한 사이트에만 알림을 허용합니다. 두 번만 누르면 됩니다.",
+  },
+
+  /* ---- sign-in and quick send leftovers ---- */
+  "lp.signedIn": {
+    en: "You are signed in. Your drafts, contacts and schedules are waiting.",
+    ko: "이미 로그인되어 있습니다. 초안과 연락처, 예약이 기다리고 있습니다.",
+  },
+  "lp.openStudio": { en: "Open the studio", ko: "스튜디오 열기" },
+  "qs.readFull": { en: "Read the full issue", ko: "전체 호 읽기" },
+  "qs.htmlPreview": { en: "HTML preview", ko: "HTML 미리보기" },
+  "af.aGroup": { en: "A group", ko: "그룹" },
+  "af.dailyHint": { en: "A daily pulse", ko: "매일 짧게" },
+  "af.monthlyHint": { en: "A fuller round-up", ko: "한 달치 모음" },
+  "af.atNine": { en: "at 09:00 UTC", ko: "UTC 오전 9시" },
+  "af.anEmail": {
+    en: "An email to {audience}. First send {day}.",
+    ko: "{audience}에게 이메일을 보냅니다. 첫 발송은 {day}.",
+  },
+  "af.aPhoneAlert": {
+    en: "A phone alert to {audience}. First send {day}.",
+    ko: "{audience}에게 휴대폰 알림을 보냅니다. 첫 발송은 {day}.",
+  },
+  "lp.signingIn": { en: "Signing in…", ko: "로그인 중…" },
+  "rd.curated": {
+    en: "Thoughtfully curated. Made to be shared.",
+    ko: "정성껏 골랏습니다. 나눠 보세요.",
+  },
+  "db.cleanSlate": {
+    en: "A clean slate. A new opportunity.",
+    ko: "빈 종이 한 장. 새로운 기회.",
+  },
+  "db.writeNext": {
+    en: "Write your next issue, then send it straight away.",
+    ko: "다음 호를 쓰고 바로 보내세요.",
+  },
 } satisfies Record<string, Record<Lang, string>>;
 
 export type Key = keyof typeof dict;

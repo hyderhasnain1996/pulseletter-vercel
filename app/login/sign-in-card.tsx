@@ -165,11 +165,11 @@ export function SignInCard({
           {busy ? (
             <>
               <span className="lp-spin" aria-hidden="true" />
-              Signing in…
+              {t("lp.signingIn")}
             </>
           ) : (
             <>
-              Sign in
+              {t("lp.signIn")}
               <ArrowRight className="lp-arrow" size={17} aria-hidden="true" />
             </>
           )}

@@ -93,8 +93,7 @@ export function NotifyButton({ publicKey }: { publicKey: string }) {
           <li>{t("nb.thenNotify")}</li>
         </ol>
         <p className="notify-note">
-          Apple only allows notifications for sites added this way. It takes two
-          taps and costs nothing.
+          {t("nb.appleNote")}
         </p>
       </div>
     );
@@ -102,15 +101,14 @@ export function NotifyButton({ publicKey }: { publicKey: string }) {
   if (state === "unsupported")
     return (
       <p className="notify-note">
-        This browser cannot show notifications. Try Chrome or Safari.
+        {t("nb.unsupported")}
       </p>
     );
 
   if (state === "blocked")
     return (
       <p className="notify-note">
-        Notifications are blocked for this site. Allow them in your browser
-        settings to get new issues.
+        {t("nb.blocked")}
       </p>
     );
 
@@ -134,7 +132,7 @@ export function NotifyButton({ publicKey }: { publicKey: string }) {
             setState("ready");
           }}
         >
-          Turn off
+          {t("nb.turnOff")}
         </button>
       </div>
     );
@@ -166,21 +164,21 @@ export function NotifyButton({ publicKey }: { publicKey: string }) {
             });
             if (!res.ok) {
               const body = (await res.json()) as { error?: string };
-              setNote(body.error ?? "Could not save your subscription.");
+              setNote(body.error ?? t("nb.saveFailed"));
               setState("ready");
               return;
             }
             setState("on");
           } catch {
-            setNote("Your browser refused the request.");
+            setNote(t("nb.refused"));
             setState("ready");
           }
         }}
       >
-        {state === "busy" ? "Just a moment…" : "Notify me of new issues"}
+        {state === "busy" ? t("nb.moment") : t("nb.notifyNew")}
       </button>
       <p className="notify-note">
-        Free. Arrives on your phone like a message — no app, no sign-up.
+        {t("nb.free")}
       </p>
       {note && <p className="notify-note notify-warn">{note}</p>}
     </div>

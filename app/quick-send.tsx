@@ -147,7 +147,7 @@ export function QuickSend({
       brand,
       caption: caption.trim() || undefined,
       href,
-      label: "Read the full issue",
+      label: t("qs.readFull"),
       theme: linked?.theme,
     });
   }
@@ -281,7 +281,7 @@ export function QuickSend({
                   <img src={file.src} alt={subject || brand} />
                 ) : (
                   <iframe
-                    title="HTML preview"
+                    title={t("qs.htmlPreview")}
                     srcDoc={file.source}
                     sandbox=""
                     className="qs-frame"

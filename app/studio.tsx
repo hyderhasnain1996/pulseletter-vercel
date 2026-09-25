@@ -120,8 +120,8 @@ const nav = [
   ["nav.newsletters", FileText, "/newsletters"],
   ["nav.quick", ImagePlus, "/quick"],
   ["nav.contacts", Users, "/contacts"],
-  ["Automations", Workflow, "/automations"],
-  ["Reports", ChartNoAxesCombined, "/reports"],
+  ["nav.automations", Workflow, "/automations"],
+  ["nav.reports", ChartNoAxesCombined, "/reports"],
 ] as const;
 const uid = () => crypto.randomUUID();
 /* Session draft mirror, used when workspace storage is unavailable. */
@@ -130,20 +130,24 @@ function Choice({
   value,
   onChange,
   items,
+  label,
 }: {
   value: string;
   onChange: (v: string) => void;
   items: string[];
+  /* What to show for a value. The value itself is stored and compared
+     elsewhere, so it stays in English whatever the reader sees. */
+  label?: (value: string) => string;
 }) {
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger>
-        <SelectValue />
+        <SelectValue>{label ? label(value) : value}</SelectValue>
       </SelectTrigger>
       <SelectContent>
         {items.map((x) => (
           <SelectItem key={x} value={x}>
-            {x}
+            {label ? label(x) : x}
           </SelectItem>
         ))}
       </SelectContent>
@@ -520,7 +524,9 @@ export default function Studio() {
   /* Block actions, all reachable straight from the page. */
   function addBlock(type: string, at?: number, src?: string) {
     if (!issue) return;
-    const starter = blockTypes.find((b) => b[0] === type)?.[2] ?? "";
+    const starter = blockTypes.some((b) => b[0] === type)
+      ? t(("seed." + type) as Key)
+      : "";
     /* Media arrives with its src already resolved, so the block is never
        written twice — a second write would race the first one's state. */
     const b = src
@@ -679,11 +685,13 @@ export default function Studio() {
                       ),
                     });
                     toast.success(
-                      n.status === "Archived" ? "Restored" : "Archived",
+                      n.status === "Archived"
+                        ? t("act.Restored")
+                        : t("act.Archived"),
                     );
                   }}
                 >
-                  {n.status === "Archived" ? "Restore" : "Archive"}
+                  {n.status === "Archived" ? t("act.Restore") : t("act.Archive")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -847,16 +855,16 @@ export default function Studio() {
         </button>
         {insertAt === at && (
           <div className="insert-menu" onClick={(e) => e.stopPropagation()}>
-            {blockTypes.map(([t, Icon]) => (
+            {blockTypes.map(([type, Icon]) => (
               <button
-                key={t}
+                key={type}
                 onClick={() => {
-                  addBlock(t, at);
+                  addBlock(type, at);
                   setInsertAt(null);
                 }}
               >
                 <Icon size={14} />
-                {t}
+                {t(("blk." + type) as Key)}
               </button>
             ))}
           </div>
@@ -1048,7 +1056,7 @@ export default function Studio() {
           </p>
         )}
         <footer>
-          Thoughtfully curated. Made to be shared.
+          {t("rd.curated")}
           <br />
           {data.brand} · Subscription preferences
         </footer>
@@ -1372,14 +1380,8 @@ export default function Studio() {
                   <div className="calendar-icon">
                     <Clock size={25} />
                   </div>
-                  <h3>
-                    A clean slate.
-                    <br />A new opportunity.
-                  </h3>
-                  <p>
-                    Write your next issue,
-                    <br />then send it straight away.
-                  </p>
+                  <h3>{t("db.cleanSlate")}</h3>
+                  <p>{t("db.writeNext")}</p>
                   <button onClick={() => setModal("create")}>{t("md.createNewsletter")}<ArrowRight size={15} />
                   </button>
                   <div className="schedule-foot">
@@ -1442,11 +1444,13 @@ export default function Studio() {
                   value={filter}
                   onChange={setFilter}
                   items={["All statuses", "Draft", "Ready", "Archived"]}
+                  label={(v) => t(("st." + v) as Key)}
                 />
                 <Choice
                   value={view}
                   onChange={setView}
                   items={["Cards", "Table"]}
+                  label={(v) => t(("vw." + v) as Key)}
                 />
               </div>
               {view === "Cards" ? (
@@ -1603,19 +1607,19 @@ export default function Studio() {
                       : "Drops in at the end of the page."}
                   </p>
                   <div className="block-grid">
-                    {blockTypes.map(([t, Icon]) => (
+                    {blockTypes.map(([type, Icon]) => (
                       <button
-                        key={t}
-                        title={"Add " + t}
+                        key={type}
+                        title={t(("blk." + type) as Key)}
                         onClick={() => {
                           const i = issue.blocks.findIndex(
                             (b) => b.id === selected,
                           );
-                          addBlock(t, i < 0 ? undefined : i + 1);
+                          addBlock(type, i < 0 ? undefined : i + 1);
                         }}
                       >
                         <Icon size={17} />
-                        {t}
+                        {t(("blk." + type) as Key)}
                       </button>
                     ))}
                   </div>
@@ -1647,6 +1651,7 @@ export default function Studio() {
                           })
                         }
                         items={blockTypes.map((b) => b[0])}
+                        label={(v) => t(("blk." + v) as Key)}
                       />
                     </>
                   )}
@@ -1690,6 +1695,7 @@ export default function Studio() {
                     value={issue.status}
                     onChange={(status) => edit({ status })}
                     items={["Draft", "Ready"]}
+                    label={(v) => t(("st." + v) as Key)}
                   />
                 </aside>
               </div>

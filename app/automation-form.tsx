@@ -1,5 +1,5 @@
 "use client";
-import { useT } from "./i18n";
+import { useT, type Key } from "./i18n";
 
 import { useMemo, useState } from "react";
 import {
@@ -29,16 +29,16 @@ export type NewAutomation = {
 };
 
 const FREQUENCIES = [
-  { value: "Daily", label: "Every day", hint: "A daily pulse" },
-  { value: "Weekly", label: "Every week", hint: "The usual rhythm" },
-  { value: "Monthly", label: "Every month", hint: "A fuller round-up" },
-];
+  { value: "Daily", label: "af.Every day", hint: "af.dailyHint" },
+  { value: "Weekly", label: "af.Every week", hint: "af.The usual rhythm" },
+  { value: "Monthly", label: "af.Every month", hint: "af.monthlyHint" },
+] as const;
 
 const WHO = [
-  { value: "all", label: "Everyone" },
-  { value: "group", label: "A group" },
-  { value: "people", label: "Pick people" },
-];
+  { value: "all", label: "af.Everyone" },
+  { value: "group", label: "af.aGroup" },
+  { value: "people", label: "af.Pick people" },
+] as const;
 
 export function AutomationForm({
   issues,
@@ -145,14 +145,16 @@ export function AutomationForm({
       <div className="auto-field">
         <span className="auto-label">{t("af.how")}</span>
         <div className="auto-seg" role="group" aria-label={t("af.channel")}>
-          {[
-            { v: "Email", label: "Email", icon: <Mail size={15} /> },
-            {
-              v: "Phone alert",
-              label: "Phone alert",
-              icon: <BellRing size={15} />,
-            },
-          ].map((c) => (
+          {(
+            [
+              { v: "Email", label: "af.Email", icon: <Mail size={15} /> },
+              {
+                v: "Phone alert",
+                label: "af.Phone alert",
+                icon: <BellRing size={15} />,
+              },
+            ] as const
+          ).map((c) => (
             <button
               key={c.v}
               type="button"
@@ -161,7 +163,7 @@ export function AutomationForm({
               onClick={() => setChannel(c.v)}
             >
               {c.icon}
-              {c.label}
+              {t(c.label)}
             </button>
           ))}
         </div>
@@ -170,8 +172,7 @@ export function AutomationForm({
       {phone ? (
         <p className="auto-note">
           <BellRing size={15} aria-hidden="true" />
-          Phone alerts reach every device that turned notifications on. There is
-          no list to choose from.
+          {t("af.pushNote")}
         </p>
       ) : (
         <div className="auto-field">
@@ -185,7 +186,7 @@ export function AutomationForm({
                 aria-pressed={who === w.value}
                 onClick={() => setWho(w.value)}
               >
-                {w.label}
+                {t(w.label)}
               </button>
             ))}
           </div>
@@ -242,8 +243,8 @@ export function AutomationForm({
                 ) : (
                   <p className="auto-empty">
                     {mailable.length
-                      ? "Nobody matches that search."
-                      : "No subscribed contacts yet. Add someone on Contacts & Groups first."}
+                      ? t("af.noMatch")
+                      : t("af.noneYet")}
                   </p>
                 )}
               </div>
@@ -251,7 +252,7 @@ export function AutomationForm({
               <p className="auto-count">
                 {picked.length
                   ? `${picked.length} selected`
-                  : "Choose at least one person."}
+                  : t("af.pickOne")}
               </p>
             </div>
           )}
@@ -269,8 +270,8 @@ export function AutomationForm({
               aria-pressed={frequency === f.value}
               onClick={() => setFrequency(f.value)}
             >
-              <strong>{f.label}</strong>
-              <small>{f.hint}</small>
+              <strong>{t(f.label)}</strong>
+              <small>{t(f.hint)}</small>
             </button>
           ))}
         </div>
@@ -280,11 +281,17 @@ export function AutomationForm({
         <CalendarClock size={18} aria-hidden="true" />
         <p>
           <strong>
-            {FREQUENCIES.find((f) => f.value === frequency)?.label} at 09:00 UTC
+            {t(
+              (FREQUENCIES.find((f) => f.value === frequency)?.label ??
+                "af.Every week") as Key,
+            )}{" "}
+            {t("af.atNine")}
           </strong>
           <span>
-            {phone ? "A phone alert" : "An email"} to {audience}. First send{" "}
-            {firstDay}.
+            {t(phone ? "af.aPhoneAlert" : "af.anEmail", {
+              audience,
+              day: firstDay,
+            })}
           </span>
         </p>
       </div>
@@ -292,7 +299,7 @@ export function AutomationForm({
       <div className="auto-actions">
         <button className="primary" disabled={incomplete}>
           <Users size={16} aria-hidden="true" />
-          Turn it on
+          {t("af.turnOn")}
         </button>
       </div>
     </form>
