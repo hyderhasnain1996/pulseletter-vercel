@@ -420,14 +420,30 @@ export function QuickSend({
                 placeholder={list.length ? "Add another…" : "name@example.com"}
                 onChange={(e) => setDraft(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === ",") {
+                  /* An address never contains a space or a comma, so either
+                     one means "that one is finished". Backspace with nothing
+                     typed takes the last one back, the way mail apps do. */
+                  if (e.key === "Enter" || e.key === "," || e.key === " " || e.key === ";") {
                     e.preventDefault();
-                    addRecipients(draft);
+                    if (draft.trim()) addRecipients(draft);
+                  } else if (e.key === "Backspace" && !draft && list.length) {
+                    setList((l) => l.slice(0, -1));
                   }
+                }}
+                onPaste={(e) => {
+                  /* A pasted column of addresses becomes chips at once rather
+                     than one long unusable string. */
+                  const text = e.clipboardData.getData("text/plain");
+                  if (!/[\s,;]/.test(text)) return;
+                  e.preventDefault();
+                  addRecipients(text);
                 }}
                 onBlur={() => draft.trim() && addRecipients(draft)}
               />
             </div>
+            <p className="qs-tip">
+              Press space, comma or Enter after each address.
+            </p>
           </div>
 
           <button
@@ -436,11 +452,18 @@ export function QuickSend({
             onClick={send}
           >
             {sending ? (
-              <>Sending…</>
+              <>
+                <span className="qs-spin" aria-hidden="true" />
+                Sending…
+              </>
             ) : (
               <>
                 <Send size={15} />
-                Send{list.length ? ` to ${list.length}` : ""}
+                {list.length === 0
+                  ? "Send"
+                  : list.length === 1
+                    ? "Send to 1 person"
+                    : `Send to ${list.length} people`}
               </>
             )}
           </button>
