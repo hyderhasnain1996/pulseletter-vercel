@@ -62,13 +62,56 @@ function transport() {
   return mailer;
 }
 
+/* Pictures are stored inline as data: URLs, and mail clients refuse to load
+   those — Gmail and Outlook both drop a <img src="data:..."> silently, so the
+   message arrives with a hole where the photo should be. Over SMTP we can do
+   better: lift each one out into a real attachment and point the tag at it by
+   content id, which every client renders. Identical images are attached once. */
+function inlineImages(html: string) {
+  const attachments: {
+    filename: string;
+    content: Buffer;
+    contentType: string;
+    cid: string;
+    contentDisposition: "inline";
+  }[] = [];
+  const seen = new Map<string, string>();
+
+  const body = html.replace(
+    /src="(data:image\/([a-zA-Z0-9.+-]+);base64,([^"]+))"/g,
+    (_all, url: string, subtype: string, base64: string) => {
+      let cid = seen.get(url);
+      if (!cid) {
+        cid = `img${seen.size + 1}@pulseletter`;
+        seen.set(url, cid);
+        attachments.push({
+          filename: `image-${attachments.length + 1}.${subtype === "jpeg" ? "jpg" : subtype}`,
+          content: Buffer.from(base64, "base64"),
+          contentType: `image/${subtype}`,
+          cid,
+          contentDisposition: "inline",
+        });
+      }
+      return `src="cid:${cid}"`;
+    },
+  );
+  return { body, attachments };
+}
+
 async function sendOverSmtp(
   to: string,
   subject: string,
   html: string,
 ): Promise<Outcome> {
   try {
-    await transport().sendMail({ from: emailFrom(), to, subject, html });
+    const { body, attachments } = inlineImages(html);
+    await transport().sendMail({
+      from: emailFrom(),
+      to,
+      subject,
+      html: body,
+      ...(attachments.length ? { attachments } : {}),
+    });
     return { to, ok: true };
   } catch (err) {
     /* The mail server explains refusals in the message — a wrong App
