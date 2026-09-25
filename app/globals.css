@@ -3691,3 +3691,26 @@ video.doc-media {
     transition: none;
   }
 }
+
+/* Language toggle in the topbar. Wider than its neighbours because it shows
+   which language you are in, not only an icon to press. */
+.topbar .lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: auto;
+  padding-inline: 0.6rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.topbar .lang-toggle span {
+  /* Korean glyphs sit taller than Latin; hold a width so pressing the
+     button does not shift everything beside it. */
+  min-width: 2.4rem;
+  text-align: center;
+}
+:root[lang="ko"] body {
+  word-break: keep-all;
+}

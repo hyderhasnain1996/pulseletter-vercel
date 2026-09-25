@@ -19,6 +19,7 @@ import type { Contact, Issue } from "./data";
 import { compressImage } from "./media";
 import { renderImageEmail, readUrl } from "./render-newsletter";
 import { splitRecipients } from "./recipients";
+import { useT } from "./i18n";
 
 /* Quick send.
 
@@ -61,6 +62,7 @@ export function QuickSend({
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState("");
 
+  const { t } = useT();
   const picker = useRef<HTMLInputElement>(null);
   const depth = useRef(0); // dragenter/leave fire per child; count them
 
@@ -95,18 +97,18 @@ export function QuickSend({
       setReading(true);
       try {
         const source = await chosen.text();
-        if (!source.trim()) throw Error("That file is empty.");
+        if (!source.trim()) throw Error(t("qs.emptyFile"));
         setFile({ kind: "html", source, name: chosen.name });
-        toast.success("HTML ready to send");
+        toast.success(t("qs.readyHtml"));
       } catch (e) {
-        toast.error(e instanceof Error ? e.message : "That file could not be read.");
+        toast.error(e instanceof Error ? e.message : t("qs.unreadable"));
       } finally {
         setReading(false);
       }
       return;
     }
     if (!chosen.type.startsWith("image/")) {
-      toast.error("Choose a picture (JPEG, PNG, GIF, WebP…) or an .html file.");
+      toast.error(t("qs.wrongType"));
       return;
     }
     setReading(true);
@@ -114,9 +116,9 @@ export function QuickSend({
       /* Same shrink the editor uses, so a phone photo does not arrive as a
          12MB attachment nobody can download on mobile data. */
       setFile({ kind: "image", src: await compressImage(chosen), name: chosen.name });
-      toast.success("Picture ready to send");
+      toast.success(t("qs.readyImage"));
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "That picture didn't load.");
+      toast.error(e instanceof Error ? e.message : t("qs.badImage"));
     } finally {
       setReading(false);
     }
@@ -129,8 +131,8 @@ export function QuickSend({
     if (invalid.length)
       toast.error(
         invalid.length === 1
-          ? `${invalid[0]} is not a valid email address.`
-          : `${invalid.length} entries are not valid email addresses.`,
+          ? t("qs.badAddress", { address: invalid[0] })
+          : t("qs.badAddresses", { n: invalid.length }),
       );
   }
 
@@ -171,18 +173,23 @@ export function QuickSend({
         failed?: number;
         results?: { ok: boolean; error?: string }[];
       };
-      if (!res.ok) setResult(body.error ?? "Unable to send right now.");
+      if (!res.ok) setResult(body.error ?? t("qs.failed"));
       else if (body.failed) {
         const reason = body.results?.find((r) => !r.ok)?.error;
         setResult(
-          `Sent to ${body.sent} of ${list.length}.` + (reason ? ` ${reason}` : ""),
+          t("qs.partial", { sent: body.sent ?? 0, total: list.length }) +
+            (reason ? ` ${reason}` : ""),
         );
       } else {
-        setResult(`Sent to ${body.sent === 1 ? "1 person" : body.sent + " people"}.`);
-        toast.success("On its way");
+        setResult(
+          body.sent === 1
+            ? t("qs.okOne")
+            : t("qs.okMany", { n: body.sent ?? 0 }),
+        );
+        toast.success(t("qs.onItsWay"));
       }
     } catch {
-      setResult("Network error — nothing was sent.");
+      setResult(t("qs.network"));
     } finally {
       setSending(false);
     }
@@ -194,14 +201,10 @@ export function QuickSend({
     <div className="qs">
       <header className="qs-head">
         <span className="qs-eyebrow">
-          <Sparkles size={13} /> Quick send
+          <Sparkles size={13} /> {t("qs.eyebrow")}
         </span>
-        <h1>Send a picture as the whole newsletter.</h1>
-        <p>
-          Drop in a poster, a flyer, a scanned page — or a finished HTML file —
-          and send it as it is. Tapping the picture can open the full issue, or
-          it can simply be a picture.
-        </p>
+        <h1>{t("qs.title")}</h1>
+        <p>{t("qs.lede")}</p>
       </header>
 
       <div className="qs-grid">
@@ -241,10 +244,8 @@ export function QuickSend({
               <span className="qs-drop-icon">
                 {reading ? <Upload size={26} /> : <ImagePlus size={26} />}
               </span>
-              <strong>{reading ? "Reading your file…" : "Drop a picture here"}</strong>
-              <span className="qs-drop-sub">
-                or <u>choose a file</u> — JPEG, PNG, GIF, WebP, or .html
-              </span>
+              <strong>{reading ? t("qs.reading") : t("qs.drop")}</strong>
+              <span className="qs-drop-sub">{t("qs.dropSub")}</span>
               <input
                 ref={picker}
                 type="file"
@@ -270,14 +271,14 @@ export function QuickSend({
                     setResult("");
                   }}
                 >
-                  <Trash2 size={13} /> Remove
+                  <Trash2 size={13} /> {t("qs.remove")}
                 </button>
               </div>
 
               <div className={"qs-canvas" + (href ? " is-link" : "")}>
                 {file.kind === "image" ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
-                  <img src={file.src} alt={subject || "Your newsletter"} />
+                  <img src={file.src} alt={subject || brand} />
                 ) : (
                   <iframe
                     title="HTML preview"
@@ -288,16 +289,16 @@ export function QuickSend({
                 )}
                 {href && (
                   <span className="qs-tap">
-                    <MousePointerClick size={13} /> opens the full issue
+                    <MousePointerClick size={13} /> {t("qs.tapOpens")}
                   </span>
                 )}
               </div>
               <figcaption>
                 {file.kind === "html"
-                  ? "Sent exactly as written."
+                  ? t("qs.capHtml")
                   : href
-                    ? "Recipients tap the picture to read the rest."
-                    : "Just the picture — nothing to tap."}
+                    ? t("qs.capLinked")
+                    : t("qs.capPlain")}
               </figcaption>
             </figure>
           )}
@@ -306,7 +307,7 @@ export function QuickSend({
         {/* ---------------- the controls ---------------- */}
         <section className="qs-controls">
           <div className="qs-field qs-reveal" style={{ ["--i" as string]: 0 }}>
-            <label htmlFor="qs-subject">Subject</label>
+            <label htmlFor="qs-subject">{t("qs.subject")}</label>
             <input
               id="qs-subject"
               value={subject}
@@ -321,16 +322,16 @@ export function QuickSend({
                   and choosing whether to link at all were never two decisions,
                   and "none" belongs in the same list as the issues. */}
               <div className="qs-field qs-reveal" style={{ ["--i" as string]: 1 }}>
-                <label htmlFor="qs-issue">When someone taps the picture</label>
+                <label htmlFor="qs-issue">{t("qs.onTap")}</label>
                 <select
                   id="qs-issue"
                   value={linkTo}
                   onChange={(e) => setLinkTo(e.target.value)}
                 >
-                  <option value="">Nothing &mdash; just the picture</option>
+                  <option value="">{t("qs.tapNothing")}</option>
                   {issues.map((n) => (
                     <option key={n.id} value={n.id}>
-                      Opens &ldquo;{n.title}&rdquo;
+                      {t("qs.tapOpen", { title: n.title })}
                     </option>
                   ))}
                 </select>
@@ -344,13 +345,13 @@ export function QuickSend({
                     </a>
                     <button
                       type="button"
-                      aria-label="Copy link"
+                      aria-label={t("qs.copyLink")}
                       onClick={async () => {
                         try {
                           await navigator.clipboard.writeText(href);
-                          toast.success("Link copied");
+                          toast.success(t("qs.copied"));
                         } catch {
-                          toast.error("Your browser would not let us copy.");
+                          toast.error(t("qs.copyFailed"));
                         }
                       }}
                     >
@@ -362,13 +363,13 @@ export function QuickSend({
 
               <div className="qs-field qs-reveal" style={{ ["--i" as string]: 2 }}>
                 <label htmlFor="qs-caption">
-                  A line under the picture <small>optional</small>
+                  {t("qs.caption")} <small>{t("qs.optional")}</small>
                 </label>
                 <textarea
                   id="qs-caption"
                   rows={2}
                   value={caption}
-                  placeholder="Say what this is, if it needs saying."
+                  placeholder={t("qs.captionHint")}
                   onChange={(e) => setCaption(e.target.value)}
                 />
               </div>
@@ -376,7 +377,7 @@ export function QuickSend({
           )}
 
           <div className="qs-field qs-reveal" style={{ ["--i" as string]: 4 }}>
-            <label htmlFor="qs-to">Send to</label>
+            <label htmlFor="qs-to">{t("qs.sendTo")}</label>
             {audiences.length > 0 && (
               <div className="qs-groups">
                 {audiences.map((a) => {
@@ -395,7 +396,7 @@ export function QuickSend({
                       }
                     >
                       <Users size={12} />
-                      {a.name}
+                      {a.name === "Everyone" ? t("qs.everyone") : a.name}
                       <span>{a.emails.length}</span>
                     </button>
                   );
@@ -408,7 +409,7 @@ export function QuickSend({
                   {address}
                   <button
                     onClick={() => setList((l) => l.filter((x) => x !== address))}
-                    aria-label={`Remove ${address}`}
+                    aria-label={t("qs.removeAddress", { address })}
                   >
                     ×
                   </button>
@@ -417,7 +418,7 @@ export function QuickSend({
               <input
                 id="qs-to"
                 value={draft}
-                placeholder={list.length ? "Add another…" : "name@example.com"}
+                placeholder={list.length ? t("qs.another") : t("qs.firstAddress")}
                 onChange={(e) => setDraft(e.target.value)}
                 onKeyDown={(e) => {
                   /* An address never contains a space or a comma, so either
@@ -442,7 +443,7 @@ export function QuickSend({
               />
             </div>
             <p className="qs-tip">
-              Press space, comma or Enter after each address.
+              {t("qs.addressHint")}
             </p>
           </div>
 
@@ -454,16 +455,16 @@ export function QuickSend({
             {sending ? (
               <>
                 <span className="qs-spin" aria-hidden="true" />
-                Sending…
+                {t("qs.sending")}
               </>
             ) : (
               <>
                 <Send size={15} />
                 {list.length === 0
-                  ? "Send"
+                  ? t("qs.send")
                   : list.length === 1
-                    ? "Send to 1 person"
-                    : `Send to ${list.length} people`}
+                    ? t("qs.sendOne")
+                    : t("qs.sendMany", { n: list.length })}
               </>
             )}
           </button>
@@ -474,7 +475,7 @@ export function QuickSend({
             </p>
           )}
           {!file && (
-            <p className="qs-hint">Add a picture or an HTML file to send.</p>
+            <p className="qs-hint">{t("qs.needFile")}</p>
           )}
         </section>
       </div>

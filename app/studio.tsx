@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { AutomationForm } from "./automation-form";
 import { QuickSend } from "./quick-send";
 import { splitRecipients } from "./recipients";
+import { LanguageProvider, useLangState, firstLang, translator, type Key } from "./i18n";
 import {
   Activity,
   LayoutDashboard,
@@ -16,6 +17,7 @@ import {
   Bell,
   Sun,
   Moon,
+  Languages,
   Plus,
   ArrowUpRight,
   ArrowRight,
@@ -115,10 +117,10 @@ import {
   resolvePhotos,
 } from "./import-newsletter";
 const nav = [
-  ["Dashboard", LayoutDashboard, "/dashboard"],
-  ["Newsletters", FileText, "/newsletters"],
-  ["Quick send", ImagePlus, "/quick"],
-  ["Contacts & Groups", Users, "/contacts"],
+  ["nav.dashboard", LayoutDashboard, "/dashboard"],
+  ["nav.newsletters", FileText, "/newsletters"],
+  ["nav.quick", ImagePlus, "/quick"],
+  ["nav.contacts", Users, "/contacts"],
   ["Automations", Workflow, "/automations"],
   ["Reports", ChartNoAxesCombined, "/reports"],
 ] as const;
@@ -280,10 +282,17 @@ export default function Studio() {
     [future, setFuture] = useState<Issue[]>([]),
     [view, setView] = useState("Cards"),
     [saving, setSaving] = useState(false);
+  const { lang, setLang, set: setLangRaw } = useLangState();
+  const t = translator(lang);
   useEffect(() => {
     // Light unless this visitor has chosen dark before.
     const savedTheme = localStorage.getItem("pulse-theme") !== "dark";
-    queueMicrotask(() => setLight(savedTheme));
+    const savedLang = firstLang();
+    queueMicrotask(() => {
+      setLight(savedTheme);
+      setLangRaw(savedLang);
+      document.documentElement.lang = savedLang;
+    });
     fetch("/api/workspace")
       .then((r) => {
         if (!r.ok) throw Error();
@@ -302,6 +311,7 @@ export default function Studio() {
           if (cached) setData(JSON.parse(cached) as State);
         } catch {}
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     document.documentElement.dataset.theme = light ? "light" : "dark";
@@ -479,12 +489,14 @@ export default function Studio() {
   }, [modal, sendChannel]);
   const [origin, setOrigin] = useState("");
   useEffect(() => setOrigin(window.location.origin), []);
+  const navKey = nav.find((x) => x[2] === path)?.[0] as Key | undefined;
   const title = path.includes("/editor")
-    ? "Newsletter editor"
+    ? t("nav.editor")
     : issue
-      ? "Newsletter details"
-      : nav.find((x) => x[2] === path)?.[0] ||
-        "Campaign details";
+      ? t("title.issue")
+      : navKey
+        ? t(navKey)
+        : t("title.campaign");
   async function create(template: string) {
     const sample =
       initial.issues[templates.indexOf(template)] || initial.issues[0];
@@ -1142,6 +1154,7 @@ export default function Studio() {
     );
 
   return (
+    <LanguageProvider lang={lang} setLang={setLang}>
     <SidebarProvider>
       <Sidebar className="studio-sidebar">
         <SidebarHeader>
@@ -1154,7 +1167,7 @@ export default function Studio() {
           </button>
         </SidebarHeader>
         <SidebarContent>
-          <span className="nav-caption">WORKSPACE</span>
+          <span className="nav-caption">{t("nav.workspace")}</span>
           <nav>
             {nav.map(([label, Icon, url]) => (
               <button
@@ -1168,8 +1181,8 @@ export default function Studio() {
                 onClick={() => go(url)}
               >
                 <Icon size={19} />
-                {label}
-                {label === "Newsletters" && (
+                {t(label as Key)}
+                {label === "nav.newsletters" && (
                   <span className="nav-count">{data.issues.length}</span>
                 )}
               </button>
@@ -1179,14 +1192,10 @@ export default function Studio() {
             <span className="tiny-icon">
               <Sparkles size={17} />
             </span>
-            <h4>
-              Your next great issue
-              <br />
-              starts with an idea.
-            </h4>
-            <p>Make it yours with a template.</p>
+            <h4>{t("side.title")}</h4>
+            <p>{t("side.sub")}</p>
             <button onClick={() => setModal("create")}>
-              Explore templates <ArrowUpRight size={15} />
+              {t("side.cta")} <ArrowUpRight size={15} />
             </button>
           </div>
         </SidebarContent>
@@ -1194,10 +1203,11 @@ export default function Studio() {
           <div className="profile">
             <span className="avatar">JD</span>
             <span>
-              Demo workspace<small>Preview access</small>
+              {t("profile.workspace")}
+              <small>{t("profile.access")}</small>
             </span>
             <button
-              aria-label="Sign out"
+              aria-label={t("action.signOut")}
               onClick={() => {
                 window.location.href = "/api/auth/signout";
               }}
@@ -1212,14 +1222,14 @@ export default function Studio() {
           <div className="row">
             <SidebarTrigger />
             <span className="breadcrumb">
-              Workspace <ChevronRight size={14} /> <b>{title}</b>
+              {t("top.crumb")} <ChevronRight size={14} /> <b>{title}</b>
             </span>
           </div>
           <div className="top-actions">
             <div className="searchbox">
               <Search size={16} />
               <input
-                placeholder="Search newsletters…"
+                placeholder={t("top.search")}
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
@@ -1228,11 +1238,23 @@ export default function Studio() {
               />
               <kbd>⌘ K</kbd>
             </div>
-            <button aria-label="Toggle theme" onClick={() => setLight(!light)}>
+            <button
+              className="lang-toggle"
+              aria-label={t("action.language")}
+              title={t("action.language")}
+              onClick={() => setLang(lang === "en" ? "ko" : "en")}
+            >
+              <Languages size={16} />
+              <span>{lang === "en" ? "EN" : "한국어"}</span>
+            </button>
+            <button
+              aria-label={t("action.theme")}
+              onClick={() => setLight(!light)}
+            >
               {light ? <Moon size={18} /> : <Sun size={18} />}
             </button>
             <button
-              aria-label="Notifications"
+              aria-label={t("action.notifications")}
               onClick={() => setModal("notifications")}
             >
               <Bell size={18} />
@@ -1244,10 +1266,8 @@ export default function Studio() {
           <div className="demo-banner">
             <span>
               <span className="demo-dot" />
-              Demo workspace{" "}
-              <span className="muted">
-                — sample content, no real messages sent
-              </span>
+              {t("banner.demo")}{" "}
+              <span className="muted">{t("banner.demoNote")}</span>
             </span>
             <button onClick={() => go("/newsletters")}>
               Your newsletters <ArrowRight size={14} />
@@ -2923,5 +2943,6 @@ export default function Studio() {
         richColors
       />
     </SidebarProvider>
+    </LanguageProvider>
   );
 }
