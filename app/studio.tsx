@@ -402,7 +402,7 @@ export default function Studio() {
         setUploading("paste");
         try {
           addBlock("Image", pasteIndex(), await compressImage(file));
-          toast.success("Image pasted");
+          toast.success(t("ed.imagePasted"));
         } catch (err) {
           toast.error(
             err instanceof Error ? err.message : "That image didn't load.",
@@ -426,11 +426,11 @@ export default function Studio() {
       if (toEmbed(text)) {
         e.preventDefault();
         addBlock("Video", pasteIndex(), text);
-        toast.success("Video added");
+        toast.success(t("ed.videoAdded"));
       } else if (/^https?:\/\/\S+\.(png|jpe?g|gif|webp|avif)(\?\S*)?$/i.test(text)) {
         e.preventDefault();
         addBlock("Image", pasteIndex(), text);
-        toast.success("Image added");
+        toast.success(t("ed.imageAdded"));
       }
     };
     document.addEventListener("paste", onPaste);
@@ -579,15 +579,15 @@ export default function Studio() {
     if (!file.type.startsWith("image/")) {
       toast.error(
         file.type.startsWith("video/")
-          ? "Video files can't be stored yet — paste a YouTube, Vimeo or .mp4 link instead."
-          : "Please choose an image file.",
+          ? t("ed.noVideoFile")
+          : t("ed.chooseImage"),
       );
       return;
     }
     setUploading(id);
     try {
       setBlockSrc(id, await compressImage(file));
-      toast.success("Image added");
+      toast.success(t("ed.imageAdded"));
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "That image didn't load.");
     } finally {
@@ -620,7 +620,7 @@ export default function Studio() {
       public: false,
     };
     save({ ...data, issues: [copy, ...data.issues] });
-    toast.success("Newsletter duplicated");
+    toast.success(t("ed.duplicated"));
   }
   function renderCard(n: Issue, index = 0) {
     return (
@@ -637,7 +637,7 @@ export default function Studio() {
           {/* Light across the paper. Decoration only. */}
           <span className="cover-sheen" aria-hidden="true" />
           <span className="cover-brand">
-            {data.brand.toUpperCase()} <span>JOURNAL</span>
+            {data.brand.toUpperCase()} <span>{t("ed.journal")}</span>
           </span>
           <span className="cover-issue">{n.issue} / SEPTEMBER 2026</span>
           <strong>{n.blocks[0]?.text || n.title}</strong>
@@ -660,9 +660,7 @@ export default function Studio() {
               <DropdownMenuContent>
                 <DropdownMenuItem
                   onClick={() => go("/newsletters/" + n.id + "/editor")}
-                >
-                  Edit newsletter
-                </DropdownMenuItem>
+                >{t("nl.edit")}</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => duplicate(n)}>
                   Duplicate
                 </DropdownMenuItem>
@@ -698,7 +696,7 @@ export default function Studio() {
               day: "numeric",
               timeZone: "UTC",
             })}
-            <span>By you</span>
+            <span>{t("ed.byYou")}</span>
           </p>
           <button
             className="details-link"
@@ -758,7 +756,7 @@ export default function Studio() {
             {media}
             <button
               className="media-clear"
-              aria-label="Remove media"
+              aria-label={t("ed.removeMedia")}
               onClick={(e) => {
                 e.stopPropagation();
                 setBlockSrc(b.id, "");
@@ -792,22 +790,22 @@ export default function Studio() {
             }}
           >
             {busy ? (
-              <p>Adding your image…</p>
+              <p>{t("ed.adding")}</p>
             ) : isVideo ? (
               <>
                 <Clapperboard size={22} />
                 <p>
-                  <strong>Paste a video link</strong>
+                  <strong>{t("ed.pasteVideo")}</strong>
                 </p>
-                <small>Paste with Ctrl/Cmd+V · YouTube, Vimeo or .mp4</small>
+                <small>{t("ed.pasteHint")}</small>
               </>
             ) : (
               <>
                 <ImagePlus size={22} />
                 <p>
-                  <strong>Click to upload</strong> or drop an image here
+                  <strong>{t("ed.clickUpload")}</strong> or drop an image here
                 </p>
-                <small>Or press Ctrl/Cmd+V to paste a copied image</small>
+                <small>{t("ed.orPaste")}</small>
               </>
             )}
           </div>
@@ -826,7 +824,7 @@ export default function Studio() {
           as="small"
           className="doc-caption"
           value={b.text}
-          placeholder="Add a caption…"
+          placeholder={t("ed.caption")}
           onCommit={(v) => setBlockText(b.id, v)}
         />
       </>
@@ -839,7 +837,7 @@ export default function Studio() {
       <div className="insert-rail">
         <button
           className="insert-dot"
-          aria-label="Add a block here"
+          aria-label={t("ed.addHere")}
           onClick={(e) => {
             e.stopPropagation();
             setInsertAt(insertAt === at ? null : at);
@@ -895,7 +893,7 @@ export default function Studio() {
               {live ? (
                 <Editable
                   value={b.text}
-                  placeholder="The longer explanation…"
+                  placeholder={t("ed.longer")}
                   onCommit={(v) => setBlockText(b.id, v)}
                 />
               ) : (
@@ -909,7 +907,7 @@ export default function Studio() {
               <Editable
                 as="h1"
                 value={b.text}
-                placeholder="Your headline…"
+                placeholder={t("ed.headline")}
                 onCommit={(v) => setBlockText(b.id, v)}
               />
             ) : b.type === "Button" ? (
@@ -917,16 +915,16 @@ export default function Studio() {
                 as="span"
                 className="doc-button"
                 value={b.text}
-                placeholder="Button label"
+                placeholder={t("ed.buttonLabel")}
                 onCommit={(v) => setBlockText(b.id, v)}
               />
             ) : b.type === "Featured story" ? (
               <>
-                <small>IN FOCUS</small>
+                <small>{t("ed.inFocus")}</small>
                 <Editable
                   as="h2"
                   value={b.text}
-                  placeholder="Your featured story…"
+                  placeholder={t("ed.featured")}
                   onCommit={(v) => setBlockText(b.id, v)}
                 />
               </>
@@ -945,7 +943,7 @@ export default function Studio() {
             <span className="doc-button">{b.text}</span>
           ) : b.type === "Featured story" ? (
             <>
-              <small>IN FOCUS</small>
+              <small>{t("ed.inFocus")}</small>
               <h2>{b.text}</h2>
             </>
           ) : (
@@ -988,34 +986,34 @@ export default function Studio() {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <button
-                        aria-label="Drag to reorder"
+                        aria-label={t("ed.drag")}
                         className="drag-handle"
                         onMouseDown={() => setDragging(b.id)}
                       >
                         <GripVertical size={14} />
                       </button>
                       <button
-                        aria-label="Move up"
+                        aria-label={t("ed.moveUp")}
                         disabled={i === 0}
                         onClick={() => moveBlock(b.id, -1)}
                       >
                         <ArrowUp size={14} />
                       </button>
                       <button
-                        aria-label="Move down"
+                        aria-label={t("ed.moveDown")}
                         disabled={i === n.blocks.length - 1}
                         onClick={() => moveBlock(b.id, 1)}
                       >
                         <ArrowDown size={14} />
                       </button>
                       <button
-                        aria-label="Duplicate block"
+                        aria-label={t("ed.dupBlock")}
                         onClick={() => duplicateBlock(b.id)}
                       >
                         <Copy size={14} />
                       </button>
                       <button
-                        aria-label="Delete block"
+                        aria-label={t("ed.delBlock")}
                         className="danger"
                         onClick={() => removeBlock(b.id)}
                       >
@@ -1261,23 +1259,19 @@ export default function Studio() {
             <>
               <div className="page-heading">
                 <div>
-                  <div className="eyebrow">YOUR NEWSLETTER STUDIO</div>
+                  <div className="eyebrow">{t("db.eyebrow")}</div>
                   <h1>
                     A little pulse. A lot of possibility<span>.</span>
                   </h1>
-                  <p>
-                    Bring your ideas to life, and your audience a little closer.
-                  </p>
+                  <p>{t("db.bring")}</p>
                 </div>
                 <button className="primary" onClick={() => setModal("create")}>
-                  <Plus size={18} />
-                  Create newsletter
-                </button>
+                  <Plus size={18} />{t("nl.create")}</button>
               </div>
               <div className="section-top">
-                <span className="section-label">Workspace overview</span>
+                <span className="section-label">{t("db.overview")}</span>
                 <span className="period">
-                  <Clock size={14} /> Last 30 days <ChevronDown size={14} />
+                  <Clock size={14} />{t("db.last30")}<ChevronDown size={14} />
                 </span>
               </div>
               <div className="stats">
@@ -1330,8 +1324,8 @@ export default function Studio() {
                 <section className="panel trend">
                   <div className="panel-heading">
                     <div>
-                      <h2>Delivery overview</h2>
-                      <p>Your messages, over time</p>
+                      <h2>{t("db.delivery")}</h2>
+                      <p>{t("db.deliverySub")}</p>
                     </div>
                     <span className="legend">
                       <i />
@@ -1357,10 +1351,8 @@ export default function Studio() {
                         <span className="chart-icon">
                           <ChartNoAxesCombined size={22} />
                         </span>
-                        <strong>Your story is just getting started</strong>
-                        <p>
-                          Delivery trends will appear after your first campaign.
-                        </p>
+                        <strong>{t("db.empty")}</strong>
+                        <p>{t("db.trends")}</p>
                       </div>
                     </div>
                   </div>
@@ -1374,7 +1366,7 @@ export default function Studio() {
                 </section>
                 <section className="panel schedule">
                   <div className="panel-heading">
-                    <h2>Up next</h2>
+                    <h2>{t("db.upNext")}</h2>
                     <span className="subtle-label">UTC</span>
                   </div>
                   <div className="calendar-icon">
@@ -1388,21 +1380,20 @@ export default function Studio() {
                     Write your next issue,
                     <br />then send it straight away.
                   </p>
-                  <button onClick={() => setModal("create")}>
-                    Create a newsletter <ArrowRight size={15} />
+                  <button onClick={() => setModal("create")}>{t("md.createNewsletter")}<ArrowRight size={15} />
                   </button>
                   <div className="schedule-foot">
                     <span className="badge draft">
                       {data.campaigns.length} campaigns
                     </span>
-                    <span>All times in UTC</span>
+                    <span>{t("db.utc")}</span>
                   </div>
                 </section>
               </div>
               <div className="section-top recent-heading">
                 <div>
-                  <h2>Recent newsletters</h2>
-                  <p>Fresh ideas and works in progress.</p>
+                  <h2>{t("db.recent")}</h2>
+                  <p>{t("db.recentSub")}</p>
                 </div>
                 <button onClick={() => go("/newsletters")}>
                   View all newsletters <ArrowRight size={16} />
@@ -1419,13 +1410,10 @@ export default function Studio() {
                   <Send size={20} />
                 </span>
                 <div>
-                  <h3>One step closer to your audience</h3>
-                  <p>
-                    Connect your email provider to send your first newsletter.
-                  </p>
+                  <h3>{t("db.closer")}</h3>
+                  <p>{t("db.connect")}</p>
                 </div>
-                <button onClick={() => setModal("create")}>
-                  Create a newsletter <ArrowRight size={16} />
+                <button onClick={() => setModal("create")}>{t("md.createNewsletter")}<ArrowRight size={16} />
                 </button>
               </div>
             </>
@@ -1434,20 +1422,18 @@ export default function Studio() {
             <>
               <div className="page-heading">
                 <div>
-                  <div className="eyebrow">THE EDITORIAL SHELF</div>
-                  <h1>Your words. All together.</h1>
-                  <p>Create, collect, and keep your next great idea moving.</p>
+                  <div className="eyebrow">{t("nl.eyebrow")}</div>
+                  <h1>{t("nl.title")}</h1>
+                  <p>{t("nl.sub")}</p>
                 </div>
                 <button className="primary" onClick={() => setModal("create")}>
-                  <Plus size={17} />
-                  Create newsletter
-                </button>
+                  <Plus size={17} />{t("nl.create")}</button>
               </div>
               <div className="filters">
                 <div className="searchbox">
                   <Search size={17} />
                   <input
-                    placeholder="Find a newsletter…"
+                    placeholder={t("nl.find")}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />
@@ -1480,9 +1466,9 @@ export default function Studio() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Newsletter</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Updated</TableHead>
+                        <TableHead>{t("nl.colTitle")}</TableHead>
+                        <TableHead>{t("nl.colStatus")}</TableHead>
+                        <TableHead>{t("nl.colUpdated")}</TableHead>
                         <TableHead />
                       </TableRow>
                     </TableHeader>
@@ -1524,7 +1510,7 @@ export default function Studio() {
               <div className="editor-heading">
                 <div>
                   <input
-                    aria-label="Newsletter title"
+                    aria-label={t("ed.title")}
                     className="title-input"
                     value={issue.title}
                     onChange={(e) => edit({ title: e.target.value })}
@@ -1539,7 +1525,7 @@ export default function Studio() {
                 </div>
                 <div className="row">
                   <button
-                    aria-label="Undo"
+                    aria-label={t("ed.undo")}
                     disabled={!history.length}
                     onClick={() => {
                       const prev = history.at(-1)!;
@@ -1556,7 +1542,7 @@ export default function Studio() {
                     <Undo2 size={18} />
                   </button>
                   <button
-                    aria-label="Redo"
+                    aria-label={t("ed.redo")}
                     disabled={!future.length}
                     onClick={() => {
                       const next = future.at(-1)!;
@@ -1610,7 +1596,7 @@ export default function Studio() {
               />
               <div className="editor-grid">
                 <aside className="panel block-library">
-                  <h3>Add a block</h3>
+                  <h3>{t("ed.addBlock")}</h3>
                   <p>
                     {selected
                       ? "Drops in below the block you picked."
@@ -1636,11 +1622,11 @@ export default function Studio() {
                 </aside>
                 <div className="canvas">{renderDocument(issue)}</div>
                 <aside className="panel block-settings">
-                  <h3>How to edit</h3>
+                  <h3>{t("ed.howTo")}</h3>
                   <ul className="how-to">
-                    <li>Click any text on the page and just type.</li>
-                    <li>Hover a block for move, copy and delete.</li>
-                    <li>Paste a copied image or video link anywhere.</li>
+                    <li>{t("ed.howText")}</li>
+                    <li>{t("ed.howBlock")}</li>
+                    <li>{t("ed.howPaste")}</li>
                     <li>
                       Press <strong>+</strong> between blocks to add one there.
                     </li>
@@ -1648,7 +1634,7 @@ export default function Studio() {
                   {issue.blocks.find((b) => b.id === selected) && (
                     <>
                       <hr />
-                      <h3>Selected block</h3>
+                      <h3>{t("ed.selected")}</h3>
                       <Choice
                         value={
                           issue.blocks.find((b) => b.id === selected)!.type
@@ -1682,7 +1668,7 @@ export default function Studio() {
                     ))}
                   </div>
                   <hr />
-                  <h3>Layout</h3>
+                  <h3>{t("ed.layout")}</h3>
                   <div className="layout-picker">
                     {layouts.map((l) => (
                       <button
@@ -1699,7 +1685,7 @@ export default function Studio() {
                     ))}
                   </div>
                   <hr />
-                  <h3>Newsletter status</h3>
+                  <h3>{t("ed.status")}</h3>
                   <Choice
                     value={issue.status}
                     onChange={(status) => edit({ status })}
@@ -1752,9 +1738,7 @@ export default function Studio() {
                     className="primary"
                     onClick={() => go("/newsletters/" + issue.id + "/editor")}
                   >
-                    <Pencil size={16} />
-                    Edit newsletter
-                  </button>
+                    <Pencil size={16} />{t("nl.edit")}</button>
                 </div>
               </div>
               <Tabs defaultValue="preview">
@@ -1786,7 +1770,7 @@ export default function Studio() {
                         </TabsContent>
                         <TabsContent value="email">
                           <iframe
-                            title="Email-compatible newsletter preview"
+                            title={t("ed.previewFrame")}
                             sandbox=""
                             className="email-frame"
                             srcDoc={renderEmail(issue, data.brand, origin)}
@@ -1813,7 +1797,7 @@ export default function Studio() {
                       <span className={"badge " + issue.status.toLowerCase()}>
                         {issue.status}
                       </span>
-                      <h3>Ready for its next chapter?</h3>
+                      <h3>{t("nl.nextChapter")}</h3>
                       <p>
                         Add addresses or notify subscribed phones, and send it
                         straight away.
@@ -1831,19 +1815,19 @@ export default function Studio() {
                         Send this issue
                       </button>
                       <hr />
-                      <h3>Publication</h3>
+                      <h3>{t("nl.publication")}</h3>
                       <p>
                         This issue is private. Public publication requires a
                         configured access policy.
                       </p>
-                      <h3>Last updated</h3>
+                      <h3>{t("nl.lastUpdated")}</h3>
                       <p>{fmtDateTime(issue.updated)}</p>
                     </aside>
                   </div>
                 </TabsContent>
                 <TabsContent value="recipients">
                   <div className="panel">
-                    <h3>Campaign audience snapshots</h3>
+                    <h3>{t("nl.snapshots")}</h3>
                     {data.campaigns
                       .filter((c) => c.issueId === issue.id)
                       .map((c) => (
@@ -1856,13 +1840,13 @@ export default function Studio() {
                           ))}
                         </div>
                       ))}
-                    <p>Recipient records appear after a campaign is created.</p>
+                    <p>{t("nl.snapshotsEmpty")}</p>
                   </div>
                 </TabsContent>
                 <TabsContent value="performance">
                   <div className="empty panel">
                     <ChartNoAxesCombined />
-                    <h3>No delivery data yet</h3>
+                    <h3>{t("nl.noData")}</h3>
                     <p>
                       Opens are approximate. Delivery does not prove inbox
                       placement or reading.
@@ -1871,7 +1855,7 @@ export default function Studio() {
                 </TabsContent>
                 <TabsContent value="versions">
                   <div className="panel">
-                    <h3>Campaign snapshots</h3>
+                    <h3>{t("nl.campaignSnaps")}</h3>
                     {data.campaigns
                       .filter((c) => c.issueId === issue.id)
                       .map((c) => (
@@ -1903,8 +1887,8 @@ export default function Studio() {
             <>
               <div className="page-heading">
                 <div>
-                  <div className="eyebrow">PEOPLE, NOT JUST ADDRESSES</div>
-                  <h1>Your audience starts here.</h1>
+                  <div className="eyebrow">{t("ct.eyebrow")}</div>
+                  <h1>{t("ct.title")}</h1>
                   <p>
                     {data.contacts.length} contacts ·{" "}
                     {data.contacts.filter((c) => c.subscribed).length}{" "}
@@ -1916,16 +1900,12 @@ export default function Studio() {
                     className="secondary"
                     onClick={() => setModal("import")}
                   >
-                    <Upload size={16} />
-                    Import CSV
-                  </button>
+                    <Upload size={16} />{t("ct.importCsv")}</button>
                   <button
                     className="primary"
                     onClick={() => setModal("contact")}
                   >
-                    <Plus size={16} />
-                    Add contact
-                  </button>
+                    <Plus size={16} />{t("ct.add")}</button>
                 </div>
               </div>
               <div className="group-bar">
@@ -2012,7 +1992,7 @@ export default function Studio() {
                                   {g}
                                 </option>
                               ))}
-                            <option value="__new">New group…</option>
+                            <option value="__new">{t("ct.newGroup")}</option>
                           </select>
                         </TableCell>
                         <TableCell>
@@ -2021,7 +2001,7 @@ export default function Studio() {
                               "badge toggle " +
                               (c.subscribed ? "ready" : "draft")
                             }
-                            title="Click to change"
+                            title={t("ct.clickChange")}
                             onClick={() =>
                               updateContact(c.id, { subscribed: !c.subscribed })
                             }
@@ -2046,7 +2026,7 @@ export default function Studio() {
               <div className="page-heading">
                 <div>
                   <div className="eyebrow">A RHYTHM THAT WORKS FOR YOU</div>
-                  <h1>Keep the conversation going.</h1>
+                  <h1>{t("ct.sub")}</h1>
                   <p>
                     Pick a newsletter, a channel and how often. It goes out on
                     its own from then on.
@@ -2122,7 +2102,7 @@ export default function Studio() {
                                 (x) => x.id !== a.id,
                               ),
                             });
-                            toast.success("Automation removed");
+                            toast.success(t("au.removed"));
                           }}
                         >
                           <Trash2 size={16} />
@@ -2133,7 +2113,7 @@ export default function Studio() {
                 ) : (
                   <div className="empty">
                     <Workflow />
-                    <h2>Send it without thinking about it</h2>
+                    <h2>{t("au.empty")}</h2>
                     <p>
                       Choose a newsletter, a channel and how often. The studio
                       sends it on schedule from then on.
@@ -2142,9 +2122,7 @@ export default function Studio() {
                       className="primary"
                       onClick={() => setModal("automation")}
                     >
-                      <Plus size={16} />
-                      Create your first automation
-                    </button>
+                      <Plus size={16} />{t("au.first")}</button>
                   </div>
                 )}
               </div>
@@ -2159,28 +2137,30 @@ export default function Studio() {
             <>
               <div className="page-heading">
                 <div>
-                  <div className="eyebrow">THE BIGGER PICTURE</div>
-                  <h1>Every send tells a story.</h1>
-                  <p>Delivery and engagement, clearly separated.</p>
+                  <div className="eyebrow">{t("an.eyebrow")}</div>
+                  <h1>{t("an.title")}</h1>
+                  <p>{t("an.sub")}</p>
                 </div>
               </div>
               <div className="stats">
-                {[
-                  "Email delivered",
-                  "SMS delivered",
-                  "Unique recipients",
-                  "Failed messages",
-                ].map((t) => (
-                  <div className="stat" key={t}>
-                    <span>{t}</span>
+                {(
+                  [
+                    "an.emailDelivered",
+                    "an.smsDelivered",
+                    "an.uniqueRecipients",
+                    "an.failedMessages",
+                  ] as Key[]
+                ).map((stat) => (
+                  <div className="stat" key={stat}>
+                    <span>{t(stat)}</span>
                     <strong>0</strong>
-                    <small>No live delivery data</small>
+                    <small>{t("an.noData")}</small>
                   </div>
                 ))}
               </div>
               <div className="empty panel spaced">
                 <ChartNoAxesCombined />
-                <h2>Your first campaign is the first chapter.</h2>
+                <h2>{t("an.firstChapter")}</h2>
                 <p>
                   Reports will appear when a connected provider reports delivery
                   events.
@@ -2258,7 +2238,7 @@ export default function Studio() {
                 <div className="ai-grid">
                   <section className="ai-step">
                     <span className="ai-step-no">1</span>
-                    <h3>Start the draft</h3>
+                    <h3>{t("md.startDraft")}</h3>
                     <p>
                       Describe the theme — that is all. Your assistant opens
                       with the prompt ready and writes the whole issue, photos
@@ -2331,7 +2311,7 @@ export default function Studio() {
                       onClick={() => {
                         navigator.clipboard
                           .writeText(buildPrompt(aiTopic))
-                          .then(() => toast.success("Prompt copied"))
+                          .then(() => toast.success(t("md.promptCopied")))
                           .catch(() => toast.error("Couldn't copy the prompt"));
                       }}
                     >
@@ -2341,7 +2321,7 @@ export default function Studio() {
                   </section>
                   <section className="ai-step">
                     <span className="ai-step-no">2</span>
-                    <h3>Paste the reply</h3>
+                    <h3>{t("md.pasteReply")}</h3>
                     <p>
                       Copy what the assistant wrote and drop it in. We&rsquo;ll
                       turn it into blocks you can edit.
@@ -2403,14 +2383,14 @@ export default function Studio() {
                         {importing ? "Finding photos…" : "Import as newsletter"}
                       </button>
                       {!!aiDraft && (
-                        <button onClick={() => setAiDraft("")}>Clear</button>
+                        <button onClick={() => setAiDraft("")}>{t("md.clear")}</button>
                       )}
                     </div>
                   </section>
                 </div>
                 {!!aiPreview.blocks.length && (
                   <div className="ai-preview">
-                    <h3>What will be imported</h3>
+                    <h3>{t("ct.whatImported")}</h3>
                     <ul>
                       {aiPreview.blocks.map((b) => (
                         <li key={b.id}>
@@ -2517,7 +2497,7 @@ export default function Studio() {
                   onClick={() => {
                     const list = reachable();
                     if (!list.length) {
-                      toast.error("No subscribed contacts for this channel.");
+                      toast.error(t("md.noSubscribed"));
                       return;
                     }
                     addRecipients(list.join(","));
@@ -2540,7 +2520,7 @@ export default function Studio() {
                   );
                 })}
                 {!!sendList.length && (
-                  <button onClick={() => setSendList([])}>Clear all</button>
+                  <button onClick={() => setSendList([])}>{t("md.clearAll")}</button>
                 )}
               </div>
                 </>
@@ -2548,7 +2528,7 @@ export default function Studio() {
 
               {sendChannel === "Push" ? (
                 <div className="sms-preview">
-                  <span className="sms-label">Every subscribed phone</span>
+                  <span className="sms-label">{t("md.everyPhone")}</span>
                   <p className="sms-bubble">
                     <strong>{issue.title}</strong>
                     <br />
@@ -2575,7 +2555,7 @@ export default function Studio() {
                   const parts = smsSegments(text);
                   return (
                     <div className="sms-preview">
-                      <span className="sms-label">They receive</span>
+                      <span className="sms-label">{t("md.theyReceive")}</span>
                       <p className="sms-bubble">{text}</p>
                       <p className="send-what">
                         Texts need a paid messaging account. If yours is still
@@ -2634,7 +2614,7 @@ export default function Studio() {
                             `Notified ${body.sent} device${body.sent === 1 ? "" : "s"}.` +
                               (body.failed ? ` ${body.failed} failed.` : ""),
                           );
-                          if (body.sent) toast.success("Notification sent");
+                          if (body.sent) toast.success(t("md.notified"));
                         }
                       } catch {
                         setSendResult("Could not reach the server.");
@@ -2705,7 +2685,7 @@ export default function Studio() {
                           ? `Send to ${sendList.length} people`
                           : "Add someone first"}
                 </button>
-                <button onClick={() => setModal("")}>Cancel</button>
+                <button onClick={() => setModal("")}>{t("md.cancel")}</button>
               </div>
               {sendResult && <p className="send-result">{sendResult}</p>}
             </div>
@@ -2736,7 +2716,7 @@ export default function Studio() {
                 const f = new FormData(e.currentTarget),
                   email = String(f.get("email")).trim().toLowerCase();
                 if (data.contacts.some((c) => c.email === email)) {
-                  toast.error("This email already exists. No duplicate added.");
+                  toast.error(t("ct.dupe"));
                   return;
                 }
                 save({
@@ -2754,7 +2734,7 @@ export default function Studio() {
                   ],
                 });
                 setModal("");
-                toast.success("Contact added without marketing consent");
+                toast.success(t("ct.noConsent"));
               }}
             >
               <label>
@@ -2773,12 +2753,10 @@ export default function Studio() {
                   placeholder="+12025550123"
                 />
               </label>
-              <label>
-                Group
-                <input name="group" defaultValue="Community" />
+              <label>{t("ct.group")}<input name="group" defaultValue="Community" />
               </label>
-              <p>New contacts are not subscribed until consent is recorded.</p>
-              <button className="primary">Add contact</button>
+              <p>{t("ct.consent")}</p>
+              <button className="primary">{t("ct.add")}</button>
             </form>
           )}
           {modal === "import" && (
@@ -2790,12 +2768,12 @@ export default function Studio() {
                 try {
                   rows = parseCSV(text);
                 } catch {
-                  toast.error("Invalid CSV: check quotes");
+                  toast.error(t("ct.badCsv"));
                   return;
                 }
                 const headers = rows.shift()?.map((x) => x.toLowerCase()) || [];
                 if (!headers.includes("name") || !headers.includes("email")) {
-                  toast.error("CSV requires name and email headers");
+                  toast.error(t("ct.csvHeaders"));
                   return;
                 }
                 const lines = rows;
@@ -2885,7 +2863,7 @@ export default function Studio() {
                 </span>
               </label>
 
-              <button className="primary">Import contacts</button>
+              <button className="primary">{t("ct.import")}</button>
             </form>
           )}
           {modal === "automation" && (

@@ -1,4 +1,5 @@
 "use client";
+import { useT } from "./i18n";
 
 import { useEffect, useState } from "react";
 
@@ -44,6 +45,7 @@ const isInstalled = () =>
     (navigator as Navigator & { standalone?: boolean }).standalone === true);
 
 export function NotifyButton({ publicKey }: { publicKey: string }) {
+  const { t } = useT();
   const [state, setState] = useState<State>("checking");
   const [note, setNote] = useState("");
 
@@ -68,10 +70,10 @@ export function NotifyButton({ publicKey }: { publicKey: string }) {
   if (state === "in-app")
     return (
       <div className="notify-box">
-        <p className="notify-title">Get new issues on your phone</p>
+        <p className="notify-title">{t("nb.getPhone")}</p>
         <p className="notify-note">
           You are viewing this inside another app. Tap the ••• or share icon and
-          choose <strong>Open in browser</strong> (Safari or Chrome), then come
+          choose <strong>{t("nb.openBrowser")}</strong> (Safari or Chrome), then come
           back to this page to turn notifications on.
         </p>
       </div>
@@ -80,15 +82,15 @@ export function NotifyButton({ publicKey }: { publicKey: string }) {
   if (state === "ios-install")
     return (
       <div className="notify-box">
-        <p className="notify-title">Get new issues on your iPhone</p>
+        <p className="notify-title">{t("nb.getIphone")}</p>
         <ol className="notify-steps">
           <li>
-            Tap the <strong>Share</strong> button at the bottom of Safari
+            Tap the <strong>{t("nb.share")}</strong> button at the bottom of Safari
           </li>
           <li>
-            Choose <strong>Add to Home Screen</strong>
+            Choose <strong>{t("nb.addHome")}</strong>
           </li>
-          <li>Open ML Lab from your Home Screen and tap Notify me</li>
+          <li>{t("nb.thenNotify")}</li>
         </ol>
         <p className="notify-note">
           Apple only allows notifications for sites added this way. It takes two
@@ -115,7 +117,7 @@ export function NotifyButton({ publicKey }: { publicKey: string }) {
   if (state === "on")
     return (
       <div className="notify-box">
-        <p className="notify-on">You will get new issues on this device.</p>
+        <p className="notify-on">{t("nb.confirmed")}</p>
         <button
           className="notify-off"
           onClick={async () => {

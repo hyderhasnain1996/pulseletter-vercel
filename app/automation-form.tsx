@@ -1,4 +1,5 @@
 "use client";
+import { useT } from "./i18n";
 
 import { useMemo, useState } from "react";
 import {
@@ -50,6 +51,7 @@ export function AutomationForm({
   groups: string[];
   onCreate: (a: NewAutomation) => void;
 }) {
+  const { t } = useT();
   const [name, setName] = useState("");
   const [issueId, setIssueId] = useState("");
   const [channel, setChannel] = useState("Email");
@@ -119,19 +121,19 @@ export function AutomationForm({
       }}
     >
       <label className="auto-field">
-        <span className="auto-label">Name it</span>
+        <span className="auto-label">{t("af.name")}</span>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          placeholder="Weekly issue"
+          placeholder={t("af.namePlaceholder")}
         />
       </label>
 
       <label className="auto-field">
-        <span className="auto-label">Which newsletter goes out</span>
+        <span className="auto-label">{t("af.which")}</span>
         <select value={issueId} onChange={(e) => setIssueId(e.target.value)}>
-          <option value="">Always the most recently edited one</option>
+          <option value="">{t("af.latest")}</option>
           {issues.map((i) => (
             <option key={i.id} value={i.id}>
               {i.title}
@@ -141,8 +143,8 @@ export function AutomationForm({
       </label>
 
       <div className="auto-field">
-        <span className="auto-label">How it travels</span>
-        <div className="auto-seg" role="group" aria-label="Channel">
+        <span className="auto-label">{t("af.how")}</span>
+        <div className="auto-seg" role="group" aria-label={t("af.channel")}>
           {[
             { v: "Email", label: "Email", icon: <Mail size={15} /> },
             {
@@ -173,8 +175,8 @@ export function AutomationForm({
         </p>
       ) : (
         <div className="auto-field">
-          <span className="auto-label">Who receives it</span>
-          <div className="auto-seg" role="group" aria-label="Who receives it">
+          <span className="auto-label">{t("af.who")}</span>
+          <div className="auto-seg" role="group" aria-label={t("af.who")}>
             {WHO.map((w) => (
               <button
                 key={w.value}
@@ -193,7 +195,7 @@ export function AutomationForm({
               className="auto-sub"
               value={group}
               onChange={(e) => setGroup(e.target.value)}
-              aria-label="Group"
+              aria-label={t("af.group")}
             >
               {groups.map((g) => (
                 <option key={g} value={g}>
@@ -210,8 +212,8 @@ export function AutomationForm({
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search by name or email"
-                  aria-label="Search contacts"
+                  placeholder={t("af.searchHint")}
+                  aria-label={t("af.search")}
                 />
               </div>
 
@@ -257,8 +259,8 @@ export function AutomationForm({
       )}
 
       <div className="auto-field">
-        <span className="auto-label">How often</span>
-        <div className="auto-freq" role="group" aria-label="How often">
+        <span className="auto-label">{t("af.often")}</span>
+        <div className="auto-freq" role="group" aria-label={t("af.often")}>
           {FREQUENCIES.map((f) => (
             <button
               key={f.value}
