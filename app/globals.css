@@ -422,9 +422,12 @@ kbd {
   font-size: 12px;
   color: var(--muted-foreground);
 }
+/* Fits whatever tiles there are rather than a fixed four, so the row always
+   fills the width and lines up with the panels below it. Each keeps a
+   readable width and the row breaks when they no longer fit. */
 .stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 16px;
 }
 .stat {
@@ -1352,7 +1355,6 @@ hr {
     font-size: 29px;
   }
   .stats {
-    grid-template-columns: 1fr 1fr;
     gap: 12px;
   }
   .stat {
