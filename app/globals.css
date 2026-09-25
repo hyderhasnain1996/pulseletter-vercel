@@ -3675,3 +3675,37 @@ video.doc-media {
 :root[lang="ko"] body {
   word-break: keep-all;
 }
+
+/* The pair of ways to start an issue, in a page heading. They wrap onto
+   their own line before they squeeze the headline beside them. */
+.start-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+/* Quieter than .primary, so the two read as a choice rather than a pair of
+   equal shouts, but still plainly a button. */
+.start-actions .ghost {
+  color: var(--foreground);
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+.start-actions .ghost:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+@media (max-width: 720px) {
+  .page-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .start-actions {
+    width: 100%;
+  }
+  .start-actions button {
+    flex: 1;
+    justify-content: center;
+  }
+}

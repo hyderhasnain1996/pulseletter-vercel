@@ -616,6 +616,24 @@ export default function Studio() {
       );
   }
 
+  /* The two ways to begin, offered together wherever an issue can be
+     started, and in the same order as the sidebar: the quick route first,
+     then the one you build yourself. */
+  function startButtons(size: number) {
+    return (
+      <div className="start-actions">
+        <button className="ghost" onClick={() => go("/quick")}>
+          <ImagePlus size={size} />
+          {t("nav.quick")}
+        </button>
+        <button className="primary" onClick={() => setModal("create")}>
+          <Plus size={size} />
+          {t("nl.create")}
+        </button>
+      </div>
+    );
+  }
+
   function duplicate(n: Issue) {
     const copy = {
       ...structuredClone(n),
@@ -1263,8 +1281,7 @@ export default function Studio() {
                   </h1>
                   <p>{t("db.bring")}</p>
                 </div>
-                <button className="primary" onClick={() => setModal("create")}>
-                  <Plus size={18} />{t("nl.create")}</button>
+                {startButtons(18)}
               </div>
               <div className="section-top">
                 <span className="section-label">{t("db.overview")}</span>
@@ -1408,8 +1425,7 @@ export default function Studio() {
                   <h1>{t("nl.title")}</h1>
                   <p>{t("nl.sub")}</p>
                 </div>
-                <button className="primary" onClick={() => setModal("create")}>
-                  <Plus size={17} />{t("nl.create")}</button>
+                {startButtons(17)}
               </div>
               <div className="filters">
                 <div className="searchbox">
