@@ -601,6 +601,15 @@ const dict = {
     en: "A little pulse. A lot of possibility",
     ko: "작은 신호 하나. 커다란 가능성",
   },
+  "stat.saved": { en: "Saved newsletters", ko: "저장된 뉴스레터" },
+  "stat.savedSub": { en: "Your ideas, in one place", ko: "아이디어를 한곳에" },
+  "stat.delivered": { en: "Delivered messages", ko: "발송된 메시지" },
+  "stat.deliveredSub": { en: "No live deliveries yet", ko: "아직 실제 발송이 없습니다" },
+  "stat.failed": { en: "Failed deliveries", ko: "실패한 발송" },
+  "stat.failedSub": {
+    en: "Nothing needs your attention",
+    ko: "확인할 항목이 없습니다",
+  },
 } satisfies Record<string, Record<Lang, string>>;
 
 export type Key = keyof typeof dict;

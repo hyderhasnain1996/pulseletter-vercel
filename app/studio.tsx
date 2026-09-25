@@ -1273,50 +1273,40 @@ export default function Studio() {
                 </span>
               </div>
               <div className="stats">
-                {[
+                {(
                   [
-                    FileText,
-                    "Saved newsletters",
-                    data.issues.filter((x) => x.status !== "Archived").length,
-                    "Your ideas, in one place",
-                    "cyan",
-                  ],
-                  [
-                    CheckCheck,
-                    "Delivered messages",
-                    0,
-                    "No live deliveries yet",
-                    "teal",
-                  ],
-                  [
-                    TriangleAlert,
-                    "Failed deliveries",
-                    0,
-                    "Nothing needs your attention",
-                    "coral",
-                  ],
-                  [
-                    Clock,
-                    "Upcoming campaigns",
-                    data.campaigns.filter(
-                      (x) => x.status === "Scheduled (demo)",
-                    ).length,
-                    "Ready when you are",
-                    "violet",
-                  ],
-                ].map(([Icon, label, num, caption, color]) => {
-                  const I = Icon as typeof FileText;
-                  return (
-                    <div className="stat" key={String(label)}>
-                      <div className="row">
-                        <span>{String(label)}</span>
-                        <I className={String(color)} size={18} />
-                      </div>
-                      <strong>{String(num)}</strong>
-                      <small>{String(caption)}</small>
+                    [
+                      FileText,
+                      "stat.saved",
+                      data.issues.filter((x) => x.status !== "Archived").length,
+                      "stat.savedSub",
+                      "cyan",
+                    ],
+                    [
+                      CheckCheck,
+                      "stat.delivered",
+                      0,
+                      "stat.deliveredSub",
+                      "teal",
+                    ],
+                    [
+                      TriangleAlert,
+                      "stat.failed",
+                      0,
+                      "stat.failedSub",
+                      "coral",
+                    ],
+                  ] as [typeof FileText, Key, number, Key, string][]
+                ).map(([Icon, label, num, caption, color]) => (
+                  <div className="stat" key={label}>
+                    <div className="row">
+                      <span>{t(label)}</span>
+                      <Icon className={color} size={18} />
                     </div>
-                  );
-                })}
+                    <strong>{num}</strong>
+                    <small>{t(caption)}</small>
+                  </div>
+                ))}
               </div>
               <div className="dashboard-grid">
                 <section className="panel trend">
