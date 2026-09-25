@@ -41,10 +41,39 @@ page, and send it to your readers.
 
 ### Signing in
 
-Email sign-in works as soon as `AUTH_RESEND_KEY` is set — you get a link by
-email, no password. Google sign-in appears only when `AUTH_GOOGLE_ID` and
-`AUTH_GOOGLE_SECRET` are set; its redirect URI must be
-`https://YOUR-APP.vercel.app/api/auth/callback/google`.
+There are three ways in, and each appears only once it can actually work.
+
+**An account here.** Anyone can create one from the sign-in card: a name, an
+email and a password of at least eight characters. Each account gets its own
+workspace, so one person's newsletters and contacts are never another's.
+Passwords are stored as a salted scrypt hash, never as themselves. This needs
+`DATABASE_URL`; without it the card offers only the shared demo login below.
+
+**The shared demo login.** `APP_USERNAME` and `APP_PASSWORD`, defaulting to
+`mllab` / `mllab`. Everyone who signs in this way shares one workspace. It
+works with no database at all, which is what makes the app runnable before any
+of this is set up.
+
+**Google.** Appears only when `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` are
+both set. To get them:
+
+1. Open the [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+   and pick or create a project.
+2. **Create credentials → OAuth client ID → Web application**.
+3. Under **Authorised redirect URIs** add exactly:
+   - `http://localhost:3100/api/auth/callback/google` — for local use
+   - `https://YOUR-APP.vercel.app/api/auth/callback/google` — for the deployed site
+
+   The path must match character for character, or Google returns
+   `redirect_uri_mismatch`.
+4. Copy the client ID and secret into `AUTH_GOOGLE_ID` and
+   `AUTH_GOOGLE_SECRET`, then restart (or redeploy).
+
+**Email links.** Work as soon as `AUTH_RESEND_KEY` is set — a link by email,
+no password.
+
+You can check which are live at `/api/auth/providers`, which lists exactly what
+the server is offering.
 
 ### Sending
 

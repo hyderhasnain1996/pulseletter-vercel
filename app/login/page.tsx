@@ -1,4 +1,10 @@
-import { auth, emailSignInReady, googleSignInReady, signIn } from "@/auth";
+import {
+  auth,
+  emailSignInReady,
+  googleSignInReady,
+  signUpReady,
+  signIn,
+} from "@/auth";
 import { LandingShell } from "./landing-shell";
 import { LanguageProvider } from "../i18n";
 import { HeroContent } from "./hero-content";
@@ -95,6 +101,7 @@ export default async function LoginPage({
           <SignInCard
             alternatives={alternatives}
             notConfigured={notConfigured}
+            canSignUp={signUpReady()}
           />
         }
       />

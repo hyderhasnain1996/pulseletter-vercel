@@ -1096,3 +1096,30 @@ html:has(.lp) body {
   min-width: 2.4rem;
   text-align: center;
 }
+
+/* "New here? Create account" under the form. A sentence with a button in
+   it, so the button looks like the link it behaves as. */
+.lp-switch {
+  margin: 0.9rem 0 0;
+  text-align: center;
+  font-size: 0.86rem;
+  color: #5b6478;
+}
+.lp-switch button {
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: #4f46e5;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-underline-offset: 2px;
+}
+.lp-switch button:hover {
+  text-decoration: underline;
+}
+.lp-switch button:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+  border-radius: 3px;
+}

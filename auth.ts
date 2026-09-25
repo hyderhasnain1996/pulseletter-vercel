@@ -4,14 +4,23 @@ import Google from "next-auth/providers/google";
 import Resend from "next-auth/providers/resend";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { getDb, hasDatabase } from "./db";
-import { users, accounts, sessions, verificationTokens } from "./db/schema";
+import {
+  users,
+  accounts,
+  sessions,
+  verificationTokens,
+  appCredentials,
+} from "./db/schema";
+import { eq } from "drizzle-orm";
+import { verifyPassword } from "./app/lib/password";
 
 /* Sign-in.
 
-   Username and password is the default way in. The pair lives in the
-   environment so it can be changed without editing code; APP_USERNAME and
-   APP_PASSWORD override the built-in values. Everyone who signs in this way
-   shares one workspace, since there is only one account.
+   Two kinds of account answer the same form. An address and password belong
+   to somebody who signed up here, and that person gets a workspace of their
+   own. The built-in pair -- APP_USERNAME and APP_PASSWORD, defaulting to the
+   demo login -- is the shared workspace everyone lands in before anybody has
+   made an account, and it stays so the app is usable with no database.
 
    Email links and Google are added only when their credentials exist, so the
    app still boots before any of that is set up. */
@@ -35,9 +44,36 @@ const providers: NextAuthConfig["providers"] = [
       username: { label: "Username", type: "text" },
       password: { label: "Password", type: "password" },
     },
-    authorize(raw) {
-      const username = String(raw?.username ?? "");
+    async authorize(raw) {
+      const username = String(raw?.username ?? "").trim();
       const password = String(raw?.password ?? "");
+      if (!username || !password) return null;
+
+      /* An account made here is looked up by address. Its own id becomes the
+         session id, which is what the workspace is filed under, so one
+         person's issues and contacts are never another's. */
+      if (username.includes("@") && hasDatabase()) {
+        const db = getDb();
+        const [found] = await db
+          .select({
+            userId: appCredentials.userId,
+            passwordHash: appCredentials.passwordHash,
+            name: users.name,
+            email: users.email,
+          })
+          .from(appCredentials)
+          .innerJoin(users, eq(users.id, appCredentials.userId))
+          .where(eq(appCredentials.email, username.toLowerCase()))
+          .limit(1);
+        if (found && (await verifyPassword(password, found.passwordHash)))
+          return {
+            id: found.userId,
+            name: found.name ?? found.email,
+            email: found.email,
+          };
+        return null;
+      }
+
       if (!sameSecret(username, APP_USER)) return null;
       if (!sameSecret(password, APP_PASS)) return null;
       // A stable id keeps this account pointed at the same workspace.
@@ -94,3 +130,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => ({
 export const emailSignInReady = () => Boolean(process.env.AUTH_RESEND_KEY);
 export const googleSignInReady = () =>
   Boolean(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET);
+/** Signing up needs somewhere to keep the account. */
+export const signUpReady = () => hasDatabase();

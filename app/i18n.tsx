@@ -540,6 +540,51 @@ const dict = {
     en: "Write your next issue, then send it straight away.",
     ko: "다음 호를 쓰고 바로 보내세요.",
   },
+
+  /* ---- making an account ---- */
+  "su.title": { en: "Create your account", ko: "계정 만들기" },
+  "su.sub": {
+    en: "Your own workspace, with its own newsletters and contacts.",
+    ko: "뉴스레터와 연락처를 따로 두는 나만의 워크스페이스입니다.",
+  },
+  "su.name": { en: "Your name", ko: "이름" },
+  "su.nameHint": { en: "Hana Kim", ko: "김하나" },
+  "su.email": { en: "Email", ko: "이메일" },
+  "su.emailHint": { en: "you@example.com", ko: "you@example.com" },
+  "su.password": { en: "Choose a password", ko: "비밀번호 설정" },
+  "su.passwordHint": { en: "At least 8 characters", ko: "8자 이상" },
+  "su.create": { en: "Create account", ko: "계정 만들기" },
+  "su.creating": { en: "Creating your account…", ko: "계정을 만드는 중…" },
+  "su.newHere": { en: "New here?", ko: "처음이신가요?" },
+  "su.haveAccount": { en: "Already have an account?", ko: "이미 계정이 있으신가요?" },
+  "su.goSignIn": { en: "Sign in", ko: "로그인" },
+  "su.enterName": { en: "Enter your name.", ko: "이름을 입력하세요." },
+  "su.enterEmail": { en: "Enter your email.", ko: "이메일을 입력하세요." },
+  "su.badEmail": {
+    en: "That does not look like an email address.",
+    ko: "이메일 주소 형식이 아닙니다.",
+  },
+  "su.shortPassword": {
+    en: "Use at least 8 characters.",
+    ko: "8자 이상으로 입력하세요.",
+  },
+  "su.taken": {
+    en: "That email already has an account. Sign in instead.",
+    ko: "이미 계정이 있는 이메일입니다. 로그인해 주세요.",
+  },
+  "su.needDatabase": {
+    en: "Accounts need a database. Ask whoever set this up to add DATABASE_URL.",
+    ko: "계정을 만들려면 데이터베이스가 필요합니다. 설치한 분에게 DATABASE_URL 설정을 요청하세요.",
+  },
+  "su.failed": {
+    en: "Could not create your account. Please try again.",
+    ko: "계정을 만들지 못했습니다. 다시 시도해 주세요.",
+  },
+  "su.signInEmail": { en: "Email or username", ko: "이메일 또는 아이디" },
+  "su.signInEmailHint": {
+    en: "you@example.com",
+    ko: "you@example.com",
+  },
 } satisfies Record<string, Record<Lang, string>>;
 
 export type Key = keyof typeof dict;

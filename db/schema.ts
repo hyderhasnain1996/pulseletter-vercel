@@ -14,6 +14,23 @@ export const workspaces = pgTable("workspaces", {
   updated: text("updated").notNull(),
 });
 
+/* Password sign-in for people who made an account here.
+
+   Kept apart from the Auth.js user table, which the adapter owns and whose
+   shape is fixed: one row per account that has a password, pointing at that
+   user. Somebody who only ever signs in with Google simply has no row. */
+export const appCredentials = pgTable("app_credential", {
+  userId: text("userId")
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+  /* Lower-cased on the way in, and unique, so an address cannot be claimed
+     twice by varying the capitals. */
+  email: text("email").notNull().unique(),
+  /* scrypt, as "scrypt$<salt hex>$<key hex>". Never the password itself. */
+  passwordHash: text("passwordHash").notNull(),
+  created: text("created").notNull(),
+});
+
 /* Readers who allowed notifications on their phone. The endpoint is the
    browser's own push address and is unique per device, so it doubles as the
    key — re-subscribing the same device updates rather than duplicates. */
