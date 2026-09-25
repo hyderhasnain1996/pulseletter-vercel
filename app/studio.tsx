@@ -1252,23 +1252,14 @@ export default function Studio() {
           </div>
         </header>
         <main className="main">
-          <div className="demo-banner">
-            <span>
-              <span className="demo-dot" />
-              {t("banner.demo")}{" "}
-              <span className="muted">{t("banner.demoNote")}</span>
-            </span>
-            <button onClick={() => go("/newsletters")}>
-              Your newsletters <ArrowRight size={14} />
-            </button>
-          </div>
           {path === "/dashboard" && (
             <>
               <div className="page-heading">
                 <div>
                   <div className="eyebrow">{t("db.eyebrow")}</div>
                   <h1>
-                    A little pulse. A lot of possibility<span>.</span>
+                    {t("db.headline")}
+                    <span>.</span>
                   </h1>
                   <p>{t("db.bring")}</p>
                 </div>

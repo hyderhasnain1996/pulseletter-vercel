@@ -48,11 +48,6 @@ const dict = {
   "action.notifications": { en: "Notifications", ko: "알림" },
   "top.search": { en: "Search newsletters…", ko: "뉴스레터 검색…" },
   "top.crumb": { en: "Workspace", ko: "워크스페이스" },
-  "banner.demo": { en: "Demo workspace", ko: "데모 워크스페이스" },
-  "banner.demoNote": {
-    en: "— sample content, no real messages sent",
-    ko: "— 샘플 콘텐츠이며 실제로 발송되지 않습니다",
-  },
 
   /* ---- quick send ---- */
   "qs.eyebrow": { en: "Send a picture", ko: "사진으로 보내기" },
@@ -602,6 +597,10 @@ const dict = {
     ko: "작은 신호가 먼 곳까지 닿습니다.",
   },
   "foot.demo": { en: "Demo preview", ko: "데모 미리보기" },
+  "db.headline": {
+    en: "A little pulse. A lot of possibility",
+    ko: "작은 신호 하나. 커다란 가능성",
+  },
 } satisfies Record<string, Record<Lang, string>>;
 
 export type Key = keyof typeof dict;

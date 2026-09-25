@@ -342,36 +342,6 @@ kbd {
   margin: auto;
   padding: 22px 36px 0;
 }
-.demo-banner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12px;
-  padding: 9px 13px;
-  background: #54d1df07;
-  border: 1px solid #54d1df20;
-  border-radius: 6px;
-  color: #9bc2cb;
-  gap: 12px;
-}
-.demo-banner > span {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-.demo-banner button {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  color: var(--primary);
-  font-size: 12px;
-}
-.demo-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--primary);
-}
 .page-heading {
   display: flex;
   justify-content: space-between;
@@ -1363,15 +1333,6 @@ hr {
   }
   .top-actions {
     gap: 13px;
-  }
-  .demo-banner {
-    font-size: 12px;
-  }
-  .demo-banner .muted {
-    display: none;
-  }
-  .demo-banner button {
-    font-size: 12px;
   }
   .page-heading {
     flex-direction: column;
