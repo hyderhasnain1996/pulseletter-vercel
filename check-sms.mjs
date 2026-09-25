@@ -35,7 +35,7 @@ const res = await fetch("https://api.httpsms.com/v1/messages/send", {
     Accept: "application/json",
   },
   body: JSON.stringify({
-    content: "PulseLetter test — texting works.",
+    content: "ML Lab test — texting works.",
     from: HTTPSMS_FROM,
     to,
   }),

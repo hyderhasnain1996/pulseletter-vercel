@@ -7,7 +7,7 @@ import LoginPage from "./login/page";
    passed through here first. */
 
 export const metadata = {
-  title: "PulseLetter — Newsletter Studio",
+  title: "Machine Learning Lab Newsletters",
   description:
     "Turn a theme into a polished newsletter, then share it with your audience.",
 };

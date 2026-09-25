@@ -137,7 +137,7 @@ export function LandingShell({
                 />
               </svg>
             </span>
-            PulseLetter
+            Machine Learning Lab
           </Link>
 
           <button

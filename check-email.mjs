@@ -32,8 +32,8 @@ try {
 const info = await mailer.sendMail({
   from: EMAIL_FROM || SMTP_USER,
   to: SMTP_USER,
-  subject: "PulseLetter test",
-  html: "<p>If you are reading this, PulseLetter can send from your Gmail.</p>",
+  subject: "ML Lab newsletter test",
+  html: "<p>If you are reading this, the newsletter studio can send from your Gmail.</p>",
 });
 console.log(`Test email sent to ${SMTP_USER} (id ${info.messageId})`);
 console.log("Check your inbox.");

@@ -1,4 +1,4 @@
-# PulseLetter Studio
+# Machine Learning Lab Newsletters
 
 A newsletter studio: write an issue with AI or by hand, edit it directly on the
 page, and send it to your readers.

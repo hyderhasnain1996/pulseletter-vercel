@@ -18,7 +18,7 @@ self.addEventListener("push", (event) => {
     icon: payload.icon || "/favicon.svg",
     badge: "/favicon.svg",
     data: { url: payload.url || "/" },
-    tag: payload.tag || "pulseletter",
+    tag: payload.tag || "mllab",
     renotify: true,
   };
 

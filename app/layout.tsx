@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "PulseLetter — Newsletter Studio",
+  title: "Machine Learning Lab Newsletters",
   description: "Create, organize, and share your next great newsletter.",
   other: {
     "codex-preview": "development",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: "PulseLetter",
+    title: "ML Lab",
     statusBarStyle: "default",
   },
 };

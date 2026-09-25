@@ -6,7 +6,7 @@ import { ContinueCard } from "./continue-card";
 import "./landing.css";
 
 export const metadata = {
-  title: "Sign in — PulseLetter",
+  title: "Sign in — Machine Learning Lab",
   description:
     "Turn a theme into a polished newsletter, then share it with your audience.",
 };

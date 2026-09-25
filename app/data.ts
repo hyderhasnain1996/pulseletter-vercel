@@ -73,7 +73,7 @@ export const templates = [
   "Events & Community",
 ];
 export const initial: State = {
-  brand: "PulseLetter",
+  brand: "Machine Learning Lab",
   issues: templates.map((category, i) => ({
     id: "sample-" + i,
     title: [

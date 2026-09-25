@@ -76,7 +76,7 @@ export function SignInCard({
       </span>
 
       <h1>Welcome back</h1>
-      <p className="lp-card-sub">Sign in to your PulseLetter workspace.</p>
+      <p className="lp-card-sub">Sign in to the Machine Learning Lab workspace.</p>
 
       {configWarning && (
         <div className="lp-alert">

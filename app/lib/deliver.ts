@@ -82,7 +82,7 @@ function inlineImages(html: string) {
     (_all, url: string, subtype: string, base64: string) => {
       let cid = seen.get(url);
       if (!cid) {
-        cid = `img${seen.size + 1}@pulseletter`;
+        cid = `img${seen.size + 1}@mllab`;
         seen.set(url, cid);
         attachments.push({
           filename: `image-${attachments.length + 1}.${subtype === "jpeg" ? "jpg" : subtype}`,

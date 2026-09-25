@@ -2131,7 +2131,7 @@ export default function Studio() {
                     <Workflow />
                     <h2>Send it without thinking about it</h2>
                     <p>
-                      Choose a newsletter, a channel and how often. PulseLetter
+                      Choose a newsletter, a channel and how often. The studio
                       sends it on schedule from then on.
                     </p>
                     <button
@@ -2191,7 +2191,7 @@ export default function Studio() {
             <span>
               <Activity size={13} /> A little pulse goes a long way.
             </span>
-            <span>PulseLetter Studio · Demo preview</span>
+            <span>Machine Learning Lab · Demo preview</span>
           </footer>
         </main>
       </div>
@@ -2218,7 +2218,7 @@ export default function Studio() {
               : modal === "create"
                 ? "Describe your theme and let AI write it — or build it yourself."
                 : modal === "automation"
-                  ? "Set it once. PulseLetter sends it on schedule from then on."
+                  ? "Set it once. The studio sends it on schedule from then on."
                   : "Your newsletter studio"}
           </DialogDescription>
           {modal === "create" && (

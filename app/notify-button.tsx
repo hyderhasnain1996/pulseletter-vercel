@@ -88,7 +88,7 @@ export function NotifyButton({ publicKey }: { publicKey: string }) {
           <li>
             Choose <strong>Add to Home Screen</strong>
           </li>
-          <li>Open PulseLetter from your Home Screen and tap Notify me</li>
+          <li>Open ML Lab from your Home Screen and tap Notify me</li>
         </ol>
         <p className="notify-note">
           Apple only allows notifications for sites added this way. It takes two

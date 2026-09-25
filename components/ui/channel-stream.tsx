@@ -168,7 +168,7 @@ export const CHANNELS: Channel[] = [
     capability: "available",
     detail:
       "Every issue has a public page. Copy the link and put it anywhere you already talk to people.",
-    snippet: "pulseletter.app/read",
+    snippet: "mllab.news/read",
     logo: (
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
         <circle cx="12" cy="12" r="10" fill="#12967f" />
@@ -318,7 +318,7 @@ export function ChannelStream({ selected }: { selected: string }) {
         <div className="cs-issue">
           <div className="cs-issue-top">
             <span className="cs-issue-mark" />
-            PULSELETTER
+            ML LAB
           </div>
           <strong>Your weekly update</strong>
           <div className="cs-issue-cover">

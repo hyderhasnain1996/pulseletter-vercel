@@ -5,8 +5,8 @@ import type { MetadataRoute } from "next";
    reader install it and receive new issues. */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "PulseLetter — Newsletter Studio",
-    short_name: "PulseLetter",
+    name: "Machine Learning Lab Newsletters",
+    short_name: "ML Lab",
     description: "Your newsletters, and every new issue on your phone.",
     start_url: "/",
     scope: "/",
